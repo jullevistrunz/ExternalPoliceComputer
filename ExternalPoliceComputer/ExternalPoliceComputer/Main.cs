@@ -2,7 +2,6 @@
 using LSPD_First_Response.Mod.API;
 using System.IO;
 using System;
-using System.Linq;
 
 namespace ExternalPoliceComputer {
     public class Main : Plugin {
@@ -15,7 +14,6 @@ namespace ExternalPoliceComputer {
         public override void Finally() {
             Game.LogTrivial("ExternalPoliceComputer has been cleaned up.");
         }
-
 
         private static void Functions_OnOnDutyStateChanged(bool OnDuty) {
             if (OnDuty) {
@@ -38,7 +36,6 @@ namespace ExternalPoliceComputer {
                 }
             }
         }
-
 
         private static void addEventsWithSTP() {
             Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
@@ -144,6 +141,5 @@ namespace ExternalPoliceComputer {
             
             Game.LogTrivial("ExternalPoliceComputer: Updated EPC/worldCars.data");
         }
-
     }
 }
