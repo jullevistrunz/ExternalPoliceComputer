@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # Each "Item" tag may have "chance" attribute
+    # Possible "chance" values are: "rare", "normal", "often"
+    # If "chance" attribute is not set, then the plugin will set it as "normal" by default
+-->
+<PatDownItems>
+    <RedItems>
+       <Item chance="normal">a handgun</Item>
+       <Item>a small revolver</Item>
+       <Item chance="rare">a grenade</Item>
+       <Item>a baggie of marijuana</Item>
+       <Item>small baggie of cocaine</Item>
+       <Item>a baggie of meth</Item>
+       <Item>a baggie of heroine</Item>
+       <Item>Fentanyl</Item>
+       <Item>illegal prescription pills</Item>
+       <Item>PCP</Item>
+       <Item>LSD</Item>
+       <Item>Ecstasy</Item>
+       <Item chance="rare">Anabolic Steroids</Item>
+       <Item chance="rare">Morphine</Item>
+        <Item chance="rare">Opium</Item>
+        <Item chance="rare">Oxy</Item>
+        <Item chance="rare">Roofies</Item>
+        <Item>stolen debit card</Item>
+        <Item>stolen creadit card</Item>
+        <Item>stolen drivers license</Item>
+        <Item>stolen car keys</Item>
+    </RedItems>
+    <YellowItems>
+       <Item>a used needle</Item>
+       <Item chance="often">pocket knife</Item>
+       <Item>wire cutter</Item>
+       <Item>a burnt meth pipe</Item>
+       <Item>knuckledusters</Item>
+       <Item>pepper spray</Item>
+       <Item>rusty spoon</Item>
+       <Item>a lockpick</Item>
+       <Item>clown mask</Item>
+       <Item>terrorist mask</Item>
+       <Item>police stick</Item>
+       <Item>screwdriver</Item>
+       <Item>a small bottle containing a clear liquid</Item>
+       <Item>a metal spoon with black powder residue</Item>
+       <Item>a pipe with tan powder residue</Item>
+       <Item>a pipe with brown powder residue</Item>
+       <Item>a bong with white powder residue</Item>
+       <Item>unmarked pills</Item>
+       <Item>three unmarked pills</Item>
+       <Item>a few tablets in plastic container</Item>
+       <Item>a few capsules in plastic container</Item>
+       <Item>a dollar-bill covered in white powder</Item>
+       <Item>a baggie of clear crystals</Item>
+       <Item>a baggie of brown powder</Item>
+       <Item>a baggie of unmarked pills</Item>
+       <Item>a baggie of white powder</Item>
+       <Item>a baggie of blue crystals</Item>
+       <Item>a baggie of tan powder</Item>
+       <Item>a little jar of suspicious liquid</Item>
+       <Item>some blotter papers</Item>
+    </YellowItems>
+    <GreenItems>
+       <Item chance="normal">wallet</Item>
+       <Item>keys</Item>
+       <Item chance="often">cell phone</Item>
+       <Item>pocket camera</Item>
+       <Item>playboy magazine</Item>
+       <Item>a pair of panties</Item>
+       <Item>dildo</Item>
+       <Item>a vibrator</Item>
+       <Item>a postcard</Item>
+       <Item>a citation ticket</Item>
+       <Item>a cigar</Item>
+       <Item>a used condom</Item>
+       <Item>a condom</Item>
+       <Item>flashlight</Item>
+       <Item>car key fob</Item>
+       <Item>a binocular</Item>
+       <Item chance="often">a pack of cigarettes</Item>
+       <Item>smart phone</Item>
+       <Item chance="often">a ballpoint</Item>
+       <Item>a pencil</Item>
+       <Item>zippo lighter</Item>
+       <Item>matches</Item>
+       <Item>a plane ticket</Item>
+       <Item>sunglasses</Item>
+       <Item>a lolypop</Item>
+       <Item>packing tape</Item>
+    </GreenItems>
+</PatDownItems>

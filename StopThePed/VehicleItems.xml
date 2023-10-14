@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # Each "Item" tag may have "chance" attribute
+    # Possible "chance" values are: "rare", "normal", "often"
+    # If "chance" attribute is not set, then the plugin will set it as "normal" by default
+-->
+<VehicleItems>
+    <RedItems>
+       <Item chance="normal">a handgun</Item>
+       <Item>a large bong</Item>
+       <Item>a briefcase full of heroin</Item>
+       <Item>a briefcase full of methamphetamine</Item>
+       <Item>a briefcase full of cocaine</Item>
+       <Item>several bags of marijuana</Item>
+       <Item>a bag of shrooms</Item>
+       <Item>several pounds of methamphetamine</Item>
+       <Item>several pounds of heroine</Item>
+       <Item>several pounds of cocaine</Item>
+       <Item chance="rare">a nunchucks</Item>
+       <Item>a silencer</Item>
+       <Item chance="rare">an IED</Item>
+       <Item chance="rare">a couple of grenades</Item>
+       <Item>an AR-15 rifle</Item>
+       <Item>a sniper rifle</Item>
+       <Item>a shotgun</Item>
+       <Item>LSD</Item>
+       <Item>Ecstasy</Item>
+       <Item>Anabolic Steroids</Item>
+       <Item>Morphine</Item>
+       <Item>Opium</Item>
+        <Item>Oxy</Item>
+        <Item>Roofies</Item>
+        <Item>stolen drivers license</Item>
+        <Item>stolen license plate</Item>
+    </RedItems>
+    <YellowItems>
+       <Item chance="normal">wire cutters</Item>
+       <Item>several cell phones</Item>
+       <Item>several cans of spray paint</Item>
+       <Item>glass-cutting equipment</Item>
+       <Item>several rounds of ammunition</Item>
+       <Item>a bag of fertilizer</Item>
+       <Item>a duffel bag full of money</Item>
+       <Item>a briefcase full of $100 bills</Item>
+       <Item>a clown mask</Item>
+       <Item>a clown outfit</Item>
+       <Item>a human skull</Item>
+       <Item>a large bloodstain</Item>
+       <Item>a brown bag stuffed with money</Item>
+       <Item>a bottle of percocet</Item>
+       <Item>a bottle of morphine</Item>
+       <Item>a crossbow</Item>
+       <Item>a hatchet</Item>
+       <Item>a hammer</Item>
+       <Item>a kitchen knife</Item>
+       <Item>a chainsaw</Item>
+       <Item>a large axe</Item>
+       <Item>a crowbar</Item>
+       <Item>a katana</Item>
+       <Item>a samurai</Item>
+       <Item>knuckledusters</Item>
+       <Item>a baseball bat</Item>
+       <Item>a machete</Item>
+       <Item>a can of pepper spray</Item>
+       <Item>a tazer</Item>
+       <Item>a police nightstick</Item>
+       <Item>several pills in an unmarked bottle</Item>
+       <Item>a wrapped brick containing brown powder</Item>
+       <Item>a bottle containing a clear liquid</Item>
+       <Item>a containing a liquid residue</Item>
+       <Item>a duffle bag filled with baggies of white powder</Item>
+       <Item>a scale coated with white powder</Item>
+       <Item>a scale coated with tan powder</Item>
+       <Item>an empty baggie with black powder residue</Item>
+       <Item>empty vial containing white powder residue</Item>
+       <Item>a few sheets of perforated blotter paper</Item>
+       <Item>two empty baggies with a brown powder residue</Item>
+       <Item>a dollar-bill covered in powder</Item>
+       <Item>a baggie of unmarked pills</Item>
+       <Item>a baggie of unmarked tablets</Item>
+       <Item>a baggie of unmarked capsules</Item>
+       <Item>some blotter paper</Item>
+    </YellowItems>
+    <GreenItems>
+       <Item chance="often">a flashlight</Item>
+       <Item>a beach towel</Item>
+       <Item>a soccer ball</Item>
+       <Item>jerry can</Item>
+       <Item>prosthetic arm</Item>
+       <Item>a bottle of bleach</Item>
+       <Item>bags of groceries</Item>
+       <Item chance="rare">a bowling ball</Item>
+       <Item>a tennis racquet</Item>
+       <Item>a badminton racquete</Item>
+       <Item>a violin</Item>
+       <Item>a basketball</Item>
+       <Item>an NFL football</Item>
+       <Item>a soccer ball</Item>
+       <Item>an urn of ashes</Item>
+       <Item chance="often">a pair of shoes</Item>
+       <Item>a pair of sandals</Item>
+       <Item>a shovel</Item>
+       <Item>a macbook pro laptop</Item>
+       <Item>a locked briefcase</Item>
+       <Item>a pile of dirty clothes</Item>
+       <Item>a motorbike helmet</Item>
+       <Item>a bag of oranges</Item>
+       <Item>a toaster</Item>
+       <Item>a bottle of hand sanitizer</Item>
+       <Item>a set of jumper cables</Item>
+       <Item>a halloween costume</Item>
+       <Item>a cowboy hat</Item>
+       <Item>a fedora</Item>
+       <Item>a bag of apples</Item>
+       <Item>a bottle of diet cola</Item>
+    </GreenItems>
+</VehicleItems>

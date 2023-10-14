@@ -1,0 +1,546 @@
+body {
+  background-color: var(--background-color);
+  color: var(--main-color);
+  font-family: var(--main-font);
+}
+
+body button,
+body input {
+  font-family: var(--main-font);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  z-index: 1;
+  font-size: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 2px;
+  background-color: var(--accent-color);
+  overflow-x: auto;
+}
+
+.header button {
+  padding: 0 20px;
+  margin: 0;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid transparent;
+  border-top: 4px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: var(--second-background-color);
+  color: var(--accent-color);
+  transition: 50ms linear;
+}
+
+.header button:hover,
+.header button:focus,
+.header button.selected {
+  border-bottom-color: var(--accent-color);
+}
+
+.header button:active {
+  border-bottom: 4px solid var(--accent-color);
+}
+
+.content {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--header-height));
+  top: var(--header-height);
+}
+
+.content > * {
+  width: 100%;
+  height: 100%;
+}
+
+.mapPage iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.mapPage input {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  height: auto;
+  width: auto;
+  border: none;
+  background-color: var(--second-background-color);
+  color: var(--accent-color);
+  outline: none;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px;
+}
+
+.searchPedPage .inpContainer,
+.courtPage .inpContainer,
+.searchCarPage .inpContainer,
+.shiftPage .btnContainer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  height: auto;
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
+.searchCarPage .carInp,
+.searchPedPage .pedInp,
+.courtPage .pedInp {
+  height: auto;
+  width: unset;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px;
+  border: 2px solid transparent;
+  background-color: var(--second-background-color);
+  color: var(--accent-color);
+  outline: none;
+  transition: 50ms linear;
+}
+
+.searchCarPage .carInp:focus,
+.searchPedPage .pedInp:focus,
+.courtPage .pedInp:focus {
+  border-color: var(--accent-color);
+}
+
+.searchCarPage .carBtn,
+.searchPedPage .pedBtn,
+.courtPage .pedBtn,
+.shiftPage .btnContainer button {
+  height: auto;
+  width: unset;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px;
+  border: 2px solid transparent;
+  background-color: var(--second-background-color);
+  color: var(--accent-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+}
+
+.searchPedPage .pedBtn:hover,
+.searchPedPage .pedBtn:focus,
+.courtPage .pedBtn:hover,
+.courtPage .pedBtn:focus,
+.searchCarPage .carBtn:hover,
+.searchCarPage .carBtn:focus,
+.shiftPage .btnContainer button:not(:disabled):hover,
+.shiftPage .btnContainer button:not(:disabled):focus {
+  border-color: var(--accent-color);
+}
+
+.searchCarPage .resultContainer,
+.searchPedPage .resultContainer {
+  width: calc(100% - 60px);
+  margin: 30px;
+  height: calc(100% - 60px - 42px - 20px);
+  overflow-y: auto;
+}
+
+.searchCarPage .resultContainer .name,
+.searchPedPage .resultContainer .name,
+.shiftPage .title {
+  width: auto;
+  height: auto;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.searchCarPage .resultContainer .labelContainer,
+.searchPedPage .resultContainer .labelContainer,
+.courtPage .container,
+.shiftPage .currentShift,
+.shiftPage .list .container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 15px;
+  width: auto;
+  height: auto;
+  gap: 20px 50px;
+}
+
+.searchCarPage .resultContainer .label,
+.searchPedPage .resultContainer .label,
+.courtPage .container .label,
+.shiftPage .currentShift .label,
+.shiftPage .list .label {
+  width: fit-content;
+  height: min-content;
+  padding: 5px;
+}
+
+.searchCarPage .resultContainer .key,
+.searchPedPage .resultContainer .key,
+.courtPage .container .key,
+.shiftPage .currentShift .key,
+.shiftPage .list .key {
+  width: auto;
+  height: auto;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--second-accent-color);
+}
+
+.searchCarPage .resultContainer .value,
+.searchPedPage .resultContainer .value,
+.courtPage .container .value,
+.shiftPage .currentShift .value,
+.shiftPage .list .value {
+  width: auto;
+  height: auto;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.searchPedPage .citationArrestContainer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  height: auto;
+  margin: 15px;
+  margin-top: 50px;
+  width: calc(100% - 40px);
+}
+
+.searchPedPage .citationArrestContainer .label {
+  width: calc(100% - 10px);
+}
+
+.alphabetPage .container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  height: 100%;
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
+.alphabetPage .container .name {
+  font-size: 32px;
+  font-weight: 800;
+  width: auto;
+  height: auto;
+}
+
+.alphabetPage .container .label {
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.alphabetPage .container .list {
+  font-family: monospace;
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  height: auto;
+}
+
+.alphabetPage .container .item {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  width: fit-content;
+  height: auto;
+}
+
+.alphabetPage .container .list .letter {
+  color: var(--second-accent-color);
+  margin-right: 10px;
+}
+
+.searchPedPage .citationReport,
+.searchPedPage .arrestReport {
+  width: 100%;
+  height: calc(100% - var(--header-height));
+  background-color: var(--background-color);
+  position: fixed;
+  z-index: 1;
+  top: var(--header-height);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
+.searchPedPage .citationReport .options,
+.searchPedPage .arrestReport .options {
+  font-size: 20px;
+  font-weight: 600;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  height: calc(100% - 20px - 20px);
+}
+
+.searchPedPage .citationReport .options summary,
+.searchPedPage .arrestReport .options summary,
+.courtPage summary {
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  outline: none;
+}
+
+.searchPedPage .citationReport .options summary:focus,
+.searchPedPage .arrestReport .options summary:focus,
+.courtPage summary:focus {
+  color: var(--second-accent-color);
+}
+
+.searchPedPage .citationReport .options summary::marker,
+.searchPedPage .arrestReport .options summary::marker,
+.courtPage summary::marker {
+  color: var(--second-accent-color);
+}
+
+.searchPedPage .citationReport .options details button,
+.searchPedPage .arrestReport .options details button {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  width: calc(100% - 4px);
+  margin: 2px;
+  text-align: left;
+}
+
+.searchPedPage .citationReport .options details button:hover,
+.searchPedPage .arrestReport .options details button:hover,
+.searchPedPage .citationReport .options details button:focus,
+.searchPedPage .arrestReport .options details button:focus {
+  background-color: var(--second-accent-color-half);
+}
+
+.searchPedPage .citationReport .result,
+.searchPedPage .arrestReport .result {
+  border: 2px solid var(--second-accent-color-half);
+  height: calc(100% - 40px);
+  overflow-y: auto;
+  position: relative;
+}
+
+.searchPedPage .citationReport .result .title,
+.searchPedPage .arrestReport .result .title {
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.searchPedPage .citationReport .result .title button,
+.searchPedPage .arrestReport .result .title button {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  width: calc(100% - 4px);
+  margin: 2px;
+  text-align: left;
+}
+
+.searchPedPage .citationReport .result .title button:not(:disabled):hover,
+.searchPedPage .arrestReport .result .title button:not(:disabled):hover,
+.searchPedPage .citationReport .result .title button:not(:disabled):focus,
+.searchPedPage .arrestReport .result .title button:not(:disabled):focus {
+  background-color: var(--second-accent-color-half);
+}
+
+.searchPedPage .citationReport .result .title button:disabled,
+.searchPedPage .arrestReport .result .title button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.searchPedPage .citationReport .result .title button.close,
+.searchPedPage .arrestReport .result .title button.close {
+  border-color: var(--warning-color);
+}
+
+.searchPedPage .citationReport .result .title button.close:hover,
+.searchPedPage .arrestReport .result .title button.close:hover,
+.searchPedPage .citationReport .result .title button.close:focus,
+.searchPedPage .arrestReport .result .title button.close:focus {
+  background-color: var(--warning-color-half);
+}
+
+.searchPedPage .citationReport .result .title > div,
+.searchPedPage .arrestReport .result .title > div {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--second-accent-color);
+  margin: 5px;
+}
+
+.searchPedPage .citationReport .result .btn,
+.searchPedPage .arrestReport .result .btn {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: none;
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  width: calc(100% - 10px);
+  margin: 5px;
+  text-align: left;
+}
+
+.searchPedPage .citationReport .result .btn:hover,
+.searchPedPage .arrestReport .result .btn:hover,
+.searchPedPage .citationReport .result .btn:focus,
+.searchPedPage .arrestReport .result .btn:focus {
+  background-color: var(--warning-color-half);
+}
+
+.searchPedPage .citationReport .result .btn::before,
+.searchPedPage .arrestReport .result .btn::before,
+.searchPedPage .citationReport .result .btn::before,
+.searchPedPage .arrestReport .result .btn::before {
+  content: '• ';
+}
+
+.searchPedPage .citationReport .result .charges,
+.searchPedPage .arrestReport .result .charges {
+  overflow: auto;
+  height: 50%;
+}
+
+.searchPedPage .citationReport .result .description,
+.searchPedPage .arrestReport .result .description {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 10px);
+  height: calc(50% - 50px);
+  outline: none;
+  border: none;
+  border-top: 2px solid var(--second-accent-color-half);
+  padding: 5px;
+  resize: none;
+  background-color: transparent;
+  color: var(--main-color);
+}
+
+.courtPage .list .title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 20px;
+}
+
+.courtPage .container:not(:last-child) {
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--second-accent-color-half);
+}
+
+.courtPage .list {
+  height: calc(100% - 82px);
+  overflow-y: auto;
+}
+
+.courtPage summary {
+  margin: 0;
+}
+
+.courtPage details div {
+  margin-left: 21px;
+}
+
+.shiftPage .btnContainer button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.shiftPage .currentShiftNotes {
+  background-color: transparent;
+  color: var(--main-color);
+  border: var(--second-accent-color) 2px solid;
+  outline: none;
+  font-size: 20px;
+  font-weight: 400;
+  resize: none;
+  height: 250px;
+  width: 250px;
+  padding: 10px;
+}
+
+.shiftPage .shiftNotes,
+.courtPage .description {
+  font-family: monospace;
+  background-color: transparent;
+  color: var(--main-color);
+  border: var(--second-accent-color) 2px solid;
+  outline: none;
+  font-size: 20px;
+  font-weight: 400;
+  resize: none;
+  height: fit-content;
+  width: fit-content;
+  padding: 10px;
+}
+
+.shiftPage .courtCaseValue {
+  cursor: pointer;
+}
+
+.shiftPage .courtCaseValue::before {
+  content: '• ';
+  transition: 50ms linear;
+}
+
+.shiftPage .courtCaseValue:hover::before {
+  color: var(--second-accent-color);
+}
+
+.shiftPage .list .container:not(:first-child) {
+  border-top: 2px solid var(--second-accent-color-half);
+  padding-top: 15px;
+}
+
+.shiftPage .title {
+  margin-left: 15px;
+}
+
+.shiftPage {
+  overflow-y: auto;
+}
+
+/* remove border radius on iOS */
+input {
+  border-radius: none;
+}
+
+/* overwrite */
+.hidden {
+  display: none;
+  visibility: hidden;
+}
