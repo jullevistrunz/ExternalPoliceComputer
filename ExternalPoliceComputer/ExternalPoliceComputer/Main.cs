@@ -113,7 +113,7 @@ namespace ExternalPoliceComputer {
             foreach (Vehicle car in allCars) {
                 if (car.Exists()) {
                     string driver = car.Driver.Exists() ? Functions.GetPersonaForPed(car.Driver).FullName : "";
-                    carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&driver={driver}&registration={getRegistration(car)}&insurance={getInsurance(car)}";
+                    carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={Functions.GetVehicleOwnerName(car)}&driver={driver}&registration={getRegistration(car)}&insurance={getInsurance(car)}";
                 }
             }
 
@@ -132,7 +132,7 @@ namespace ExternalPoliceComputer {
                 foreach (Vehicle car in allCars) {
                     if (car.Exists()) {
                         string driver = car.Driver.Exists() ? Functions.GetPersonaForPed(car.Driver).FullName : "";
-                        carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&driver={driver}";
+                        carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={Functions.GetVehicleOwnerName(car)}&driver={driver}";
                     }
                 }
 

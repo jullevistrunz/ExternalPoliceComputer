@@ -3,7 +3,8 @@ const fs = require('fs')
 const url = require('url')
 const os = require('os')
 const port = 80
-const useStopThePed = true
+
+const config = JSON.parse(fs.readFileSync('config.json'))
 
 // clear data on start up
 clearGeneratedData()
@@ -283,20 +284,24 @@ function generateCars() {
       isStolen: worldCar.isStolen,
       isPolice: worldCar.isPolice,
       driver: worldCar.driver,
-      owner:
-        worldCar.isPolice == 'True'
+      owner: !config.useLSPDFROwner
+        ? worldCar.isPolice == 'True'
           ? worldCar.model.toLowerCase().startsWith('police')
             ? 'Los Santos Police Department'
             : 'State Of San Andreas'
           : Math.floor(Math.random() * 10) != 0 && worldCar.driver
           ? worldCar.driver
-          : getRandomPed().name,
+          : getRandomPed().name
+        : worldCar.owner,
+
       registration:
-        worldCar.registration && useStopThePed
+        worldCar.registration && config.useStopThePed
           ? worldCar.registration
           : registration,
       insurance:
-        worldCar.insurance && useStopThePed ? worldCar.insurance : insurance,
+        worldCar.insurance && config.useStopThePed
+          ? worldCar.insurance
+          : insurance,
       stolen: worldCar.isStolen == 'True' ? 'Yes' : 'No',
       plateStatus: plateStatus,
     }
