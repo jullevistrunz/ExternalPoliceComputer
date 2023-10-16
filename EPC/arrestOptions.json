@@ -73,6 +73,22 @@
         "minMonths": 0,
         "maxMonths": 12,
         "probation": 0.4
+      },
+      {
+        "name": "Driving Under The Influence",
+        "minFine": 390,
+        "maxFine": 1000,
+        "minMonths": 0,
+        "maxMonths": 12,
+        "probation": 0.4
+      },
+      {
+        "name": "Failure To Submit To Field Sobriety Test",
+        "minFine": 390,
+        "maxFine": 1000,
+        "minMonths": 0,
+        "maxMonths": 9,
+        "probation": 0.4
       }
     ]
   },
@@ -102,42 +118,13 @@
         "minMonths": 12,
         "maxMonths": 120,
         "probation": 0.4
-      }
-    ]
-  },
-  {
-    "name": "DWI / DUI",
-    "charges": [
-      {
-        "name": "Driving While Intoxicated",
-        "minFine": 390,
-        "maxFine": 1000,
-        "minMonths": 0,
-        "maxMonths": 6,
-        "probation": 0.4
       },
       {
-        "name": "Driving Under The Influence Of Narcotics",
-        "minFine": 390,
-        "maxFine": 1000,
-        "minMonths": 0,
-        "maxMonths": 6,
-        "probation": 0.4
-      },
-      {
-        "name": "Driving While Intoxicated Causing Injury Or Death",
-        "minFine": 390,
-        "maxFine": 1000,
-        "minMonths": 3,
-        "maxMonths": 12,
-        "probation": 0.4
-      },
-      {
-        "name": "Driving Under The Influence Of Narcotics Causing Injury Or Death",
-        "minFine": 390,
-        "maxFine": 1000,
-        "minMonths": 3,
-        "maxMonths": 12,
+        "name": "Driving Under The Influence Causing Injury Or Death",
+        "minFine": 1000,
+        "maxFine": 5000,
+        "minMonths": 12,
+        "maxMonths": 48,
         "probation": 0.4
       }
     ]
