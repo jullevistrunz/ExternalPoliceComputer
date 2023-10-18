@@ -139,6 +139,17 @@ const server = http.createServer(function (req, res) {
         fs.writeFileSync('shift.json', JSON.stringify(data))
         res.writeHead(200)
         res.end()
+      } else if (dataPath == 'updateCourtDescription') {
+        const court = JSON.parse(fs.readFileSync('court.json'))
+        body = JSON.parse(body)
+        for (i in court) {
+          if (court[i].number == body.number) {
+            court[i].description = body.description
+          }
+        }
+        fs.writeFileSync('court.json', JSON.stringify(court))
+        res.writeHead(200)
+        res.end()
       } else {
         res.writeHead(404)
         res.end()

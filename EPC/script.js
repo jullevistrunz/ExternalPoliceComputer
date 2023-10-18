@@ -604,10 +604,22 @@ async function renderCourt() {
       el.appendChild(
         createLabelElement(
           'Description',
-          `<div class="description">${courtCase.description
+          `<div contenteditable class="description">${courtCase.description
             .split('\n')
             .join('<br>')}</div>`
         )
+      )
+      el.querySelector('.description').addEventListener(
+        'input',
+        async function () {
+          await fetch('/post/updateCourtDescription', {
+            method: 'POST',
+            body: JSON.stringify({
+              number: el.querySelector('.caseNumber .value').innerHTML,
+              description: this.innerHTML,
+            }),
+          })
+        }
       )
     }
     list.appendChild(el)
@@ -743,8 +755,8 @@ async function renderShiftPage() {
     )
     document
       .querySelector('.shiftPage .currentShift .currentShiftNotes')
-      .addEventListener('input', function () {
-        fetch('/post/updateCurrentShiftNotes', {
+      .addEventListener('input', async function () {
+        await fetch('/post/updateCurrentShiftNotes', {
           method: 'post',
           body: this.value,
         })
