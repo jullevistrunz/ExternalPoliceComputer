@@ -273,6 +273,8 @@ async function openCitationReport() {
       oldBtn.remove()
     })
 
+  disableCitationSubmitButton()
+
   document.querySelector(
     '.searchPedPage .citationReport .result .description'
   ).value = ''
@@ -335,6 +337,8 @@ async function openArrestReport() {
     .forEach((oldBtn) => {
       oldBtn.remove()
     })
+
+  disableArrestSubmitButton()
 
   document.querySelector(
     '.searchPedPage .arrestReport .result .description'
