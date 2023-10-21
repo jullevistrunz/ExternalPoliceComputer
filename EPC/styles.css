@@ -44,6 +44,7 @@ body input {
 .header button:focus,
 .header button.selected {
   border-bottom-color: var(--accent-color);
+  opacity: 0.8;
 }
 
 .header button:active {
