@@ -12,7 +12,7 @@ namespace ExternalPoliceComputer {
         }
 
         public override void Finally() {
-            Game.LogTrivial("ExternalPoliceComputer has been cleaned up.");
+            Game.LogTrivial("ExternalPoliceComputer has been unloaded.");
         }
 
         private static void Functions_OnOnDutyStateChanged(bool OnDuty) {
@@ -26,8 +26,8 @@ namespace ExternalPoliceComputer {
                     Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
                 } catch {
                     Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
-                    Events.OnCalloutAccepted += Events_OnCalloutAccepted;
                     Events.OnPulloverStarted += Events_OnPulloverStarted;
+                    Events.OnPedPresentedId += Events_OnPedPresentedId;
 
                     updateWorldPeds();
                     updateWorldCars();
@@ -37,11 +37,21 @@ namespace ExternalPoliceComputer {
             }
         }
 
+        private static void Events_OnPedPresentedId(Ped ped, LHandle pullover, LHandle pedInteraction) {
+            updateWorldPeds();
+            updateWorldCars();
+        }
+
         private static void addEventsWithSTP() {
             Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
-            Events.OnCalloutAccepted += Events_OnCalloutAccepted;
             Events.OnPulloverStarted += Events_OnPulloverStarted;
             StopThePed.API.Events.askIdEvent += Events_askIdEvent;
+            StopThePed.API.Events.pedArrestedEvent += Events_pedArrestedEvent;
+        }
+
+        private static void Events_pedArrestedEvent(Ped ped) {
+            updateWorldPeds();
+            updateWorldCars();
         }
 
         private static void Events_askIdEvent(Ped ped) {
@@ -50,11 +60,6 @@ namespace ExternalPoliceComputer {
         }
 
         private static void Events_OnPulloverStarted(LHandle handle) {
-            updateWorldPeds();
-            updateWorldCars();
-        }
-
-        private static void Events_OnCalloutAccepted(LHandle handle) {
             updateWorldPeds();
             updateWorldCars();
         }
