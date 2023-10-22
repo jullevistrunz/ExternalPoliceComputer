@@ -547,6 +547,142 @@ input {
   top: 0;
   left: 0;
   pointer-events: none;
+  z-index: 3;
+}
+
+.currentID {
+  pointer-events: all;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  height: 200px;
+  width: 350px;
+  background-color: var(--second-background-color);
+  padding: 5px 15px 15px 15px;
+  border-radius: 10px;
+}
+
+.currentID .title {
+  display: grid;
+  grid-auto-flow: column;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.currentID .title .sa {
+  color: var(--accent-color);
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.currentID .title .dl {
+  color: var(--accent-color);
+  font-size: 20px;
+  font-weight: 600;
+  align-self: center;
+}
+
+.currentID .container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 10px;
+}
+
+.currentID .container img {
+  width: 154px;
+  aspect-ratio: 1/ 1;
+  align-self: center;
+}
+
+.currentID .properties {
+  color: var(--background-color);
+  align-self: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.currentID .properties * {
+  margin-bottom: 5px;
+}
+
+.currentID .properties :before {
+  color: var(--accent-color);
+  margin-right: 5px;
+}
+
+.currentID .properties .fname:before {
+  content: 'FN';
+}
+
+.currentID .properties .lname:before {
+  content: 'LN';
+}
+
+.currentID .properties .dob:before {
+  content: 'DOB';
+}
+
+.currentID .properties .gender:before {
+  content: 'SEX';
+}
+
+.currentID .closeCurrentID {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--warning-color);
+  color: var(--background-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  text-align: left;
+  opacity: 0;
+  transition: 50ms linear;
+}
+
+.currentID .closeCurrentID:hover {
+  background-color: var(--warning-color-half);
+}
+
+.currentID:hover .closeCurrentID {
+  opacity: 1;
+}
+
+.showCurrentID-container {
+  position: fixed;
+  width: 120px;
+  height: 75px;
+  background-color: var(--background-color);
+  z-index: 2;
+  bottom: 0;
+  right: 0;
+}
+
+.showCurrentID {
+  pointer-events: all;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  text-align: left;
+  transition: 50ms linear;
+}
+
+.showCurrentID:hover {
+  background-color: var(--second-accent-color-half);
 }
 
 /* overwrite */

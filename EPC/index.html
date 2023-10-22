@@ -315,13 +315,24 @@
       </div>
     </div>
     <div class="overlay">
+      <div class="showCurrentID-container">
+        <button class="showCurrentID" onclick="showCurrentID()">Show ID</button>
+      </div>
       <div class="currentID hidden">
-        <img src="/defaultMugshot" />
-        <div class="properties">
-          <div class="name"></div>
-          <div class="dob"></div>
-          <div class="gender"></div>
+        <div class="title">
+          <div class="sa">San Andreas</div>
+          <div class="dl">Driver License</div>
         </div>
+        <div class="container">
+          <img src="/defaultMugshot" />
+          <div class="properties">
+            <div class="lname"></div>
+            <div class="fname"></div>
+            <div class="dob"></div>
+            <div class="gender"></div>
+          </div>
+        </div>
+        <button class="closeCurrentID" onclick="closeCurrentID()">Close</button>
       </div>
     </div>
   </body>

@@ -35,6 +35,10 @@ const server = http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'image/jpeg' })
     res.write(fs.readFileSync('map.jpeg'))
     res.end()
+  } else if (path == '/defaultMugshot') {
+    res.writeHead(200, { 'Content-Type': 'image/jpg' })
+    res.write(fs.readFileSync('defaultMugshot.jpg'))
+    res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
     if (dataPath == 'peds') {
