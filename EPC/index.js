@@ -64,6 +64,10 @@ const server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/json' })
       res.write(fs.readFileSync('shift.json'))
       res.end()
+    } else if (dataPath == 'currentID') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.write(fs.readFileSync('currentID.data'))
+      res.end()
     } else {
       res.writeHead(404)
       res.end()

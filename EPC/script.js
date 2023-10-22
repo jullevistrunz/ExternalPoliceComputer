@@ -94,6 +94,12 @@ setInterval(() => {
   updateCurrentShiftDuration()
 }, 1000)
 
+setInterval(() => {
+  if (document.visibilityState == 'visible') {
+    displayCurrentID()
+  }
+}, 5000)
+
 //funcs
 async function goToPage(name) {
   document.querySelectorAll('.content > *').forEach((page) => {
@@ -920,4 +926,13 @@ function disableArrestSubmitButton() {
   ).disabled = !document.querySelectorAll(
     '.searchPedPage .arrestReport .result .charges button'
   ).length
+}
+
+async function displayCurrentID() {
+  const data = await (await fetch('/data/currentID')).text()
+  if (!data) {
+    document.querySelector('.currentID').classList.add('hidden')
+  } else {
+    document.querySelector('.currentID').classList.remove('hidden')
+  }
 }
