@@ -959,6 +959,7 @@ function closeCurrentID() {
   document.querySelector('.showCurrentID-container').classList.remove('hidden')
 }
 
+https://stackoverflow.com/a/11381730
 function mobileCheck() {
   let check = false
   ;(function (a) {
