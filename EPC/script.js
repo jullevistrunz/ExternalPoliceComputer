@@ -1,3 +1,8 @@
+let config = { wordForJail: 'Jail', currency: '$' }
+;(async function () {
+  // fetched config can't be used on top level = this won't be awaited
+  config = await (await fetch('/data/config')).json()
+})()
 const mapZoom = 1.5
 
 document.querySelector('.mapPage input').value = mapZoom
@@ -309,14 +314,16 @@ async function openCitationReport() {
           JSON.parse(this.dataset.charge).maxFine
             ? `${
                 JSON.parse(this.dataset.charge).name
-              }<br><a style="opacity: 0.75; pointer-events: none;">Fine: ${currency}${
-                JSON.parse(this.dataset.charge).minFine
-              }</a>`
+              }<br><a style="opacity: 0.75; pointer-events: none;">Fine: ${
+                config.currency
+              }${JSON.parse(this.dataset.charge).minFine}</a>`
             : `${
                 JSON.parse(this.dataset.charge).name
-              }<br><a style="opacity: 0.75; pointer-events: none;">Fine: ${currency}${
-                JSON.parse(this.dataset.charge).minFine
-              }-${currency}${JSON.parse(this.dataset.charge).maxFine}</a>`
+              }<br><a style="opacity: 0.75; pointer-events: none;">Fine: ${
+                config.currency
+              }${JSON.parse(this.dataset.charge).minFine}-${config.currency}${
+                JSON.parse(this.dataset.charge).maxFine
+              }</a>`
       })
       btn.addEventListener('mouseleave', function () {
         this.innerHTML = JSON.parse(this.dataset.charge).name
@@ -372,17 +379,19 @@ async function openArrestReport() {
         const fineString =
           JSON.parse(this.dataset.charge).minFine ==
           JSON.parse(this.dataset.charge).maxFine
-            ? `Fine: ${currency}${JSON.parse(this.dataset.charge).minFine}`
-            : `Fine: ${currency}${
+            ? `Fine: ${config.currency}${
                 JSON.parse(this.dataset.charge).minFine
-              } - ${currency}${JSON.parse(this.dataset.charge).maxFine}`
+              }`
+            : `Fine: ${config.currency}${
+                JSON.parse(this.dataset.charge).minFine
+              } - ${config.currency}${JSON.parse(this.dataset.charge).maxFine}`
         const jailString =
           JSON.parse(this.dataset.charge).minMonths ==
           JSON.parse(this.dataset.charge).maxMonths
-            ? `${wordForJail}: ${monthsToYearsAndMonths(
+            ? `${config.wordForJail}: ${monthsToYearsAndMonths(
                 JSON.parse(this.dataset.charge).minMonths
               )}`
-            : `${wordForJail}: ${monthsToYearsAndMonths(
+            : `${config.wordForJail}: ${monthsToYearsAndMonths(
                 JSON.parse(this.dataset.charge).minMonths
               )} - ${monthsToYearsAndMonths(
                 JSON.parse(this.dataset.charge).maxMonths
@@ -503,7 +512,7 @@ async function addCitationToCourt(charges, pedName, description) {
     const fine =
       charge.minFine +
       Math.floor(Math.random() * (charge.maxFine - charge.minFine))
-    const outcome = `Fine: ${currency}${bigNumberToNiceString(fine)}`
+    const outcome = `Fine: ${config.currency}${bigNumberToNiceString(fine)}`
     nameList.push(
       `<details><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
     )
@@ -517,7 +526,7 @@ async function addCitationToCourt(charges, pedName, description) {
       ped: pedName,
       number: caseNumber,
       charge: nameList.join(''),
-      outcome: `Fine: ${currency}${bigNumberToNiceString(fullFine)}`,
+      outcome: `Fine: ${config.currency}${bigNumberToNiceString(fullFine)}`,
       description: description,
     }),
   })
@@ -547,9 +556,9 @@ async function addArrestToCourt(charges, pedName, description) {
     const jailTimeString =
       typeof jailTime == 'number' ? monthsToYearsAndMonths(jailTime) : jailTime
 
-    const outcome = `Fine: ${currency}${bigNumberToNiceString(
+    const outcome = `Fine: ${config.currency}${bigNumberToNiceString(
       fine
-    )}<br>${wordForJail}: ${jailTimeString}`
+    )}<br>${config.wordForJail}: ${jailTimeString}`
     nameList.push(
       `<details><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
     )
@@ -574,9 +583,9 @@ async function addArrestToCourt(charges, pedName, description) {
       ped: pedName,
       number: caseNumber,
       charge: nameList.join(''),
-      outcome: `Fine: ${currency}${bigNumberToNiceString(
-        fullFine
-      )}<br>${wordForJail}: ${
+      outcome: `Fine: ${config.currency}${bigNumberToNiceString(fullFine)}<br>${
+        config.wordForJail
+      }: ${
         typeof fullJailTime == 'number'
           ? monthsToYearsAndMonths(fullJailTime)
           : fullJailTime
@@ -942,10 +951,10 @@ async function displayCurrentID() {
         .classList.remove('hidden')
     }
     const data = file.split(',')
-    el.querySelector('.properties .lname').innerHTML = data[0]
-    el.querySelector('.properties .fname').innerHTML = data[1]
-    el.querySelector('.properties .dob').innerHTML = data[2]
-    el.querySelector('.properties .gender').innerHTML = data[3]
+    el.querySelector('.properties .lname').innerHTML = data[0].split(' ')[1]
+    el.querySelector('.properties .fname').innerHTML = data[0].split(' ')[0]
+    el.querySelector('.properties .dob').innerHTML = data[1]
+    el.querySelector('.properties .gender').innerHTML = data[2]
   }
 }
 
@@ -959,7 +968,7 @@ function closeCurrentID() {
   document.querySelector('.showCurrentID-container').classList.remove('hidden')
 }
 
-https://stackoverflow.com/a/11381730
+// https://stackoverflow.com/a/11381730
 function mobileCheck() {
   let check = false
   ;(function (a) {

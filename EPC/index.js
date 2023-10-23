@@ -72,6 +72,10 @@ const server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/plain' })
       res.write(fs.readFileSync('currentID.data'))
       res.end()
+    } else if (dataPath == 'config') {
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(fs.readFileSync('config.json'))
+      res.end()
     } else {
       res.writeHead(404)
       res.end()
@@ -390,6 +394,7 @@ function getRandomArrests(allCharges, isWanted) {
 
 function clearGeneratedData() {
   fs.writeFileSync('cars.json', '[]')
+  fs.writeFileSync('currentID.data', '')
   const peds = JSON.parse(fs.readFileSync('peds.json'))
   const court = JSON.parse(fs.readFileSync('court.json'))
   const newPeds = []

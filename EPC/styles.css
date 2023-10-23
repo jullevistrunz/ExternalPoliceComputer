@@ -654,19 +654,14 @@ input {
 
 .showCurrentID-container {
   position: fixed;
-  width: 120px;
-  height: 75px;
   background-color: var(--background-color);
   z-index: 2;
-  bottom: 0;
-  right: 0;
+  bottom: 20px;
+  right: 20px;
 }
 
 .showCurrentID {
   pointer-events: all;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
   font-size: 16px;
   font-weight: 400;
   font-family: monospace;

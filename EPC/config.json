@@ -1,4 +1,6 @@
 {
   "useStopThePed": true,
-  "useLSPDFROwner": true
+  "useLSPDFROwner": true,
+  "wordForJail": "Jail",
+  "currency": "$"
 }
