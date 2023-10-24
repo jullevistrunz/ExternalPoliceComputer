@@ -1,8 +1,3 @@
-let config = { wordForJail: 'Jail', currency: '$' }
-;(async function () {
-  // fetched config can't be used on top level = this won't be awaited
-  config = await (await fetch('/data/config')).json()
-})()
 const mapZoom = 1.5
 
 document.querySelector('.mapPage input').value = mapZoom
@@ -269,6 +264,7 @@ function openPedInSearchPedPage(name) {
 }
 
 async function openCitationReport() {
+  const config = await (await fetch('/data/config')).json()
   document
     .querySelector('.searchPedPage .citationReport')
     .classList.remove('hidden')
@@ -336,6 +332,7 @@ async function openCitationReport() {
 }
 
 async function openArrestReport() {
+  const config = await (await fetch('/data/config')).json()
   document
     .querySelector('.searchPedPage .arrestReport')
     .classList.remove('hidden')
@@ -505,6 +502,7 @@ function closeArrests() {
 }
 
 async function addCitationToCourt(charges, pedName, description) {
+  const config = await (await fetch('/data/config')).json()
   const nameList = []
   let fullFine = 0
   for (let charge of charges) {
@@ -533,6 +531,7 @@ async function addCitationToCourt(charges, pedName, description) {
 }
 
 async function addArrestToCourt(charges, pedName, description) {
+  const config = await (await fetch('/data/config')).json()
   const nameList = []
   let fullFine = 0
   let fullJailTimeArr = []
