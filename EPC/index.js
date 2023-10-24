@@ -162,6 +162,10 @@ const server = http.createServer(function (req, res) {
         fs.writeFileSync('court.json', JSON.stringify(court))
         res.writeHead(200)
         res.end()
+      } else if (dataPath == 'removeCurrentID') {
+        fs.writeFileSync('currentID.data', '')
+        res.writeHead(200)
+        res.end()
       } else {
         res.writeHead(404)
         res.end()

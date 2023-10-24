@@ -942,14 +942,9 @@ async function displayCurrentID() {
   const file = await (await fetch('/data/currentID')).text()
   if (!file || mobileCheck()) {
     document.querySelector('.currentID').classList.add('hidden')
-    document.querySelector('.showCurrentID-container').classList.add('hidden')
   } else {
     const el = document.querySelector('.currentID')
-    if (el.classList.contains('hidden')) {
-      document
-        .querySelector('.showCurrentID-container')
-        .classList.remove('hidden')
-    }
+    el.classList.remove('hidden')
     const data = file.split(',')
     el.querySelector('.properties .lname').innerHTML = data[0].split(' ')[1]
     el.querySelector('.properties .fname').innerHTML = data[0].split(' ')[0]
@@ -958,14 +953,9 @@ async function displayCurrentID() {
   }
 }
 
-function showCurrentID() {
-  document.querySelector('.currentID').classList.remove('hidden')
-  document.querySelector('.showCurrentID-container').classList.add('hidden')
-}
-
-function closeCurrentID() {
+async function closeCurrentID() {
   document.querySelector('.currentID').classList.add('hidden')
-  document.querySelector('.showCurrentID-container').classList.remove('hidden')
+  await fetch('/post/removeCurrentID')
 }
 
 // https://stackoverflow.com/a/11381730
