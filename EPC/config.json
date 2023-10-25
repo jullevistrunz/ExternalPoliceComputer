@@ -2,5 +2,6 @@
   "useStopThePed": true,
   "useLSPDFROwner": true,
   "wordForJail": "Jail",
-  "currency": "$"
+  "currency": "$",
+  "showCurrentID": true
 }

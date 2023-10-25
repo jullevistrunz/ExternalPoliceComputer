@@ -94,12 +94,20 @@ setInterval(() => {
   updateCurrentShiftDuration()
 }, 1000)
 
-displayCurrentID()
-setInterval(() => {
-  if (document.visibilityState == 'visible') {
-    displayCurrentID()
-  }
-}, 5000)
+// currentID handler
+let currentIDClosed = true
+;(async function () {
+  const config = await (await fetch('/data/config')).json()
+  setInterval(() => {
+    if (
+      document.visibilityState == 'visible' &&
+      config.showCurrentID &&
+      currentIDClosed
+    ) {
+      displayCurrentID()
+    }
+  }, 5000)
+})()
 
 //funcs
 async function goToPage(name) {
@@ -949,11 +957,13 @@ async function displayCurrentID() {
     el.querySelector('.properties .fname').innerHTML = data[0].split(' ')[0]
     el.querySelector('.properties .dob').innerHTML = data[1]
     el.querySelector('.properties .gender').innerHTML = data[2]
+    currentIDClosed = false
   }
 }
 
 async function closeCurrentID() {
   document.querySelector('.currentID').classList.add('hidden')
+  currentIDClosed = true
   await fetch('/post/removeCurrentID')
 }
 
