@@ -52,8 +52,8 @@ const server = http.createServer(function (req, res) {
     res.write(fs.readFileSync('img/map.jpeg'))
     res.end()
   } else if (path == '/defaultMugshot') {
-    res.writeHead(200, { 'Content-Type': 'image/jpg' })
-    res.write(fs.readFileSync('img/defaultMugshot.jpg'))
+    res.writeHead(200, { 'Content-Type': 'image/png' })
+    res.write(fs.readFileSync('img/logo.png'))
     res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)

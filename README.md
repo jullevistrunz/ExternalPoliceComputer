@@ -17,6 +17,11 @@ A Police Computer Plugin and Server for LSPDFR.
 - Preferred Dimensions: 3072 x 4608
 - Source: https://forum.cfx.re/uploads/default/original/4X/c/6/7/c67d156aaba53758e345a6cf72110044048f3e3e.jpeg
 
+## Logo [1.2.4]
+
+- File: `EPC/img/logo.png`
+- Source: https://forum.gta.world/en/topic/52002-san-andreas-state-government/ | https://i.ibb.co/6bwcmKr/icon-2000px.png
+
 ## Styles
 
 - File: `EPC/custom.css`
