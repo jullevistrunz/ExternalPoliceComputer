@@ -13,7 +13,7 @@ A Police Computer Plugin and Server for LSPDFR.
 
 ## Map
 
-- File: `EPC/map.jpeg`
+- File: `EPC/img/map.jpeg`
 - Preferred Dimensions: 3072 x 4608
 - Source: https://forum.cfx.re/uploads/default/original/4X/c/6/7/c67d156aaba53758e345a6cf72110044048f3e3e.jpeg
 

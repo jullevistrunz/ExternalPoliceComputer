@@ -95,7 +95,7 @@ namespace ExternalPoliceComputer {
         }
 
         private static void updateWorldPeds() {
-            Game.LogTrivial("ExternalPoliceComputer: Update EPC/worldPeds.data");
+            Game.LogTrivial("ExternalPoliceComputer: Update worldPeds.data");
             Ped[] allPeds = World.GetAllPeds();
             string[] persList = new string[allPeds.Length];
 
@@ -106,9 +106,9 @@ namespace ExternalPoliceComputer {
 
             }
 
-            File.WriteAllText("EPC/worldPeds.data", string.Join(",", persList));
+            File.WriteAllText("EPC/data/worldPeds.data", string.Join(",", persList));
 
-            Game.LogTrivial("ExternalPoliceComputer: Updated EPC/worldPeds.data");
+            Game.LogTrivial("ExternalPoliceComputer: Updated worldPeds.data");
         }
 
         
@@ -147,11 +147,11 @@ namespace ExternalPoliceComputer {
                 }
             }
 
-            File.WriteAllText("EPC/worldCars.data", string.Join(",", carsList));
+            File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
         }
 
         private static void updateWorldCars() {
-            Game.LogTrivial("ExternalPoliceComputer: Update EPC/worldCars.data");
+            Game.LogTrivial("ExternalPoliceComputer: Update worldCars.data");
 
             try {
                 updateWorldCarsWithSTP();
@@ -166,14 +166,14 @@ namespace ExternalPoliceComputer {
                     }
                 }
 
-                File.WriteAllText("EPC/worldCars.data", string.Join(",", carsList));
+                File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
             }
             
-            Game.LogTrivial("ExternalPoliceComputer: Updated EPC/worldCars.data");
+            Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
         }
 
         private static void updateCurrentID(Ped ped) {
-            Game.LogTrivial("ExternalPoliceComputer: Update EPC/currentID.data");
+            Game.LogTrivial("ExternalPoliceComputer: Update currentID.data");
 
             int pedHeadShot = NativeFunction.Natives.REGISTER_PEDHEADSHOT<int>(ped);
             while (!NativeFunction.Natives.IS_PEDHEADSHOT_READY<bool>(pedHeadShot)) {
@@ -184,12 +184,12 @@ namespace ExternalPoliceComputer {
 
             string data = $"{Functions.GetPersonaForPed(ped).FullName},{Functions.GetPersonaForPed(ped).Birthday.Month}/{Functions.GetPersonaForPed(ped).Birthday.Day}/{Functions.GetPersonaForPed(ped).Birthday.Year},{Functions.GetPersonaForPed(ped).Gender},{pedHeadShotString}";
 
-            File.WriteAllText("EPC/currentID.data", data);
+            File.WriteAllText("EPC/data/currentID.data", data);
 
             //Unload Headshot
             NativeFunction.Natives.UNREGISTER_PEDHEADSHOT(pedHeadShot);
 
-            Game.LogTrivial("ExternalPoliceComputer: Updated EPC/currentID.data");
+            Game.LogTrivial("ExternalPoliceComputer: Updated currentID.data");
         }
     }
 }

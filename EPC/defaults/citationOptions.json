@@ -1,0 +1,362 @@
+[
+  {
+    "name": "Speeding",
+    "charges": [
+      {
+        "name": "Unlawful Speed 1-15 MPH Over Speed Limit",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Unlawful Speed 16-25 MPH Over Speed Limit",
+        "minFine": 367,
+        "maxFine": 367
+      },
+      {
+        "name": "Unlawful Speed 26 MPH Or More Over Speed Limit",
+        "minFine": 490,
+        "maxFine": 490
+      },
+      {
+        "name": "Impeding Traffic",
+        "minFine": 150,
+        "maxFine": 250
+      },
+      {
+        "name": "Excessive Acceleration",
+        "minFine": 150,
+        "maxFine": 250
+      },
+      {
+        "name": "Too Fast For Conditions",
+        "minFine": 150,
+        "maxFine": 350
+      }
+    ]
+  },
+  {
+    "name": "Signals / Signs",
+    "charges": [
+      {
+        "name": "Failure To Stop At Stop Sign",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Stop For Traffic Signal",
+        "minFine": 400,
+        "maxFine": 500
+      },
+      {
+        "name": "Failure To Stop At R/R Signal / Barrier",
+        "minFine": 490,
+        "maxFine": 490
+      },
+      {
+        "name": "Failure To Comply With Lane Direction Sign / Device",
+        "minFine": 150,
+        "maxFine": 250
+      },
+      {
+        "name": "Wrong Direction On Posted One Way",
+        "minFine": 150,
+        "maxFine": 250
+      }
+    ]
+  },
+  {
+    "name": "Operation",
+    "charges": [
+      {
+        "name": "Improper Lane Change",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Improper Passing",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Improper Turn",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Signal",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Driving On Shoulder",
+        "minFine": 237,
+        "maxFine": 237
+      },
+      {
+        "name": "Passing In No Passing Zone",
+        "minFine": 237,
+        "maxFine": 300
+      },
+      {
+        "name": "Illegal U-Turn",
+        "minFine": 234,
+        "maxFine": 234
+      },
+      {
+        "name": "Failure to Maintain Lane",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Crossing Over a Center Divider, Median Or Gore",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Following Too Closely",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Driving On Sidewalk / Bicycle Path",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Riding On Exterior Of Vehicle",
+        "minFine": 200,
+        "maxFine": 600
+      },
+      {
+        "name": "Operating A Telecommunications Device While Driving",
+        "minFine": 20,
+        "maxFine": 200
+      },
+      {
+        "name": "Stopping On Rail Crossing",
+        "minFine": 238,
+        "maxFine": 238
+      }
+    ]
+  },
+  {
+    "name": "Yielding",
+    "charges": [
+      {
+        "name": "Failure To Yield To Stopped Emergency Vehicle / Personal",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield To Emergency Vehicle",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield To Pedestrian In Cross Walk",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield To Highway Workers",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield To Public Transit Vehicles",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield At Intersection",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield Entering Highway",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Yield Leaving Obstructed Lane",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Violation Of Right Of Way",
+        "minFine": 238,
+        "maxFine": 238
+      }
+    ]
+  },
+  {
+    "name": "Bikes / ATV",
+    "charges": [
+      {
+        "name": "Failure To Wear DOT Approved Helmet",
+        "minFine": 150,
+        "maxFine": 250
+      },
+      {
+        "name": "Riding Bicycle Not On Right",
+        "minFine": 225,
+        "maxFine": 275
+      },
+      {
+        "name": "Operating Bicycle On Highway",
+        "minFine": 225,
+        "maxFine": 275
+      }
+    ]
+  },
+  {
+    "name": "Equipment",
+    "charges": [
+      {
+        "name": "Defective Equipment",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Safety Belt Violation",
+        "minFine": 162,
+        "maxFine": 162
+      },
+      {
+        "name": "Vehicle Not Roadworthy",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Windshield Damaged In Drivers View",
+        "minFine": 50,
+        "maxFine": 120
+      },
+      {
+        "name": "Illegal Window Tint",
+        "minFine": 25,
+        "maxFine": 197
+      },
+      {
+        "name": "Lights Not Illuminated As Required",
+        "minFine": 230,
+        "maxFine": 230
+      },
+      {
+        "name": "Prohibited Lighting",
+        "minFine": 238,
+        "maxFine": 238
+      },
+      {
+        "name": "Failure To Secure Load To Vehicle",
+        "minFine": 200,
+        "maxFine": 300
+      }
+    ]
+  },
+  {
+    "name": "Documents",
+    "charges": [
+      {
+        "name": "Failure To Insure Vehicle",
+        "minFine": 100,
+        "maxFine": 200
+      },
+      {
+        "name": "Expired Insurance",
+        "minFine": 100,
+        "maxFine": 200
+      },
+      {
+        "name": "Failure To Register Vehicle",
+        "minFine": 280,
+        "maxFine": 280
+      },
+      {
+        "name": "Expired Vehicle Registration",
+        "minFine": 30,
+        "maxFine": 100
+      },
+      {
+        "name": "Failure To Display License Plate",
+        "minFine": 197,
+        "maxFine": 197
+      },
+      {
+        "name": "License Not Carried",
+        "minFine": 100,
+        "maxFine": 150
+      },
+      {
+        "name": "Expired Drivers License",
+        "minFine": 200,
+        "maxFine": 250
+      },
+      {
+        "name": "Driving Without License",
+        "minFine": 200,
+        "maxFine": 250
+      }
+    ]
+  },
+  {
+    "name": "Other / Public Citations",
+    "charges": [
+      {
+        "name": "Open Container Of Alcohol",
+        "minFine": 200,
+        "maxFine": 250
+      },
+      {
+        "name": "Public Urination",
+        "minFine": 250,
+        "maxFine": 500
+      },
+      {
+        "name": "Trespassing",
+        "minFine": 75,
+        "maxFine": 250
+      },
+      {
+        "name": "Disturbing The Peace",
+        "minFine": 350,
+        "maxFine": 400
+      },
+      {
+        "name": "Littering",
+        "minFine": 100,
+        "maxFine": 600
+      },
+      {
+        "name": "Jaywalking",
+        "minFine": 196,
+        "maxFine": 196
+      },
+      {
+        "name": "Possession Of Fake ID / Drivers License",
+        "minFine": 250,
+        "maxFine": 1000
+      },
+      {
+        "name": "Walking On Highway",
+        "minFine": 196,
+        "maxFine": 196
+      },
+      {
+        "name": "Unleashed Dog",
+        "minFine": 100,
+        "maxFine": 250
+      },
+      {
+        "name": "Fishing Without License",
+        "minFine": 100,
+        "maxFine": 1000
+      },
+      {
+        "name": "Hunting Without License",
+        "minFine": 700,
+        "maxFine": 1000
+      }
+    ]
+  }
+]

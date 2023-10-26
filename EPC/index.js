@@ -4,20 +4,36 @@ const url = require('url')
 const os = require('os')
 const port = 80
 
-const config = JSON.parse(fs.readFileSync('config.json'))
+//! all files and directories not included in this list, will be removed on startup
+const dirList = [
+  '#start.bat',
+  'arrestOptions.json',
+  'citationOptions.json',
+  'config.json',
+  'custom.css',
+  'custom.js',
+  'data',
+  'img',
+  'index.js',
+  'main',
+  'defaults',
+]
 
 // clear data on start up
 clearGeneratedData()
+generateDirectory()
+
+const config = JSON.parse(fs.readFileSync('config.json'))
 
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
   if (path == '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' })
-    res.write(fs.readFileSync('index.html'))
+    res.write(fs.readFileSync('main/index.html'))
     res.end()
   } else if (path == '/styles') {
     res.writeHead(200, { 'Content-Type': 'text/css' })
-    res.write(fs.readFileSync('styles.css'))
+    res.write(fs.readFileSync('main/styles.css'))
     res.end()
   } else if (path == '/customStyles') {
     res.writeHead(200, { 'Content-Type': 'text/css' })
@@ -25,19 +41,19 @@ const server = http.createServer(function (req, res) {
     res.end()
   } else if (path == '/script') {
     res.writeHead(200, { 'Content-Type': 'text/js' })
-    res.write(fs.readFileSync('script.js'))
+    res.write(fs.readFileSync('main/script.js'))
     res.end()
-  } else if (path == '/custom') {
+  } else if (path == '/customScript') {
     res.writeHead(200, { 'Content-Type': 'text/js' })
     res.write(fs.readFileSync('custom.js'))
     res.end()
   } else if (path == '/map') {
     res.writeHead(200, { 'Content-Type': 'image/jpeg' })
-    res.write(fs.readFileSync('map.jpeg'))
+    res.write(fs.readFileSync('img/map.jpeg'))
     res.end()
   } else if (path == '/defaultMugshot') {
     res.writeHead(200, { 'Content-Type': 'image/jpg' })
-    res.write(fs.readFileSync('defaultMugshot.jpg'))
+    res.write(fs.readFileSync('img/defaultMugshot.jpg'))
     res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
@@ -62,15 +78,15 @@ const server = http.createServer(function (req, res) {
       res.end()
     } else if (dataPath == 'court') {
       res.writeHead(200, { 'Content-Type': 'text/json' })
-      res.write(fs.readFileSync('court.json'))
+      res.write(fs.readFileSync('data/court.json'))
       res.end()
     } else if (dataPath == 'shift') {
       res.writeHead(200, { 'Content-Type': 'text/json' })
-      res.write(fs.readFileSync('shift.json'))
+      res.write(fs.readFileSync('data/shift.json'))
       res.end()
     } else if (dataPath == 'currentID') {
       res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.write(fs.readFileSync('currentID.data'))
+      res.write(fs.readFileSync('data/currentID.data'))
       res.end()
     } else if (dataPath == 'config') {
       res.writeHead(200, { 'Content-Type': 'text/json' })
@@ -88,7 +104,7 @@ const server = http.createServer(function (req, res) {
     })
     req.on('end', () => {
       if (dataPath == 'addCitations') {
-        let data = JSON.parse(fs.readFileSync('peds.json'))
+        let data = JSON.parse(fs.readFileSync('data/peds.json'))
         const newData = JSON.parse(body)
         for (const i in data) {
           if (data[i].name == newData.name) {
@@ -97,11 +113,11 @@ const server = http.createServer(function (req, res) {
             }
           }
         }
-        fs.writeFileSync('peds.json', JSON.stringify(data))
+        fs.writeFileSync('data/peds.json', JSON.stringify(data))
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'addArrests') {
-        let data = JSON.parse(fs.readFileSync('peds.json'))
+        let data = JSON.parse(fs.readFileSync('data/peds.json'))
         const newData = JSON.parse(body)
         for (const i in data) {
           if (data[i].name == newData.name) {
@@ -110,60 +126,60 @@ const server = http.createServer(function (req, res) {
             }
           }
         }
-        fs.writeFileSync('peds.json', JSON.stringify(data))
+        fs.writeFileSync('data/peds.json', JSON.stringify(data))
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'addToCourt') {
-        const data = JSON.parse(fs.readFileSync('court.json'))
+        const data = JSON.parse(fs.readFileSync('data/court.json'))
         data.push(JSON.parse(body))
-        fs.writeFileSync('court.json', JSON.stringify(data))
+        fs.writeFileSync('data/court.json', JSON.stringify(data))
         if (JSON.parse(body).outcome.includes('Granted Probation')) {
-          const peds = JSON.parse(fs.readFileSync('peds.json'))
+          const peds = JSON.parse(fs.readFileSync('data/peds.json'))
           for (const i in peds) {
             if (peds[i].name == JSON.parse(body).ped) {
               peds[i].probation = 'Yes'
             }
           }
-          fs.writeFileSync('peds.json', JSON.stringify(peds))
+          fs.writeFileSync('data/peds.json', JSON.stringify(peds))
         }
-        const shift = JSON.parse(fs.readFileSync('shift.json'))
+        const shift = JSON.parse(fs.readFileSync('data/shift.json'))
         if (shift.currentShift) {
           shift.currentShift.courtCases.push(JSON.parse(body).number)
-          fs.writeFileSync('shift.json', JSON.stringify(shift))
+          fs.writeFileSync('data/shift.json', JSON.stringify(shift))
         }
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'updateCurrentShift') {
-        const data = JSON.parse(fs.readFileSync('shift.json'))
+        const data = JSON.parse(fs.readFileSync('data/shift.json'))
         data.currentShift = JSON.parse(body)
-        fs.writeFileSync('shift.json', JSON.stringify(data))
+        fs.writeFileSync('data/shift.json', JSON.stringify(data))
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'addShift') {
-        const data = JSON.parse(fs.readFileSync('shift.json'))
+        const data = JSON.parse(fs.readFileSync('data/shift.json'))
         data.shifts.push(JSON.parse(body))
-        fs.writeFileSync('shift.json', JSON.stringify(data))
+        fs.writeFileSync('data/shift.json', JSON.stringify(data))
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'updateCurrentShiftNotes') {
-        const data = JSON.parse(fs.readFileSync('shift.json'))
+        const data = JSON.parse(fs.readFileSync('data/shift.json'))
         data.currentShift.notes = body
-        fs.writeFileSync('shift.json', JSON.stringify(data))
+        fs.writeFileSync('data/shift.json', JSON.stringify(data))
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'updateCourtDescription') {
-        const court = JSON.parse(fs.readFileSync('court.json'))
+        const court = JSON.parse(fs.readFileSync('data/court.json'))
         body = JSON.parse(body)
         for (i in court) {
           if (court[i].number == body.number) {
             court[i].description = body.description
           }
         }
-        fs.writeFileSync('court.json', JSON.stringify(court))
+        fs.writeFileSync('data/court.json', JSON.stringify(court))
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'removeCurrentID') {
-        fs.writeFileSync('currentID.data', '')
+        fs.writeFileSync('data/currentID.data', '')
         res.writeHead(200)
         res.end()
       } else {
@@ -202,7 +218,7 @@ server.listen(port, function (error) {
 
 //funcs
 function generatePeds() {
-  const worldPedDataRaw = fs.readFileSync('worldPeds.data', 'utf-8')
+  const worldPedDataRaw = fs.readFileSync('data/worldPeds.data', 'utf-8')
   const worldPedDataArr = worldPedDataRaw.split(',')
   const worldPedData = []
 
@@ -213,9 +229,9 @@ function generatePeds() {
 
   let pedData = new Array()
   try {
-    pedData = JSON.parse(fs.readFileSync('peds.json'))
+    pedData = JSON.parse(fs.readFileSync('data/peds.json'))
   } catch {
-    fs.writeFileSync('peds.json', '[]')
+    fs.writeFileSync('data/peds.json', '[]')
   }
 
   let pedNameArr = new Array()
@@ -257,12 +273,12 @@ function generatePeds() {
     pedData = []
   }
 
-  fs.writeFileSync('peds.json', JSON.stringify(pedData))
+  fs.writeFileSync('data/peds.json', JSON.stringify(pedData))
   return pedData
 }
 
 function generateCars() {
-  const worldCarDataRaw = fs.readFileSync('worldCars.data', 'utf-8')
+  const worldCarDataRaw = fs.readFileSync('data/worldCars.data', 'utf-8')
   const worldCarDataArr = worldCarDataRaw.split(',')
   const worldCarData = []
 
@@ -273,9 +289,9 @@ function generateCars() {
 
   let carData = new Array()
   try {
-    carData = JSON.parse(fs.readFileSync('cars.json'))
+    carData = JSON.parse(fs.readFileSync('data/cars.json'))
   } catch {
-    fs.writeFileSync('cars.json', '[]')
+    fs.writeFileSync('data/cars.json', '[]')
   }
 
   let carPlateArr = new Array()
@@ -337,7 +353,7 @@ function generateCars() {
   if (!worldCarDataRaw) {
     carData = []
   }
-  fs.writeFileSync('cars.json', JSON.stringify(carData))
+  fs.writeFileSync('data/cars.json', JSON.stringify(carData))
   return carData
 }
 
@@ -397,10 +413,10 @@ function getRandomArrests(allCharges, isWanted) {
 }
 
 function clearGeneratedData() {
-  fs.writeFileSync('cars.json', '[]')
-  fs.writeFileSync('currentID.data', '')
-  const peds = JSON.parse(fs.readFileSync('peds.json'))
-  const court = JSON.parse(fs.readFileSync('court.json'))
+  fs.writeFileSync('data/cars.json', '[]')
+  fs.writeFileSync('data/currentID.data', '')
+  const peds = JSON.parse(fs.readFileSync('data/peds.json'))
+  const court = JSON.parse(fs.readFileSync('data/court.json'))
   const newPeds = []
   for (let i in peds) {
     for (const courtCase of court) {
@@ -410,10 +426,27 @@ function clearGeneratedData() {
       }
     }
   }
-  fs.writeFileSync('peds.json', JSON.stringify(newPeds))
+  fs.writeFileSync('data/peds.json', JSON.stringify(newPeds))
 }
 
 function getRandomPed() {
-  const peds = JSON.parse(fs.readFileSync('peds.json'))
+  const peds = JSON.parse(fs.readFileSync('data/peds.json'))
   return peds[Math.floor(Math.random() * peds.length)]
+}
+
+function generateDirectory() {
+  const dir = fs.readdirSync('./')
+  for (const item of dir) {
+    if (!dirList.includes(item)) {
+      fs.rmSync(item, { recursive: true, force: true })
+    }
+  }
+  const defaultsDir = fs.readdirSync('defaults')
+  for (const item of defaultsDir) {
+    try {
+      fs.readFileSync(item)
+    } catch {
+      fs.writeFileSync(item, fs.readFileSync(`defaults/${item}`))
+    }
+  }
 }
