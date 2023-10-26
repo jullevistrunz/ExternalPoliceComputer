@@ -4,5 +4,6 @@
   "wordForJail": "Jail",
   "currency": "$",
   "showCurrentID": true,
-  "autoShowCurrentID": false
+  "autoShowCurrentID": true,
+  "warningColorsForPedCarSearch": true
 }
