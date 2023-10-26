@@ -98,10 +98,7 @@ setInterval(() => {
 ;(async function () {
   const config = await (await fetch('/data/config')).json()
   setInterval(() => {
-    if (
-      document.visibilityState == 'visible' &&
-      config.showCurrentID
-    ) {
+    if (document.visibilityState == 'visible' && config.showCurrentID) {
       displayCurrentID()
     }
   }, 5000)
@@ -181,6 +178,8 @@ function createLabelElement(key, value, onClick = null) {
 }
 
 async function renderPedSearch() {
+  const config = await (await fetch('/data/config')).json()
+
   const ped = await searchForPed(
     document.querySelector('.searchPedPage .pedInp').value
   )
@@ -205,15 +204,40 @@ async function renderPedSearch() {
 
   lc.appendChild(createLabelElement('Date Of Birth', ped.birthday))
   lc.appendChild(createLabelElement('Sex', ped.gender))
-  lc.appendChild(createLabelElement('License Status', ped.licenseStatus))
+  lc.appendChild(
+    createLabelElement(
+      'License Status',
+      ped.licenseStatus != 'Valid' && config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.licenseStatus}</a>`
+        : ped.licenseStatus
+    )
+  )
   lc.appendChild(
     createLabelElement(
       'Outstanding Warrant',
-      ped.isWanted == 'True' ? ped.warrantText : 'None'
+      ped.isWanted == 'True'
+        ? config.warningColorsForPedCarSearch
+          ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.warrantText}</a>`
+          : ped.warrantText
+        : 'None'
     )
   )
-  lc.appendChild(createLabelElement('Probation', ped.probation))
-  lc.appendChild(createLabelElement('Parole', ped.parole))
+  lc.appendChild(
+    createLabelElement(
+      'Probation',
+      ped.probation != 'No' && config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.probation}</a>`
+        : ped.probation
+    )
+  )
+  lc.appendChild(
+    createLabelElement(
+      'Parole',
+      ped.parole != 'No' && config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.parole}</a>`
+        : ped.parole
+    )
+  )
 
   const citations = ped.citations.length ? ped.citations : ['None']
   for (let i in citations) {
@@ -236,6 +260,8 @@ async function renderPedSearch() {
 }
 
 async function renderCarSearch() {
+  const config = await (await fetch('/data/config')).json()
+
   const car = await searchForCar(
     document.querySelector('.searchCarPage .carInp').value
   )
@@ -253,9 +279,30 @@ async function renderCarSearch() {
     car.licensePlate
 
   lc.appendChild(createLabelElement('Model', car.model))
-  lc.appendChild(createLabelElement('Registration', car.registration))
-  lc.appendChild(createLabelElement('Insurance', car.insurance))
-  lc.appendChild(createLabelElement('Stolen', car.stolen))
+  lc.appendChild(
+    createLabelElement(
+      'Registration',
+      car.registration != 'Valid' && config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">${car.registration}</a>`
+        : car.registration
+    )
+  )
+  lc.appendChild(
+    createLabelElement(
+      'Insurance',
+      car.insurance != 'Valid' && config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">${car.insurance}</a>`
+        : car.insurance
+    )
+  )
+  lc.appendChild(
+    createLabelElement(
+      'Stolen',
+      car.stolen != 'No' && config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">${car.stolen}</a>`
+        : car.stolen
+    )
+  )
   lc.appendChild(
     createLabelElement('Owner', car.owner, () => {
       openPedInSearchPedPage(car.owner)
