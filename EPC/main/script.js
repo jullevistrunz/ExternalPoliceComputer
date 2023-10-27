@@ -99,7 +99,7 @@ setInterval(() => {
   const config = await (await fetch('/data/config')).json()
   setInterval(() => {
     if (document.visibilityState == 'visible' && config.showCurrentID) {
-      displayCurrentID()
+      displayCurrentID(config.autoShowCurrentID)
     }
   }, 5000)
 })()
@@ -990,19 +990,31 @@ function disableArrestSubmitButton() {
   ).length
 }
 
-async function displayCurrentID() {
+async function displayCurrentID(autoShowCurrentID) {
   const file = await (await fetch('/data/currentID')).text()
-  if (!file || mobileCheck()) {
+  if (!file) {
     document.querySelector('.currentID').classList.add('hidden')
+    document.querySelector('.showCurrentID-container').classList.add('hidden')
   } else {
     const el = document.querySelector('.currentID')
-    el.classList.remove('hidden')
+    if (el.classList.contains('hidden') && !autoShowCurrentID) {
+      document
+        .querySelector('.showCurrentID-container')
+        .classList.remove('hidden')
+    } else {
+      el.classList.remove('hidden')
+    }
     const data = file.split(',')
     el.querySelector('.properties .lname').innerHTML = data[0].split(' ')[1]
     el.querySelector('.properties .fname').innerHTML = data[0].split(' ')[0]
     el.querySelector('.properties .dob').innerHTML = data[1]
     el.querySelector('.properties .gender').innerHTML = data[2]
   }
+}
+
+function showCurrentID() {
+  document.querySelector('.currentID').classList.remove('hidden')
+  document.querySelector('.showCurrentID-container').classList.add('hidden')
 }
 
 async function closeCurrentID() {
