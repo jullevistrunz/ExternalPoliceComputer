@@ -19,9 +19,19 @@ const dirList = [
   'defaults',
 ]
 
+const dataDefaults = new Map([
+  ['worldPeds.data', ''],
+  ['worldCars.data', ''],
+  ['currentID.data', ''],
+  ['peds.json', '[]'],
+  ['cars.json', '[]'],
+  ['court.json', '[]'],
+  ['shift.json', '{"currentShift":null,"shifts":[]}'],
+])
+
 // clear data on start up
-clearGeneratedData()
 generateDirectory()
+clearGeneratedData()
 
 const config = JSON.parse(fs.readFileSync('config.json'))
 
@@ -458,4 +468,18 @@ function generateDirectory() {
     }
   }
   fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
+
+  try {
+    fs.readdirSync('data')
+  } catch {
+    fs.mkdirSync('data')
+  }
+
+  dataDefaults.forEach(function (value, key) {
+    try {
+      fs.readFileSync(`data/${key}`)
+    } catch {
+      fs.writeFileSync(`data/${key}`, value)
+    }
+  })
 }
