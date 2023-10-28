@@ -560,6 +560,7 @@ input {
   background-color: var(--second-background-color);
   padding: 5px 15px 15px 15px;
   border-radius: 10px;
+  transform-style: preserve-3d;
 }
 
 .currentID .title {
@@ -625,31 +626,58 @@ input {
   content: 'SEX';
 }
 
-.currentID .closeCurrentID {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
+.currentID .closeCurrentID,
+.currentID .nextCurrentID {
   font-size: 16px;
   font-weight: 400;
   font-family: monospace;
   padding: 5px;
   border: 2px solid var(--warning-color);
-  color: var(--background-color);
+  border-radius: 0;
+  color: var(--main-color);
   outline: none;
   cursor: pointer;
-  transition: 50ms linear;
   background-color: transparent;
   text-align: left;
-  opacity: 0;
-  transition: 50ms linear;
+}
+
+.currentID .nextCurrentID {
+  border-color: var(--second-accent-color);
 }
 
 .currentID .closeCurrentID:hover {
   background-color: var(--warning-color-half);
 }
 
-.currentID:hover .closeCurrentID {
-  opacity: 1;
+.currentID .nextCurrentID:hover {
+  background-color: var(--second-accent-color-half);
+}
+
+.currentID .backgroundWrapper {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 1fr max-content max-content;
+  gap: 5px;
+  top: 0;
+  border-radius: 5px 5px 0 0;
+  background-color: var(--background-color);
+  width: calc(100% - 30px - 10px);
+  height: 35px;
+  padding: 5px;
+  transform: translateZ(-1px);
+  transition: 200ms ease-out;
+}
+
+.currentID:hover .backgroundWrapper {
+  top: -45px;
+}
+
+.currentID .currentIDPedType {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 400;
+  width: fit-content;
+  align-self: center;
 }
 
 .showCurrentID-container {

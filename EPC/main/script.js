@@ -99,7 +99,12 @@ setInterval(() => {
   const config = await (await fetch('/data/config')).json()
   setInterval(() => {
     if (document.visibilityState == 'visible' && config.showCurrentID) {
-      displayCurrentID(config.autoShowCurrentID)
+      displayCurrentID(
+        config.autoShowCurrentID,
+        document.querySelector('.currentID').dataset.index
+          ? parseInt(document.querySelector('.currentID').dataset.index)
+          : 0
+      )
     }
   }, 5000)
 })()
@@ -990,12 +995,16 @@ function disableArrestSubmitButton() {
   ).length
 }
 
-async function displayCurrentID(autoShowCurrentID) {
+async function displayCurrentID(autoShowCurrentID, index) {
   const file = await (await fetch('/data/currentID')).text()
+
+  document.querySelector('.currentID').dataset.index = index
+
   if (!file) {
     document.querySelector('.currentID').classList.add('hidden')
     document.querySelector('.showCurrentID-container').classList.add('hidden')
   } else {
+    if (!file.split(';')[index]) return displayCurrentID(autoShowCurrentID, 0)
     const el = document.querySelector('.currentID')
     if (el.classList.contains('hidden') && !autoShowCurrentID) {
       document
@@ -1004,11 +1013,38 @@ async function displayCurrentID(autoShowCurrentID) {
     } else {
       el.classList.remove('hidden')
     }
-    const data = file.split(',')
+    const data = file.split(';')[index].split(',')
     el.querySelector('.properties .lname').innerHTML = data[0].split(' ')[1]
     el.querySelector('.properties .fname').innerHTML = data[0].split(' ')[0]
     el.querySelector('.properties .dob').innerHTML = data[1]
     el.querySelector('.properties .gender').innerHTML = data[2]
+
+    if (file.split(';').length - 1 > 1) {
+      document
+        .querySelector('.currentID .nextCurrentID')
+        .classList.remove('hidden')
+      document.querySelector('.currentID .nextCurrentID').innerHTML = `Next [${
+        index + 1
+      }/${file.split(';').length - 1}]`
+    } else {
+      document
+        .querySelector('.currentID .nextCurrentID')
+        .classList.add('hidden')
+    }
+
+    const pedTypeArr = [
+      'Driver',
+      'Front Passenger',
+      'R-L Passenger',
+      'R-R Passenger',
+    ]
+
+    document.querySelector('.currentID .currentIDPedType').innerHTML =
+      data[3] != 0
+        ? data[3] - 1 < pedTypeArr.length
+          ? pedTypeArr[data[3] - 1]
+          : 'Passenger'
+        : 'Stopped Ped'
   }
 }
 
@@ -1020,4 +1056,12 @@ function showCurrentID() {
 async function closeCurrentID() {
   document.querySelector('.currentID').classList.add('hidden')
   await fetch('/post/removeCurrentID')
+}
+
+async function nextCurrentID() {
+  const config = await (await fetch('/data/config')).json()
+  displayCurrentID(
+    config.autoShowCurrentID,
+    parseInt(document.querySelector('.currentID').dataset.index) + 1
+  )
 }

@@ -2,7 +2,6 @@
 using LSPD_First_Response.Mod.API;
 using System.IO;
 using System;
-using Rage.Native;
 
 namespace ExternalPoliceComputer {
     public class Main : Plugin {
@@ -175,19 +174,14 @@ namespace ExternalPoliceComputer {
         private static void updateCurrentID(Ped ped) {
             Game.LogTrivial("ExternalPoliceComputer: Update currentID.data");
 
-            int pedHeadShot = NativeFunction.Natives.REGISTER_PEDHEADSHOT<int>(ped);
-            while (!NativeFunction.Natives.IS_PEDHEADSHOT_READY<bool>(pedHeadShot)) {
-                //Wait until Headshot is ready
-                GameFiber.Yield();
+            int index = 0;
+            if (ped.IsInAnyVehicle(false)) {
+                index = ped.SeatIndex + 1;
             }
-            string pedHeadShotString = NativeFunction.Natives.GET_PEDHEADSHOT_TXD_STRING<string>(pedHeadShot);
 
-            string data = $"{Functions.GetPersonaForPed(ped).FullName},{Functions.GetPersonaForPed(ped).Birthday.Month}/{Functions.GetPersonaForPed(ped).Birthday.Day}/{Functions.GetPersonaForPed(ped).Birthday.Year},{Functions.GetPersonaForPed(ped).Gender},{pedHeadShotString}";
+            string data = $"{Functions.GetPersonaForPed(ped).FullName},{Functions.GetPersonaForPed(ped).Birthday.Month}/{Functions.GetPersonaForPed(ped).Birthday.Day}/{Functions.GetPersonaForPed(ped).Birthday.Year},{Functions.GetPersonaForPed(ped).Gender},{index};";
 
-            File.WriteAllText("EPC/data/currentID.data", data);
-
-            //Unload Headshot
-            NativeFunction.Natives.UNREGISTER_PEDHEADSHOT(pedHeadShot);
+            File.WriteAllText("EPC/data/currentID.data", File.ReadAllText("EPC/data/currentID.data") + data);
 
             Game.LogTrivial("ExternalPoliceComputer: Updated currentID.data");
         }
