@@ -701,11 +701,35 @@ input {
   transition: 50ms linear;
   background-color: transparent;
   text-align: left;
-  transition: 50ms linear;
 }
 
 .showCurrentID:hover {
   background-color: var(--second-accent-color-half);
+}
+
+.currentID .hideCurrentID {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--warning-color);
+  color: var(--background-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  opacity: 0;
+}
+
+.currentID:hover .hideCurrentID {
+  opacity: 1;
+}
+
+.currentID .hideCurrentID:hover {
+  background-color: var(--warning-color-half);
 }
 
 /* overwrite */

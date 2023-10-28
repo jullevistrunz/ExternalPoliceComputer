@@ -1010,6 +1010,9 @@ async function displayCurrentID(autoShowCurrentID, index) {
       document
         .querySelector('.showCurrentID-container')
         .classList.remove('hidden')
+      document
+        .querySelector('.currentID .hideCurrentID')
+        .classList.remove('hidden')
     } else {
       el.classList.remove('hidden')
     }
@@ -1058,10 +1061,14 @@ async function closeCurrentID() {
   await fetch('/post/removeCurrentID')
 }
 
-async function nextCurrentID() {
-  const config = await (await fetch('/data/config')).json()
+function nextCurrentID() {
   displayCurrentID(
-    config.autoShowCurrentID,
+    null,
     parseInt(document.querySelector('.currentID').dataset.index) + 1
   )
+}
+
+function hideCurrentID() {
+  document.querySelector('.currentID').classList.add('hidden')
+  document.querySelector('.showCurrentID-container').classList.remove('hidden')
 }
