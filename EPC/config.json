@@ -5,6 +5,5 @@
   "currency": "$",
   "showCurrentID": true,
   "autoShowCurrentID": true,
-  "warningColorsForPedCarSearch": true,
-  "test": "test"
+  "warningColorsForPedCarSearch": true
 }

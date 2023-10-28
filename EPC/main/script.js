@@ -1057,8 +1057,14 @@ function showCurrentID() {
 }
 
 async function closeCurrentID() {
-  document.querySelector('.currentID').classList.add('hidden')
-  await fetch('/post/removeCurrentID')
+  await fetch('/post/removeCurrentID', {
+    method: 'POST',
+    body: parseInt(document.querySelector('.currentID').dataset.index),
+  })
+  displayCurrentID(
+    null,
+    parseInt(document.querySelector('.currentID').dataset.index)
+  )
 }
 
 function nextCurrentID() {

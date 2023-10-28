@@ -189,7 +189,10 @@ const server = http.createServer(function (req, res) {
         res.writeHead(200)
         res.end()
       } else if (dataPath == 'removeCurrentID') {
-        fs.writeFileSync('data/currentID.data', '')
+        const file = fs.readFileSync('data/currentID.data', 'utf-8')
+        const arr = file.split(';')
+        arr.splice(body, 1)
+        fs.writeFileSync('data/currentID.data', arr.join(';'))
         res.writeHead(200)
         res.end()
       } else {
