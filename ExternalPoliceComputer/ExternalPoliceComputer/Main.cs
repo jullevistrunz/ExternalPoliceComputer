@@ -45,6 +45,16 @@ namespace ExternalPoliceComputer {
             StopThePed.API.Events.pedArrestedEvent += Events_pedArrestedEvent;
             StopThePed.API.Events.patDownPedEvent += Events_patDownPedEvent;
             StopThePed.API.Events.askDriverLicenseEvent += Events_askDriverLicenseEvent;
+            StopThePed.API.Events.askPassengerIdEvent += Events_askPassengerIdEvent;
+        }
+
+        private static void Events_askPassengerIdEvent(Vehicle vehicle) {
+            updateWorldPeds();
+            updateWorldCars();
+            Ped[] passengers = vehicle.Passengers;
+            foreach (Ped passenger in passengers) {
+                updateCurrentID(passenger);
+            }
         }
 
         private static void Events_askDriverLicenseEvent(Ped ped) {
@@ -176,10 +186,21 @@ namespace ExternalPoliceComputer {
 
             int index = 0;
             if (ped.IsInAnyVehicle(false)) {
-                index = ped.SeatIndex + 1;
+                index = ped.SeatIndex + 2;
             }
 
+            string oldFile = File.ReadAllText("EPC/data/currentID.data");
+
+            string[] oldIDs = oldFile.Split(';');
+
+
             string data = $"{Functions.GetPersonaForPed(ped).FullName},{Functions.GetPersonaForPed(ped).Birthday.Month}/{Functions.GetPersonaForPed(ped).Birthday.Day}/{Functions.GetPersonaForPed(ped).Birthday.Year},{Functions.GetPersonaForPed(ped).Gender},{index};";
+
+            foreach (string oldID in oldIDs) {
+                if (oldID.Split(',')[0] == data.Split(',')[0]) {
+                    return;
+                }
+            }
 
             File.WriteAllText("EPC/data/currentID.data", File.ReadAllText("EPC/data/currentID.data") + data);
 
