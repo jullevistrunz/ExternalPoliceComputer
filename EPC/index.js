@@ -451,12 +451,11 @@ function generateDirectory() {
   }
   const defaultConfig = JSON.parse(fs.readFileSync('defaults/config.json'))
   const newConfig = JSON.parse(fs.readFileSync('config.json'))
-  if (Object.keys(defaultConfig).length != Object.keys(newConfig).length) {
-    for (const el of Object.keys(defaultConfig)) {
-      if (!Object.keys(newConfig).includes(el)) {
-        newConfig[el] = defaultConfig[el]
-      }
+
+  for (const el of Object.keys(defaultConfig)) {
+    if (!Object.keys(newConfig).includes(el)) {
+      newConfig[el] = defaultConfig[el]
     }
-    fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
   }
+  fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
 }
