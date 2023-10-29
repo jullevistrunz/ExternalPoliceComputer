@@ -261,11 +261,14 @@ function generatePeds() {
     const citations = getRandomCitations(allCitations)
     const arrests = getRandomArrests(allCharges, worldPed.isWanted == 'True')
     const probation =
-      !arrests.length || Math.floor(Math.random() * 4) != 0 ? 'No' : 'Yes'
+      !arrests.length ||
+      Math.floor(Math.random() * (1 / config.probationChance)) != 0
+        ? 'No'
+        : 'Yes'
     const parole =
       probation == 'Yes' ||
       !arrests.length ||
-      Math.floor(Math.random() * 2) != 0
+      Math.floor(Math.random() * (1 / config.paroleChance)) != 0
         ? 'No'
         : 'Yes'
     const ped = {
@@ -401,26 +404,26 @@ function getAllCitationOptions() {
 }
 
 function getRandomCitations(allCitations) {
-  let i = Math.floor(Math.random() * 5)
+  let i = Math.floor(Math.random() * (1 / config.citationChance))
   const citations = []
   while (i == 0) {
     citations.push(
       allCitations[Math.floor(Math.random() * allCitations.length)].name
     )
-    i = Math.floor(Math.random() * 10)
+    i = Math.floor(Math.random() * (1 / config.additionalCitationChance))
   }
   return citations
 }
 
 function getRandomArrests(allCharges, isWanted) {
   const wasArrested = isWanted
-    ? Math.floor(Math.random() * 5) == 0
-    : Math.floor(Math.random() * 15) == 0
+    ? Math.floor(Math.random() * (1 / config.arrestedWithWarrantChance)) == 0
+    : Math.floor(Math.random() * (1 / config.arrestedWithoutWarrantChance)) == 0
   let i = 0
   const arrests = []
   while (wasArrested && i == 0) {
     arrests.push(allCharges[Math.floor(Math.random() * allCharges.length)].name)
-    i = Math.floor(Math.random() * 10)
+    i = Math.floor(Math.random() * (1 / config.additionalArrestChance))
   }
   return arrests
 }
