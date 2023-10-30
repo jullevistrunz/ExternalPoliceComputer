@@ -274,9 +274,7 @@ function generatePeds() {
     const ped = {
       ...worldPed,
       warrantText:
-        worldPed.isWanted == 'True'
-          ? allCharges[Math.floor(Math.random() * allCharges.length)].name
-          : '',
+        worldPed.isWanted == 'True' ? getCleanRandomArrest(allCharges) : '',
       arrests: arrests,
       citations: citations,
       probation: probation,
@@ -407,9 +405,7 @@ function getRandomCitations(allCitations) {
   let i = Math.floor(Math.random() * (1 / config.citationChance))
   const citations = []
   while (i == 0) {
-    citations.push(
-      allCitations[Math.floor(Math.random() * allCitations.length)].name
-    )
+    citations.push(getCleanRandomCitation(allCitations))
     i = Math.floor(Math.random() * (1 / config.additionalCitationChance))
   }
   return citations
@@ -422,7 +418,7 @@ function getRandomArrests(allCharges, isWanted) {
   let i = 0
   const arrests = []
   while (wasArrested && i == 0) {
-    arrests.push(allCharges[Math.floor(Math.random() * allCharges.length)].name)
+    arrests.push(getCleanRandomArrest(allCharges))
     i = Math.floor(Math.random() * (1 / config.additionalArrestChance))
   }
   return arrests
@@ -488,4 +484,18 @@ function generateDirectory() {
       fs.writeFileSync(`data/${key}`, value)
     }
   })
+}
+
+function getCleanRandomArrest(allCharges) {
+  // test regex: https://regex101.com/r/d6yqZV/1
+  const regex = /\s\([0-9][snrt][tdh]\sOffen[sc]e\)/
+  const arrest = allCharges[Math.floor(Math.random() * allCharges.length)].name
+  return arrest.replace(regex, '')
+}
+
+function getCleanRandomCitation(allCitations) {
+  const regex = /\s\([0-9][snrt][tdh]\sOffen[sc]e\)/
+  const citation =
+    allCitations[Math.floor(Math.random() * allCitations.length)].name
+  return citation.replace(regex, '')
 }
