@@ -17,6 +17,9 @@ namespace ExternalPoliceComputer {
 
         private static void Functions_OnOnDutyStateChanged(bool OnDuty) {
             if (OnDuty) {
+                Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
+                Events.OnPulloverStarted += Events_OnPulloverStarted;
+
                 try {
                     addEventsWithSTP();
 
@@ -25,10 +28,11 @@ namespace ExternalPoliceComputer {
 
                     Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
                 } catch {
-                    Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
-                    Events.OnPulloverStarted += Events_OnPulloverStarted;
+                    
                     Events.OnPedPresentedId += Events_OnPedPresentedId;
                     Events.OnPedArrested += Events_OnPedArrested;
+                    Events.OnPedFrisked += Events_OnPedFrisked;
+                    Events.OnPedStopped += Events_OnPedStopped;
 
                     updateWorldPeds();
                     updateWorldCars();
@@ -39,45 +43,17 @@ namespace ExternalPoliceComputer {
         }
 
         private static void addEventsWithSTP() {
-            Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
-            Events.OnPulloverStarted += Events_OnPulloverStarted;
             StopThePed.API.Events.askIdEvent += Events_askIdEvent;
             StopThePed.API.Events.pedArrestedEvent += Events_pedArrestedEvent;
             StopThePed.API.Events.patDownPedEvent += Events_patDownPedEvent;
             StopThePed.API.Events.askDriverLicenseEvent += Events_askDriverLicenseEvent;
             StopThePed.API.Events.askPassengerIdEvent += Events_askPassengerIdEvent;
+            StopThePed.API.Events.stopPedEvent += Events_stopPedEvent;
         }
 
-        private static void Events_askPassengerIdEvent(Vehicle vehicle) {
-            updateWorldPeds();
-            updateWorldCars();
-            Ped[] passengers = vehicle.Passengers;
-            foreach (Ped passenger in passengers) {
-                updateCurrentID(passenger);
-            }
-        }
 
-        private static void Events_askDriverLicenseEvent(Ped ped) {
-            updateWorldPeds();
-            updateWorldCars();
-            updateCurrentID(ped);
-        }
-
-        private static void Events_patDownPedEvent(Ped ped) {
-            updateWorldPeds();
-            updateWorldCars();
-            updateCurrentID(ped);
-        }
-
-        private static void Events_OnPedArrested(Ped suspect, Ped arrestingOfficer) {
-            updateWorldPeds();
-            updateWorldCars();
-            updateCurrentID(suspect);
-        }
-
-        private static void Events_OnPedPresentedId(Ped ped, LHandle pullover, LHandle pedInteraction) {
-            updateWorldPeds();
-            updateWorldCars();
+        // STP
+        private static void Events_askIdEvent(Ped ped) {
             updateCurrentID(ped);
         }
 
@@ -87,10 +63,31 @@ namespace ExternalPoliceComputer {
             updateCurrentID(ped);
         }
 
-        private static void Events_askIdEvent(Ped ped) {
+        private static void Events_patDownPedEvent(Ped ped) {
+            updateCurrentID(ped);
+        }
+
+        private static void Events_askDriverLicenseEvent(Ped ped) {
+            updateCurrentID(ped);
+        }
+
+        private static void Events_askPassengerIdEvent(Vehicle vehicle) {
+            Ped[] passengers = vehicle.Passengers;
+            foreach (Ped passenger in passengers) {
+                updateCurrentID(passenger);
+            }
+        }
+
+        private static void Events_stopPedEvent(Ped ped) {
             updateWorldPeds();
             updateWorldCars();
-            updateCurrentID(ped);
+        }
+
+
+        // LSPDFR
+        private static void Events_OnCalloutDisplayed(LHandle handle) {
+            updateWorldPeds();
+            updateWorldCars();
         }
 
         private static void Events_OnPulloverStarted(LHandle handle) {
@@ -98,12 +95,27 @@ namespace ExternalPoliceComputer {
             updateWorldCars();
         }
 
-        private static void Events_OnCalloutDisplayed(LHandle handle) {
+        private static void Events_OnPedPresentedId(Ped ped, LHandle pullover, LHandle pedInteraction) {
+            updateCurrentID(ped);
+        }
+
+        private static void Events_OnPedArrested(Ped suspect, Ped arrestingOfficer) {
+            updateWorldPeds();
+            updateWorldCars();
+            updateCurrentID(suspect);
+        }
+
+        private static void Events_OnPedFrisked(Ped suspect, Ped friskingOfficer) {
+            updateCurrentID(suspect);
+        }
+
+        private static void Events_OnPedStopped(Ped ped) {
             updateWorldPeds();
             updateWorldCars();
         }
 
-        private static void updateWorldPeds() {
+        // world data
+        public static void updateWorldPeds() {
             Game.LogTrivial("ExternalPoliceComputer: Update worldPeds.data");
             Ped[] allPeds = World.GetAllPeds();
             string[] persList = new string[allPeds.Length];
@@ -112,7 +124,6 @@ namespace ExternalPoliceComputer {
                 if (ped.Exists()) {
                     persList[Array.IndexOf(allPeds, ped)] = $"name={Functions.GetPersonaForPed(ped).FullName}&birthday={Functions.GetPersonaForPed(ped).Birthday.Month}/{Functions.GetPersonaForPed(ped).Birthday.Day}/{Functions.GetPersonaForPed(ped).Birthday.Year}&gender={Functions.GetPersonaForPed(ped).Gender}&isWanted={Functions.GetPersonaForPed(ped).Wanted}&licenseStatus={Functions.GetPersonaForPed(ped).ELicenseState}";
                 }
-
             }
 
             File.WriteAllText("EPC/data/worldPeds.data", string.Join(",", persList));
@@ -159,7 +170,7 @@ namespace ExternalPoliceComputer {
             File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
         }
 
-        private static void updateWorldCars() {
+        public static void updateWorldCars() {
             Game.LogTrivial("ExternalPoliceComputer: Update worldCars.data");
 
             try {
@@ -181,7 +192,7 @@ namespace ExternalPoliceComputer {
             Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
         }
 
-        private static void updateCurrentID(Ped ped) {
+        public static void updateCurrentID(Ped ped) {
             Game.LogTrivial("ExternalPoliceComputer: Update currentID.data");
 
             int index = 0;
