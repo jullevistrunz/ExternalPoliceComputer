@@ -1078,3 +1078,16 @@ function hideCurrentID() {
   document.querySelector('.currentID').classList.add('hidden')
   document.querySelector('.showCurrentID-container').classList.remove('hidden')
 }
+
+//? mainly for custom.js
+function reassignEventListener(
+  selector = '*',
+  eventType = 'click',
+  cb = function () {
+    console.warn('Empty Callback')
+  }
+) {
+  const el = document.querySelector(selector)
+  el.parentNode.replaceChild(el.cloneNode(true), el)
+  document.querySelector(selector).addEventListener(eventType, cb)
+}
