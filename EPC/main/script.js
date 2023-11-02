@@ -213,7 +213,9 @@ async function renderPedSearch() {
     createLabelElement(
       'License Status',
       ped.licenseStatus != 'Valid' && config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.licenseStatus}</a>`
+        ? ped.licenseStatus == 'Suspended' || ped.licenseStatus == 'Revoked'
+          ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.licenseStatus} For ${ped.licenseData}</a>`
+          : `<a style="color: var(--warning-color); pointer-events: none;">${ped.licenseStatus}</a>`
         : ped.licenseStatus
     )
   )

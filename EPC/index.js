@@ -17,6 +17,7 @@ const dirList = [
   'index.js',
   'main',
   'defaults',
+  'licenseOptions.json',
 ]
 
 const dataDefaults = new Map([
@@ -254,7 +255,7 @@ function generatePeds() {
     pedNameArr.push(ped.name)
   }
 
-  for (worldPed of worldPedData) {
+  for (const worldPed of worldPedData) {
     if (pedNameArr.includes(worldPed.name)) {
       continue
     }
@@ -273,6 +274,7 @@ function generatePeds() {
       Math.floor(Math.random() * (1 / config.paroleChance)) != 0
         ? 'No'
         : 'Yes'
+    const licenseOptions = JSON.parse(fs.readFileSync('licenseOptions.json'))
     const ped = {
       ...worldPed,
       warrantText:
@@ -281,6 +283,11 @@ function generatePeds() {
       citations: citations,
       probation: probation,
       parole: parole,
+      licenseData:
+        worldPed.licenseStatus == 'Suspended' ||
+        worldPed.licenseStatus == 'Revoked'
+          ? licenseOptions[Math.floor(Math.random() * licenseOptions.length)]
+          : '',
     }
     pedData.push(ped)
   }
