@@ -20,7 +20,7 @@ A Police Computer Plugin and Server for LSPDFR.
 - `minFine`: Minimum fine in $ for charge
 - `maxFine`: Maximum fine in $ for charge
 - `minMonth`: Minimum jail time in month for charge (arrests only)
-- `maxMonth`: Maximum jail time in month for charge (arrests only)
+- `maxMonth`: Maximum jail time in month for charge (arrests only), `null` for life in prison
 - `probation`: Chance of probation 0-1 (arrests only)
 
 ## Map
