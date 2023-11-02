@@ -222,7 +222,9 @@ server.listen(port, function (error) {
     console.info(
       'The Node.js server has started. You can minimize this window now and start your game.'
     )
-    console.info(`For usage on the same device go to http://localhost:${port}`)
+    console.info(
+      `For usage on the same device go to http://localhost:${port} or http://127.0.0.1:${port}`
+    )
     console.info(
       `For usage on another device go to http://${os.hostname()}:${port} or http://${result}:${port}`
     )
