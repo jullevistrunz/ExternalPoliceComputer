@@ -14,6 +14,16 @@ A Police Computer Plugin and Server for LSPDFR.
 - `warningColorsForPedCarSearch`: If set to `true`, expired registration/insurance, outstanding warrants, etc. will be displayed in a warning color
 - If you create your own `custom.js` file, you may add variables here (path: `/data/config`)
 
+[1.3.1]
+
+- `arrestedWithWarrantChance`: The probability someone has prior arrests, if they have a warrant; value range: `0 - 1`
+- `arrestedWithoutWarrantChance`: The probability someone has prior arrests, if they don't have a warrant; value range: `0 - 1`
+- `additionalArrestChance`: The probability an additional prior arrest is added to someone who was defined to have prior arrests (see before); value range: `0 - 0.99`
+- `citationChance`: The probability someone has prior citations; value range: `0 - 1`
+- `additionalCitationChance`: The probability an additional prior citation is added to someone who was defined to have prior citations (see before); value range: `0 - 0.99`
+- `probationChance`: The probability someone who has a prior arrest is on probation; value range: `0 - 1`
+- `paroleChance`: The probability someone who has a prior arrest is on parole if they are not on probation; value range: `0 - 1`
+
 ## Citation and Arrest Options
 
 - Files: `EPC/citationOptions.json` & `EPC/arrestOptions.json`
@@ -23,8 +33,8 @@ A Police Computer Plugin and Server for LSPDFR.
 - `maxMonth`: Maximum jail time in month for charge (arrests only), `null` for life in prison
 - `probation`: Chance of probation 0-1 (arrests only)
 
-
 ## License Options [1.3.1]
+
 - File: `EPC/licenseOptions.json`
 - Reasons for suspended / revoked license
 
