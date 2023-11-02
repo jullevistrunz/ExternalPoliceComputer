@@ -23,6 +23,11 @@ A Police Computer Plugin and Server for LSPDFR.
 - `maxMonth`: Maximum jail time in month for charge (arrests only), `null` for life in prison
 - `probation`: Chance of probation 0-1 (arrests only)
 
+
+## License Options [1.3.1]
+- File: `EPC/licenseOptions.json`
+- Reasons for suspended / revoked license
+
 ## Map
 
 - File: `EPC/img/map.jpeg`
