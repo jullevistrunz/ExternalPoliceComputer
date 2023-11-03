@@ -1,4 +1,4 @@
-# ExternalPoliceComputer 1.3.0
+# ExternalPoliceComputer 1.3.1
 
 A Police Computer Plugin and Server for LSPDFR.
 
@@ -13,9 +13,6 @@ A Police Computer Plugin and Server for LSPDFR.
 - `autoShowCurrentID`: If set to `true`, IDs will pop up automatically; If set to `false`, you'll have the option to show/hide the current ID
 - `warningColorsForPedCarSearch`: If set to `true`, expired registration/insurance, outstanding warrants, etc. will be displayed in a warning color
 - If you create your own `custom.js` file, you may add variables here (path: `/data/config`)
-
-[1.3.1]
-
 - `arrestedWithWarrantChance`: The probability someone has prior arrests, if they have a warrant; value range: `0 - 1`
 - `arrestedWithoutWarrantChance`: The probability someone has prior arrests, if they don't have a warrant; value range: `0 - 1`
 - `additionalArrestChance`: The probability an additional prior arrest is added to someone who was defined to have prior arrests (see before); value range: `0 - 0.99`
@@ -34,7 +31,7 @@ A Police Computer Plugin and Server for LSPDFR.
 - `probation`: Chance of probation 0-1 (arrests only)
 - The offense part will be removed for charges including multiple offenses in warrants / prior arrests / citations; [Test it here](https://regex101.com/r/d6yqZV/1)
 
-## License Options [1.3.1]
+## License Options
 
 - File: `EPC/licenseOptions.json`
 - Reasons for suspended / revoked license
