@@ -251,6 +251,17 @@ function generatePeds() {
     const allCitations = getAllCitationOptions()
     const citations = getRandomCitations(allCitations)
     const arrests = getRandomArrests(allCharges, worldPed.isWanted == 'True')
+    const licenseOptions = JSON.parse(fs.readFileSync('licenseOptions.json'))
+    const licenseData =
+      worldPed.licenseStatus == 'Suspended' ||
+      worldPed.licenseStatus == 'Revoked'
+        ? licenseOptions[Math.floor(Math.random() * licenseOptions.length)]
+        : ''
+    if (licenseData) {
+      licenseData[1] == 'citation'
+        ? citations.push(licenseData[0])
+        : arrests.push(licenseData[1])
+    }
     const probation =
       !arrests.length ||
       Math.floor(Math.random() * (1 / config.probationChance)) != 0
@@ -262,7 +273,6 @@ function generatePeds() {
       Math.floor(Math.random() * (1 / config.paroleChance)) != 0
         ? 'No'
         : 'Yes'
-    const licenseOptions = JSON.parse(fs.readFileSync('licenseOptions.json'))
     const ped = {
       ...worldPed,
       warrantText:
@@ -271,11 +281,7 @@ function generatePeds() {
       citations: citations,
       probation: probation,
       parole: parole,
-      licenseData:
-        worldPed.licenseStatus == 'Suspended' ||
-        worldPed.licenseStatus == 'Revoked'
-          ? licenseOptions[Math.floor(Math.random() * licenseOptions.length)]
-          : '',
+      licenseData: licenseData[0],
     }
     pedData.push(ped)
   }
