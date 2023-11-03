@@ -32,6 +32,7 @@ A Police Computer Plugin and Server for LSPDFR.
 - `minMonth`: Minimum jail time in month for charge (arrests only)
 - `maxMonth`: Maximum jail time in month for charge (arrests only), `null` for life in prison
 - `probation`: Chance of probation 0-1 (arrests only)
+- The offense part will be removed for charges including multiple offenses in warrants / prior arrests / citations; [Test it here](https://regex101.com/r/d6yqZV/1)
 
 ## License Options [1.3.1]
 
