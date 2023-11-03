@@ -50,6 +50,10 @@ const server = http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'image/png' })
     res.write(fs.readFileSync('img/logo.png'))
     res.end()
+  } else if (path == '/favicon') {
+    res.writeHead(200, { 'Content-Type': 'image/png' })
+    res.write(fs.readFileSync('img/favicon.png'))
+    res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
     if (dataPath == 'peds') {
