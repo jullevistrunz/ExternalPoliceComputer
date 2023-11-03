@@ -19,6 +19,7 @@ namespace ExternalPoliceComputer {
             if (OnDuty) {
                 Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
                 Events.OnPulloverStarted += Events_OnPulloverStarted;
+                Events.OnPursuitEnded += Events_OnPursuitEnded;
 
                 try {
                     addEventsWithSTP();
@@ -41,7 +42,7 @@ namespace ExternalPoliceComputer {
                 }
             }
         }
-
+      
         private static void addEventsWithSTP() {
             StopThePed.API.Events.askIdEvent += Events_askIdEvent;
             StopThePed.API.Events.pedArrestedEvent += Events_pedArrestedEvent;
@@ -91,6 +92,11 @@ namespace ExternalPoliceComputer {
         }
 
         private static void Events_OnPulloverStarted(LHandle handle) {
+            updateWorldPeds();
+            updateWorldCars();
+        }
+
+        private static void Events_OnPursuitEnded(LHandle handle) {
             updateWorldPeds();
             updateWorldCars();
         }
