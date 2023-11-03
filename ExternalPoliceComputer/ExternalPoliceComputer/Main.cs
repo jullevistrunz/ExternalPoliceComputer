@@ -55,16 +55,19 @@ namespace ExternalPoliceComputer {
 
         // STP
         private static void Events_askIdEvent(Ped ped) {
+            updateWorldPeds();
+            updateWorldCars();
             updateCurrentID(ped);
         }
 
         private static void Events_pedArrestedEvent(Ped ped) {
             updateWorldPeds();
             updateWorldCars();
-            updateCurrentID(ped);
         }
 
         private static void Events_patDownPedEvent(Ped ped) {
+            updateWorldPeds();
+            updateWorldCars();
             updateCurrentID(ped);
         }
 
@@ -102,16 +105,19 @@ namespace ExternalPoliceComputer {
         }
 
         private static void Events_OnPedPresentedId(Ped ped, LHandle pullover, LHandle pedInteraction) {
+            updateWorldPeds();
+            updateWorldCars();
             updateCurrentID(ped);
         }
 
         private static void Events_OnPedArrested(Ped suspect, Ped arrestingOfficer) {
             updateWorldPeds();
             updateWorldCars();
-            updateCurrentID(suspect);
         }
 
         private static void Events_OnPedFrisked(Ped suspect, Ped friskingOfficer) {
+            updateWorldPeds();
+            updateWorldCars();
             updateCurrentID(suspect);
         }
 
