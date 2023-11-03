@@ -4,22 +4,6 @@ const url = require('url')
 const os = require('os')
 const port = 80
 
-//! all files and directories not included in this list, will be removed on startup
-const dirList = [
-  '#start.bat',
-  'arrestOptions.json',
-  'citationOptions.json',
-  'config.json',
-  'custom.css',
-  'custom.js',
-  'data',
-  'img',
-  'index.js',
-  'main',
-  'defaults',
-  'licenseOptions.json',
-]
-
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
   ['worldCars.data', ''],
@@ -456,12 +440,6 @@ function getRandomPed() {
 }
 
 function generateDirectory() {
-  const dir = fs.readdirSync('./')
-  for (const item of dir) {
-    if (!dirList.includes(item)) {
-      fs.rmSync(item, { recursive: true, force: true })
-    }
-  }
   const defaultsDir = fs.readdirSync('defaults')
   for (const item of defaultsDir) {
     try {
