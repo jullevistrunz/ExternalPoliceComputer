@@ -20,6 +20,7 @@ A Police Computer Plugin and Server for LSPDFR.
 - `additionalCitationChance`: The probability an additional prior citation is added to someone who was defined to have prior citations (see before); value range: `0 - 0.99`
 - `probationChance`: The probability someone who has a prior arrest is on probation; value range: `0 - 1`
 - `paroleChance`: The probability someone who has a prior arrest is on parole if they are not on probation; value range: `0 - 1`
+- `showCustomizationLink`: If set to `true` a link to the customization page will appear
 
 ## Citation and Arrest Options
 
