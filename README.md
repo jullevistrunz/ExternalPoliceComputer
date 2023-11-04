@@ -47,11 +47,11 @@ A Police Computer Plugin and Server for LSPDFR.
 - File: `EPC/img/logo.png`
 - Source: https://forum.gta.world/en/topic/52002-san-andreas-state-government/ | https://i.ibb.co/6bwcmKr/icon-2000px.png
 
-## Styles
+## Custom Styles
 
 - File: `EPC/custom.css`
 - For simple customization you may change colors and the header size in the `:root` selector
-- Feel free to also add more css. `EPC/custom.css` will overwrite `EPC/styles.css`
+- Feel free to also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
 
 ## Custom JavaScript
 
