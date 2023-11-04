@@ -64,7 +64,8 @@ body input {
 }
 
 .citationOptionsPage,
-.arrestOptionsPage {
+.arrestOptionsPage,
+.configPage {
   width: 100%;
   height: calc(100% - var(--header-height));
   background-color: var(--background-color);
@@ -77,7 +78,8 @@ body input {
 }
 
 .citationOptionsPage .options,
-.arrestOptionsPage .options {
+.arrestOptionsPage .options,
+.configPage .options {
   font-size: 20px;
   font-weight: 600;
   overflow-y: auto;
@@ -102,7 +104,8 @@ body input {
 }
 
 .citationOptionsPage .options details button,
-.arrestOptionsPage .options details button {
+.arrestOptionsPage .options details button,
+.configPage .options button {
   font-size: 16px;
   font-weight: 400;
   font-family: monospace;
@@ -121,12 +124,15 @@ body input {
 .citationOptionsPage .options details button:focus,
 .arrestOptionsPage .options details button:focus,
 .citationOptionsPage .options details button:hover,
-.arrestOptionsPage .options details button:hover {
+.arrestOptionsPage .options details button:hover,
+.configPage .options button:hover,
+.configPage .options button:focus {
   background-color: var(--second-accent-color-half);
 }
 
 .citationOptionsPage .result,
-.arrestOptionsPage .result {
+.arrestOptionsPage .result,
+.configPage .result {
   border: 2px solid var(--second-accent-color-half);
   height: calc(100% - 40px);
 }
@@ -139,7 +145,8 @@ body input {
 }
 
 .citationOptionsPage .result button,
-.arrestOptionsPage .result button {
+.arrestOptionsPage .result button,
+.configPage .result button {
   font-size: 16px;
   font-weight: 400;
   font-family: monospace;
@@ -154,6 +161,11 @@ body input {
   text-align: left;
 }
 
+.configPage .result button {
+  width: calc(100% - 4px);
+  margin-bottom: 10px;
+}
+
 .citationOptionsPage .remove,
 .arrestOptionsPage .remove {
   /* ? tf why would I need that important thing */
@@ -161,7 +173,8 @@ body input {
 }
 
 .citationOptionsPage .result button:disabled,
-.arrestOptionsPage .result button:disabled {
+.arrestOptionsPage .result button:disabled,
+.configPage .result button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -169,7 +182,9 @@ body input {
 .citationOptionsPage .result .submit:not(:disabled):hover,
 .arrestOptionsPage .result .submit:not(:disabled):hover,
 .citationOptionsPage .result .submit:not(:disabled):focus,
-.arrestOptionsPage .result .submit:not(:disabled):focus {
+.arrestOptionsPage .result .submit:not(:disabled):focus,
+.configPage .result button:not(:disabled):hover,
+.configPage .result button:not(:disabled):focus {
   background-color: var(--second-accent-color-half);
 }
 
@@ -181,7 +196,8 @@ body input {
 }
 
 .citationOptionsPage .result label,
-.arrestOptionsPage .result label {
+.arrestOptionsPage .result label,
+.configPage .result label {
   font-size: 20px;
   font-weight: 600;
   margin-left: 5px;
@@ -189,7 +205,8 @@ body input {
 }
 
 .citationOptionsPage .result input,
-.arrestOptionsPage .result input {
+.arrestOptionsPage .result input,
+.configPage .result input {
   height: auto;
   width: calc(100% - 10px - 4px - 10px);
   font-size: 20px;
@@ -225,6 +242,14 @@ body input {
 .citationOptionsPage .addGroupBtn:focus,
 .arrestOptionsPage .addGroupBtn:focus {
   background-color: var(--second-accent-color-half);
+}
+
+.configPage #docsLink {
+  color: var(--second-accent-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  margin: 2px;
 }
 
 /* overwrite */

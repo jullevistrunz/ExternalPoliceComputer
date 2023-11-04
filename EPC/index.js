@@ -204,6 +204,11 @@ const server = http.createServer(function (req, res) {
         )
         res.writeHead(200)
         res.end()
+      } else if (dataPath == 'updateConfig') {
+        body = JSON.parse(body)
+        fs.writeFileSync('config.json', JSON.stringify(body, null, 2))
+        res.writeHead(200)
+        res.end()
       } else {
         res.writeHead(404)
         res.end()

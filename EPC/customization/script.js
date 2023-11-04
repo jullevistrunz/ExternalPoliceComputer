@@ -26,6 +26,8 @@ async function goToPage(name) {
     await loadOptionsPage('citation')
   } else if (name == 'arrestOptions') {
     await loadOptionsPage('arrest')
+  } else if (name == 'config') {
+    await loadConfigPage()
   }
 }
 
@@ -251,7 +253,7 @@ async function submitResults(type) {
                 ? null
                 : parseInt(resultEl.querySelector('#maxJailInput').value)
 
-            options[i].charges[j].probation = parseInt(
+            options[i].charges[j].probation = parseFloat(
               resultEl.querySelector('#probationInput').value
             )
           }
@@ -396,4 +398,74 @@ function monthsToYearsAndMonths(input) {
       ? `${Math.floor(input / 12)}yr. ${input % 12}mth.`
       : `${input % 12}mth.`
     : `${input / 12}yr.`
+}
+
+async function loadConfigPage() {
+  const config = await (await fetch('/data/config')).json()
+  const optionsEl = document.querySelector('.configPage .options')
+  optionsEl.innerHTML = ''
+
+  for (const property of Object.keys(config)) {
+    const btn = document.createElement('button')
+    btn.innerHTML = property
+    btn.addEventListener('click', function () {
+      this.blur()
+      addPropertyToResult(property, config)
+    })
+    optionsEl.appendChild(btn)
+  }
+
+  const docsLink = document.createElement('a')
+  docsLink.href =
+    'https://github.com/jullevistrunz/ExternalPoliceComputer#config'
+  docsLink.innerHTML = 'Documentation'
+  docsLink.id = 'docsLink'
+  optionsEl.appendChild(docsLink)
+}
+
+function addPropertyToResult(property, config) {
+  const resultEl = document.querySelector('.configPage .result')
+
+  resultEl.querySelectorAll('label, input').forEach((el) => {
+    el.remove()
+  })
+
+  resultEl.querySelector('.submit').disabled = false
+
+  const label = document.createElement('label')
+  const input = document.createElement('input')
+  label.setAttribute('for', 'configInput')
+  input.id = 'configInput'
+  label.innerHTML = property
+  input.value = config[property]
+
+  resultEl.appendChild(label)
+  resultEl.appendChild(input)
+}
+
+async function submitConfigResults() {
+  const config = await (await fetch('/data/config')).json()
+
+  const property = document.querySelector(
+    '.configPage label[for="configInput"]'
+  ).innerHTML
+
+  const value = document.querySelector('.configPage #configInput').value
+
+  if (!value) {
+    return alert('Please enter a valid value')
+  }
+
+  config[property] =
+    typeof config[property] == 'boolean'
+      ? value == 'true'
+      : typeof config[property] == 'number'
+      ? parseFloat(value)
+      : value
+
+  await fetch('/post/updateConfig', {
+    method: 'POST',
+    body: JSON.stringify(config),
+  })
+  location.reload()
 }
