@@ -54,6 +54,18 @@ const server = http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'image/png' })
     res.write(fs.readFileSync('img/favicon.png'))
     res.end()
+  } else if (path == '/customization') {
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.write(fs.readFileSync('customization/index.html'))
+    res.end()
+  } else if (path == '/customizationStyles') {
+    res.writeHead(200, { 'Content-Type': 'text/css' })
+    res.write(fs.readFileSync('customization/styles.css'))
+    res.end()
+  } else if (path == '/customizationScript') {
+    res.writeHead(200, { 'Content-Type': 'text/js' })
+    res.write(fs.readFileSync('customization/script.js'))
+    res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
     if (dataPath == 'peds') {
@@ -182,6 +194,14 @@ const server = http.createServer(function (req, res) {
         const arr = file.split(';')
         arr.splice(body, 1)
         fs.writeFileSync('data/currentID.data', arr.join(';'))
+        res.writeHead(200)
+        res.end()
+      } else if (dataPath == 'updateOptions') {
+        body = JSON.parse(body)
+        fs.writeFileSync(
+          `${body.type}Options.json`,
+          JSON.stringify(body.options, null, 2)
+        )
         res.writeHead(200)
         res.end()
       } else {

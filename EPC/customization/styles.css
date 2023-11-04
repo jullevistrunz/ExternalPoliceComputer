@@ -1,0 +1,234 @@
+body {
+  background-color: var(--background-color);
+  color: var(--main-color);
+  font-family: var(--main-font);
+}
+body button,
+body input {
+  font-family: var(--main-font);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  z-index: 1;
+  font-size: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 2px;
+  background-color: var(--accent-color);
+  overflow-x: auto;
+}
+
+.header button {
+  padding: 0 20px;
+  margin: 0;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid transparent;
+  border-top: 4px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: var(--second-background-color);
+  color: var(--accent-color);
+  transition: 50ms linear;
+}
+
+.header button:hover,
+.header button:focus,
+.header button.selected {
+  border-bottom-color: var(--accent-color);
+  opacity: 0.8;
+}
+
+.header button:active {
+  border-bottom: 4px solid var(--accent-color);
+}
+
+.content {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--header-height));
+  top: var(--header-height);
+}
+
+.content > * {
+  width: 100%;
+  height: 100%;
+}
+
+.citationOptionsPage,
+.arrestOptionsPage {
+  width: 100%;
+  height: calc(100% - var(--header-height));
+  background-color: var(--background-color);
+  position: fixed;
+  top: var(--header-height);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
+.citationOptionsPage .options,
+.arrestOptionsPage .options {
+  font-size: 20px;
+  font-weight: 600;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  height: calc(100% - 20px - 20px);
+}
+
+.citationOptionsPage .options summary,
+.arrestOptionsPage .options summary {
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  outline: none;
+}
+
+.citationOptionsPage .options summary:focus,
+.arrestOptionsPage .options summary:focus,
+.citationOptionsPage .options summary::marker,
+.arrestOptionsPage .options summary::marker {
+  color: var(--second-accent-color);
+}
+
+.citationOptionsPage .options details button,
+.arrestOptionsPage .options details button {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  width: calc(100% - 4px);
+  margin: 2px;
+  text-align: left;
+}
+
+.citationOptionsPage .options details button:focus,
+.arrestOptionsPage .options details button:focus,
+.citationOptionsPage .options details button:hover,
+.arrestOptionsPage .options details button:hover {
+  background-color: var(--second-accent-color-half);
+}
+
+.citationOptionsPage .result,
+.arrestOptionsPage .result {
+  border: 2px solid var(--second-accent-color-half);
+  height: calc(100% - 40px);
+}
+
+.citationOptionsPage .result .title,
+.arrestOptionsPage .result .title {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 10px;
+}
+
+.citationOptionsPage .result button,
+.arrestOptionsPage .result button {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  margin: 2px;
+  text-align: left;
+}
+
+.citationOptionsPage .remove,
+.arrestOptionsPage .remove {
+  /* ? tf why would I need that important thing */
+  border-color: var(--warning-color) !important;
+}
+
+.citationOptionsPage .result button:disabled,
+.arrestOptionsPage .result button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.citationOptionsPage .result .submit:not(:disabled):hover,
+.arrestOptionsPage .result .submit:not(:disabled):hover,
+.citationOptionsPage .result .submit:not(:disabled):focus,
+.arrestOptionsPage .result .submit:not(:disabled):focus {
+  background-color: var(--second-accent-color-half);
+}
+
+.citationOptionsPage .remove:not(:disabled):hover,
+.arrestOptionsPage .remove:not(:disabled):hover,
+.citationOptionsPage .remove:not(:disabled):focus,
+.arrestOptionsPage .remove:not(:disabled):focus {
+  background-color: var(--warning-color-half);
+}
+
+.citationOptionsPage .result label,
+.arrestOptionsPage .result label {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 5px;
+  margin-bottom: 10px;
+}
+
+.citationOptionsPage .result input,
+.arrestOptionsPage .result input {
+  height: auto;
+  width: calc(100% - 10px - 4px - 10px);
+  font-size: 20px;
+  font-weight: 600;
+  padding: 5px;
+  margin: 5px;
+  border: 2px solid transparent;
+  background-color: var(--second-background-color);
+  color: var(--accent-color);
+  outline: none;
+  transition: 50ms linear;
+}
+
+.citationOptionsPage .addGroupBtn,
+.arrestOptionsPage .addGroupBtn {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  width: calc(100% - 4px - 10px);
+  text-align: left;
+}
+
+.citationOptionsPage .addGroupBtn:hover,
+.arrestOptionsPage .addGroupBtn:hover,
+.citationOptionsPage .addGroupBtn:focus,
+.arrestOptionsPage .addGroupBtn:focus {
+  background-color: var(--second-accent-color-half);
+}
+
+/* overwrite */
+.hidden {
+  display: none;
+  visibility: hidden;
+}
