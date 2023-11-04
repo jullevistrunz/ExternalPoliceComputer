@@ -28,6 +28,8 @@ async function goToPage(name) {
     await loadOptionsPage('arrest')
   } else if (name == 'config') {
     await loadConfigPage()
+  } else if (name == 'licenseOptions') {
+    await loadLicenseOptionsPage()
   }
 }
 
@@ -37,7 +39,7 @@ async function loadOptionsPage(type) {
   const optionsEl = document.querySelector(`.${type}OptionsPage .options`)
   optionsEl.innerHTML = ''
 
-  const addGroupBtn = document.createElement('btn')
+  const addGroupBtn = document.createElement('button')
   addGroupBtn.innerHTML = 'Add Charge Group'
   addGroupBtn.classList.add('addGroupBtn')
   addGroupBtn.addEventListener('click', function () {
@@ -466,6 +468,111 @@ async function submitConfigResults() {
   await fetch('/post/updateConfig', {
     method: 'POST',
     body: JSON.stringify(config),
+  })
+  location.reload()
+}
+
+async function loadLicenseOptionsPage() {
+  const options = await (await fetch('/data/licenseOptions')).json()
+  const optionsEl = document.querySelector('.licenseOptionsPage .options')
+  optionsEl.innerHTML = ''
+
+  const addGroupBtn = document.createElement('button')
+  addGroupBtn.innerHTML = 'Add Option'
+  addGroupBtn.classList.add('addGroupBtn')
+  addGroupBtn.addEventListener('click', function () {
+    const name = prompt('Name')
+    if (name) {
+      addLicenseOption(name)
+    }
+  })
+  optionsEl.appendChild(addGroupBtn)
+
+  for (const i in options) {
+    const btn = document.createElement('button')
+    btn.innerHTML = options[i][0]
+    btn.addEventListener('click', function () {
+      this.blur()
+      addLicenseOptionsToResult(options[i][0], options[i][1], i)
+    })
+    optionsEl.appendChild(btn)
+  }
+}
+
+function addLicenseOptionsToResult(option, type, index) {
+  const resultEl = document.querySelector('.licenseOptionsPage .result')
+
+  resultEl.querySelectorAll('label, input').forEach((el) => {
+    el.remove()
+  })
+
+  resultEl.dataset.index = index
+
+  resultEl.querySelector('.submit').disabled = false
+  resultEl.querySelector('.remove').disabled = false
+
+  const optionLabel = document.createElement('label')
+  const typeLabel = document.createElement('label')
+  const optionInput = document.createElement('input')
+  const typeInput = document.createElement('input')
+  optionLabel.setAttribute('for', 'optionInput')
+  typeLabel.setAttribute('for', 'typeInput')
+  optionInput.id = 'optionInput'
+  typeInput.id = 'typeInput'
+  optionLabel.innerHTML = 'Name'
+  typeLabel.innerHTML = 'Type [citation] or [arrest]'
+  optionInput.value = option
+  typeInput.value = type
+  resultEl.appendChild(optionLabel)
+  resultEl.appendChild(optionInput)
+  resultEl.appendChild(typeLabel)
+  resultEl.appendChild(typeInput)
+}
+
+async function submitLicenseResults() {
+  const licenseOptions = await (await fetch('/data/licenseOptions')).json()
+
+  const resultEl = document.querySelector('.licenseOptionsPage .result')
+
+  const name = resultEl.querySelector('#optionInput').value
+  const type = resultEl.querySelector('#typeInput').value
+
+  if (!name || !type || (type != 'citation' && type != 'arrest')) {
+    return alert('Please enter valid values')
+  }
+
+  licenseOptions.splice(parseInt(resultEl.dataset.index), 1)
+  licenseOptions.push([name, type])
+
+  await fetch('/post/updateLicenseOptions', {
+    method: 'POST',
+    body: JSON.stringify(licenseOptions),
+  })
+  location.reload()
+}
+
+async function removeLicenseOption() {
+  const licenseOptions = await (await fetch('/data/licenseOptions')).json()
+  const resultEl = document.querySelector('.licenseOptionsPage .result')
+
+  licenseOptions.splice(parseInt(resultEl.dataset.index), 1)
+
+  await fetch('/post/updateLicenseOptions', {
+    method: 'POST',
+    body: JSON.stringify(licenseOptions),
+  })
+  location.reload()
+}
+
+async function addLicenseOption(name) {
+  const licenseOptions = await (await fetch('/data/licenseOptions')).json()
+  const type = 'citation'
+
+  licenseOptions.push([name, type])
+
+  await fetch('/post/updateLicenseOptions', {
+    method: 'POST',
+    body: JSON.stringify(licenseOptions),
   })
   location.reload()
 }

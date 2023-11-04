@@ -65,7 +65,8 @@ body input {
 
 .citationOptionsPage,
 .arrestOptionsPage,
-.configPage {
+.configPage,
+.licenseOptionsPage {
   width: 100%;
   height: calc(100% - var(--header-height));
   background-color: var(--background-color);
@@ -79,6 +80,7 @@ body input {
 
 .citationOptionsPage .options,
 .arrestOptionsPage .options,
+.licenseOptionsPage .options,
 .configPage .options {
   font-size: 20px;
   font-weight: 600;
@@ -105,6 +107,7 @@ body input {
 
 .citationOptionsPage .options details button,
 .arrestOptionsPage .options details button,
+.licenseOptionsPage .options button,
 .configPage .options button {
   font-size: 16px;
   font-weight: 400;
@@ -123,8 +126,10 @@ body input {
 
 .citationOptionsPage .options details button:focus,
 .arrestOptionsPage .options details button:focus,
+.licenseOptionsPage .options button:focus,
 .citationOptionsPage .options details button:hover,
 .arrestOptionsPage .options details button:hover,
+.licenseOptionsPage .options button:hover,
 .configPage .options button:hover,
 .configPage .options button:focus {
   background-color: var(--second-accent-color-half);
@@ -132,12 +137,14 @@ body input {
 
 .citationOptionsPage .result,
 .arrestOptionsPage .result,
+.licenseOptionsPage .result,
 .configPage .result {
   border: 2px solid var(--second-accent-color-half);
   height: calc(100% - 40px);
 }
 
 .citationOptionsPage .result .title,
+.licenseOptionsPage .result .title,
 .arrestOptionsPage .result .title {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -146,6 +153,7 @@ body input {
 
 .citationOptionsPage .result button,
 .arrestOptionsPage .result button,
+.licenseOptionsPage .result button,
 .configPage .result button {
   font-size: 16px;
   font-weight: 400;
@@ -167,6 +175,7 @@ body input {
 }
 
 .citationOptionsPage .remove,
+.licenseOptionsPage .remove,
 .arrestOptionsPage .remove {
   /* ? tf why would I need that important thing */
   border-color: var(--warning-color) !important;
@@ -174,6 +183,7 @@ body input {
 
 .citationOptionsPage .result button:disabled,
 .arrestOptionsPage .result button:disabled,
+.licenseOptionsPage .result button:disabled,
 .configPage .result button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
@@ -181,8 +191,10 @@ body input {
 
 .citationOptionsPage .result .submit:not(:disabled):hover,
 .arrestOptionsPage .result .submit:not(:disabled):hover,
+.licenseOptionsPage .result .submit:not(:disabled):hover,
 .citationOptionsPage .result .submit:not(:disabled):focus,
 .arrestOptionsPage .result .submit:not(:disabled):focus,
+.licenseOptionsPage .result .submit:not(:disabled):focus,
 .configPage .result button:not(:disabled):hover,
 .configPage .result button:not(:disabled):focus {
   background-color: var(--second-accent-color-half);
@@ -190,13 +202,16 @@ body input {
 
 .citationOptionsPage .remove:not(:disabled):hover,
 .arrestOptionsPage .remove:not(:disabled):hover,
+.licenseOptionsPage .remove:not(:disabled):hover,
 .citationOptionsPage .remove:not(:disabled):focus,
+.licenseOptionsPage .remove:not(:disabled):focus,
 .arrestOptionsPage .remove:not(:disabled):focus {
   background-color: var(--warning-color-half);
 }
 
 .citationOptionsPage .result label,
 .arrestOptionsPage .result label,
+.licenseOptionsPage .result label,
 .configPage .result label {
   font-size: 20px;
   font-weight: 600;
@@ -206,6 +221,7 @@ body input {
 
 .citationOptionsPage .result input,
 .arrestOptionsPage .result input,
+.licenseOptionsPage .result input,
 .configPage .result input {
   height: auto;
   width: calc(100% - 10px - 4px - 10px);
@@ -250,6 +266,10 @@ body input {
   font-weight: 400;
   font-family: monospace;
   margin: 2px;
+}
+
+.licenseOptionsPage .options .addGroupBtn {
+  margin-bottom: 20px;
 }
 
 /* overwrite */

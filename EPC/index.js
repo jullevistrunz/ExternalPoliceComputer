@@ -103,6 +103,10 @@ const server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/json' })
       res.write(fs.readFileSync('config.json'))
       res.end()
+    } else if (dataPath == 'licenseOptions') {
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(fs.readFileSync('licenseOptions.json'))
+      res.end()
     } else {
       res.writeHead(404)
       res.end()
@@ -207,6 +211,11 @@ const server = http.createServer(function (req, res) {
       } else if (dataPath == 'updateConfig') {
         body = JSON.parse(body)
         fs.writeFileSync('config.json', JSON.stringify(body, null, 2))
+        res.writeHead(200)
+        res.end()
+      } else if (dataPath == 'updateLicenseOptions') {
+        body = JSON.parse(body)
+        fs.writeFileSync('licenseOptions.json', JSON.stringify(body, null, 2))
         res.writeHead(200)
         res.end()
       } else {
