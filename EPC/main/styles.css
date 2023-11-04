@@ -732,6 +732,19 @@ input {
   background-color: var(--warning-color-half);
 }
 
+.overlay .customizationLink {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  color: var(--second-accent-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 2px;
+  pointer-events: all;
+  background-color: var(--background-color);
+}
+
 /* overwrite */
 .hidden {
   display: none;

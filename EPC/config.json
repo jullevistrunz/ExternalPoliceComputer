@@ -12,5 +12,6 @@
   "citationChance": 0.4,
   "additionalCitationChance": 0.4,
   "probationChance": 0.25,
-  "paroleChance": 0.25
+  "paroleChance": 0.25,
+  "showCustomizationLink": true
 }

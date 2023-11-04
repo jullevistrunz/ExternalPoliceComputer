@@ -111,6 +111,8 @@ setInterval(() => {
 
 //funcs
 async function goToPage(name) {
+  const config = await await (await fetch('/data/config')).json()
+
   document.querySelectorAll('.content > *').forEach((page) => {
     page.classList.add('hidden')
   })
@@ -120,6 +122,16 @@ async function goToPage(name) {
   document.querySelector(`.content .${name}Page`).classList.remove('hidden')
   document.querySelector(`.header .${name}`).classList.add('selected')
   localStorage.setItem('lastPage', name)
+
+  if (!config.showCustomizationLink || name == 'map') {
+    document
+      .querySelector('.overlay .customizationLink')
+      .classList.add('hidden')
+  } else {
+    document
+      .querySelector('.overlay .customizationLink')
+      .classList.remove('hidden')
+  }
 
   if (name == 'map') {
     mapScroll = JSON.parse(localStorage.getItem('mapScroll'))
