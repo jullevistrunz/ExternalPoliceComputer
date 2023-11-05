@@ -350,7 +350,7 @@ function generateCars() {
     carPlateArr.push(car.licensePlate)
   }
 
-  for (worldCar of worldCarData) {
+  for (const worldCar of worldCarData) {
     if (carPlateArr.includes(worldCar.licensePlate) || !getRandomPed()) {
       continue
     }
@@ -398,6 +398,7 @@ function generateCars() {
           : insurance,
       stolen: worldCar.isStolen == 'True' ? 'Yes' : 'No',
       plateStatus: plateStatus,
+      color: worldCar.color,
     }
     carData.push(car)
   }
