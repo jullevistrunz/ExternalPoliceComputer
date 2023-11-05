@@ -298,7 +298,12 @@ async function renderCarSearch() {
     car.licensePlate
 
   lc.appendChild(createLabelElement('Model', car.model))
-  lc.appendChild(createLabelElement('Color', car.color))
+  lc.appendChild(
+    createLabelElement(
+      'Color',
+      `<div style="background-color: #${car.color}; width: 150px; height: 25px;  border: 2px solid var(--main-color)"></div>`
+    )
+  )
   lc.appendChild(
     createLabelElement(
       'Registration',
