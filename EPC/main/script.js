@@ -301,7 +301,11 @@ async function renderCarSearch() {
   lc.appendChild(
     createLabelElement(
       'Color',
-      `<div style="background-color: #${car.color}; width: 150px; height: 25px;  border: 2px solid var(--main-color)"></div>`
+      `<div style="background-color: rgb(${car.color.split('-')[0]},${
+        car.color.split('-')[1]
+      },${
+        car.color.split('-')[2]
+      }); width: 150px; height: 25px;  border: 2px solid var(--main-color)"></div>`
     )
   )
   lc.appendChild(
