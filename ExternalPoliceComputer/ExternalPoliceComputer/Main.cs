@@ -25,8 +25,7 @@ namespace ExternalPoliceComputer {
                 LSPD_First_Response.Mod.API.Events.OnPulloverStarted += Events_OnPulloverStarted;
                 LSPD_First_Response.Mod.API.Events.OnPursuitEnded += Events_OnPursuitEnded;
 
-                GameFiber intervalFiber = new GameFiber(Interval);
-                intervalFiber.Start();
+                GameFiber IntervalFiber = GameFiber.StartNew(Interval);
 
                 try {
                     AddEventsWithSTP();
