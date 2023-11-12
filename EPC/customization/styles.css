@@ -272,6 +272,29 @@ body input {
   margin-bottom: 20px;
 }
 
+.overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.overlay .EPCLink {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  color: var(--second-accent-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 2px;
+  pointer-events: all;
+  background-color: var(--background-color);
+}
+
 /* overwrite */
 .hidden {
   display: none;

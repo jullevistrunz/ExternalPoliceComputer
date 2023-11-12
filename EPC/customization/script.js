@@ -420,6 +420,7 @@ async function loadConfigPage() {
   const docsLink = document.createElement('a')
   docsLink.href =
     'https://github.com/jullevistrunz/ExternalPoliceComputer#config'
+  docsLink.target = '_blank'
   docsLink.innerHTML = 'Documentation'
   docsLink.id = 'docsLink'
   optionsEl.appendChild(docsLink)
