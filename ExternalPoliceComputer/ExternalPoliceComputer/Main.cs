@@ -146,7 +146,7 @@ namespace ExternalPoliceComputer {
         }
 
         
-        public static string getRegistration(Vehicle car) {
+        public static string GetRegistration(Vehicle car) {
             switch (StopThePed.API.Functions.getVehicleRegistrationStatus(car)) {
                 case STPVehicleStatus.Expired:
                     return "Expired";
@@ -164,7 +164,7 @@ namespace ExternalPoliceComputer {
                     return "Expired";
                 case STPVehicleStatus.None:
                     return "None";
-                case StopThePed.API.STPVehicleStatus.Valid:
+                case STPVehicleStatus.Valid:
                     return "Valid";
             }
             return "";
@@ -177,11 +177,13 @@ namespace ExternalPoliceComputer {
             foreach (Vehicle car in allCars) {
                 if (car.Exists()) {
                     string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
-                    carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&registration={getRegistration(car)}&insurance={GetInsurance(car)}&color={car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
+                    carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&registration={GetRegistration(car)}&insurance={GetInsurance(car)}&color={car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
                 }
             }
 
             File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
+
+            Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
         }
 
         public static void UpdateWorldCars() {
@@ -201,9 +203,9 @@ namespace ExternalPoliceComputer {
                 }
 
                 File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
+
+                Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data (without STP)");
             }
-            
-            Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
         }
 
         public static void UpdateCurrentID(Ped ped) {
