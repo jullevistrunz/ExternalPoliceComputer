@@ -257,6 +257,21 @@ async function renderPedSearch() {
         : ped.parole
     )
   )
+  const cautions = []
+
+  if (ped.relationshipGroup.toLowerCase().includes('gang')) {
+    cautions.push('Gang Affiliation')
+  }
+
+  if (cautions.length) {
+    for (const i in cautions) {
+      cautions[
+        i
+      ] = `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
+    }
+
+    lc.appendChild(createLabelElement('Caution', cautions.join('<br>')))
+  }
 
   const citations = ped.citations.length ? ped.citations : ['None']
   for (let i in citations) {
