@@ -4,11 +4,16 @@ using System.IO;
 using System;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using StopThePed.API;
+using System.Drawing;
 
 namespace ExternalPoliceComputer {
     public class Main : Plugin {
 
-        internal static bool CurrentlyOnDuty;
+        private static bool CurrentlyOnDuty;
+        private static readonly int MaxNumberOfNearbyPedsOrVehicles = 10;
+        private static readonly Ped Player = Game.LocalPlayer.Character;
+        private static readonly string DataPath = "EPC/data";
+        private static bool UseSTP = true;
 
         public override void Initialize() {
             LSPD_First_Response.Mod.API.Functions.OnOnDutyStateChanged += Functions_OnOnDutyStateChanged;
@@ -27,6 +32,7 @@ namespace ExternalPoliceComputer {
 
                 GameFiber IntervalFiber = GameFiber.StartNew(Interval);
 
+
                 try {
                     AddEventsWithSTP();
 
@@ -35,15 +41,19 @@ namespace ExternalPoliceComputer {
 
                     Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
                 } catch {
+                    UseSTP = false;
+                    Game.LogTrivial("ExternalPoliceComputer: STP isn't accessible.");
+
                     LSPD_First_Response.Mod.API.Events.OnPedPresentedId += Events_OnPedPresentedId;
                     LSPD_First_Response.Mod.API.Events.OnPedArrested += Events_OnPedArrested;
                     LSPD_First_Response.Mod.API.Events.OnPedFrisked += Events_OnPedFrisked;
                     LSPD_First_Response.Mod.API.Events.OnPedStopped += Events_OnPedStopped;
 
+
                     UpdateWorldPeds();
                     UpdateWorldCars();
 
-                    Game.DisplayNotification("ExternalPoliceComputer has been loaded (without StopThePed).");
+                    Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
                 }
             }
         }
@@ -57,6 +67,13 @@ namespace ExternalPoliceComputer {
             StopThePed.API.Events.stopPedEvent += Events_stopPedEvent;
         }
 
+        private static void Interval() {
+            while (CurrentlyOnDuty) {
+                UpdateWorldPeds();
+                UpdateWorldCars();
+                GameFiber.Wait(30000);
+            }
+        }
 
         // STP
         private static void Events_askIdEvent(Ped ped) {
@@ -127,26 +144,8 @@ namespace ExternalPoliceComputer {
         }
 
         // world data
-        public static void UpdateWorldPeds() {
-            Game.LogTrivial("ExternalPoliceComputer: Update worldPeds.data");
-            Ped[] allPeds = World.GetAllPeds();
-            string[] persList = new string[allPeds.Length];
-
-            foreach (Ped ped in allPeds) {
-                if (ped.Exists()) {
-                    Persona persona = LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(ped);
-                    string birthday = $"{persona.Birthday.Month}/{persona.Birthday.Day}/{persona.Birthday.Year}";
-                    persList[Array.IndexOf(allPeds, ped)] = $"name={persona.FullName}&birthday={birthday}&gender={persona.Gender}&isWanted={persona.Wanted}&licenseStatus={persona.ELicenseState}&relationshipGroup={ped.RelationshipGroup.Name}";
-                }
-            }
-
-            File.WriteAllText("EPC/data/worldPeds.data", string.Join(",", persList));
-
-            Game.LogTrivial("ExternalPoliceComputer: Updated worldPeds.data");
-        }
-
-        
-        public static string GetRegistration(Vehicle car) {
+        // STP
+        private static string GetRegistration(Vehicle car) {
             switch (StopThePed.API.Functions.getVehicleRegistrationStatus(car)) {
                 case STPVehicleStatus.Expired:
                     return "Expired";
@@ -158,7 +157,7 @@ namespace ExternalPoliceComputer {
             return "";
         }
 
-        public static string GetInsurance(Vehicle car) {
+        private static string GetInsurance(Vehicle car) {
             switch (StopThePed.API.Functions.getVehicleInsuranceStatus(car)) {
                 case STPVehicleStatus.Expired:
                     return "Expired";
@@ -170,45 +169,61 @@ namespace ExternalPoliceComputer {
             return "";
         }
 
-        private static void UpdateWorldCarsWithSTP() {
-            Vehicle[] allCars = World.GetAllVehicles();
-            string[] carsList = new string[allCars.Length];
+        // get world data
+        private static string GetWorldPedData(Ped ped) {
+            Persona persona = LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(ped);
+            string birthday = $"{persona.Birthday.Month}/{persona.Birthday.Day}/{persona.Birthday.Year}";
+            return $"name={persona.FullName}&birthday={birthday}&gender={persona.Gender}&isWanted={persona.Wanted}&licenseStatus={persona.ELicenseState}&relationshipGroup={ped.RelationshipGroup.Name}";
+        }
 
-            foreach (Vehicle car in allCars) {
-                if (car.Exists()) {
-                    string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
-                    carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&registration={GetRegistration(car)}&insurance={GetInsurance(car)}&color={car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
+        private static string GetWorldCarData(Vehicle car) {
+            if (UseSTP) {
+                string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
+                return $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&registration={GetRegistration(car)}&insurance={GetInsurance(car)}&color={car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
+            } else {
+                string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
+                return $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&color={car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
+            }
+        }
+
+
+        // update world data
+        private static void UpdateWorldPeds() {
+            Game.LogTrivial("ExternalPoliceComputer: Update worldPeds.data");
+            Ped[] allPeds = Player.GetNearbyPeds(MaxNumberOfNearbyPedsOrVehicles);
+            string[] persList = new string[allPeds.Length];
+
+            for (int i = 0; i < allPeds.Length; i++) {
+                Ped ped = allPeds[i];
+                if (ped.Exists()) {
+                    persList[Array.IndexOf(allPeds, ped)] = GetWorldPedData(ped);
                 }
             }
 
-            File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
+            File.WriteAllText($"{DataPath}/worldPeds.data", string.Join(",", persList));
 
-            Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
+            Game.LogTrivial("ExternalPoliceComputer: Updated worldPeds.data");
         }
 
-        public static void UpdateWorldCars() {
+
+        private static void UpdateWorldCars() {
             Game.LogTrivial("ExternalPoliceComputer: Update worldCars.data");
 
-            try {
-                UpdateWorldCarsWithSTP();
-            } catch {
-                Vehicle[] allCars = World.GetAllVehicles();
-                string[] carsList = new string[allCars.Length];
+            Vehicle[] allCars = Player.GetNearbyVehicles(MaxNumberOfNearbyPedsOrVehicles);
+            string[] carsList = new string[allCars.Length];
 
-                foreach (Vehicle car in allCars) {
-                    if (car.Exists()) {
-                        string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
-                        carsList[Array.IndexOf(allCars, car)] = $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&color={car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
-                    }
+            for (int i = 0; i < allCars.Length; i++) {
+                Vehicle car = allCars[i];
+                if (car.Exists()) {
+                    carsList[Array.IndexOf(allCars, car)] = GetWorldCarData(car);
                 }
-
-                File.WriteAllText("EPC/data/worldCars.data", string.Join(",", carsList));
-
-                Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data (without STP)");
             }
+            File.WriteAllText($"{DataPath}/worldCars.data", string.Join(",", carsList));
+            Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
+            
         }
 
-        public static void UpdateCurrentID(Ped ped) {
+        private static void UpdateCurrentID(Ped ped) {
             Game.LogTrivial("ExternalPoliceComputer: Update currentID.data");
 
             int index = 0;
@@ -216,7 +231,7 @@ namespace ExternalPoliceComputer {
                 index = ped.SeatIndex + 2;
             }
 
-            string oldFile = File.ReadAllText("EPC/data/currentID.data");
+            string oldFile = File.ReadAllText($"{DataPath}/currentID.data");
 
             string[] oldIDs = oldFile.Split(';');
 
@@ -231,16 +246,30 @@ namespace ExternalPoliceComputer {
                 }
             }
 
-            File.WriteAllText("EPC/data/currentID.data", File.ReadAllText("EPC/data/currentID.data") + data);
+            File.WriteAllText($"{DataPath}/currentID.data", File.ReadAllText("EPC/data/currentID.data") + data);
 
             Game.LogTrivial("ExternalPoliceComputer: Updated currentID.data");
         }
 
-        private static void Interval() {
-            while (CurrentlyOnDuty) {
-                UpdateWorldPeds();
-                UpdateWorldCars();
-                GameFiber.Wait(30000);
+        
+        // ! implement this shit VV
+        private static void AddWorldPed(Ped ped) {
+            if (ped.Exists()) {
+                string data = GetWorldPedData(ped);
+                string oldFile = File.ReadAllText($"{DataPath}/worldPeds.data");
+                string addComma = oldFile.Length > 0 ? "," : "";
+
+                File.WriteAllText($"{DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
+            } 
+        }
+
+        private static void AddWorldCar(Vehicle car) {
+            if (car.Exists()) {
+                string data = GetWorldCarData(car);
+                string oldFile = File.ReadAllText($"{DataPath}/worldCars.data");
+                string addComma = oldFile.Length > 0 ? "," : "";
+
+                File.WriteAllText($"{DataPath}/worldCars.data", $"{oldFile}{addComma}{data}");
             }
         }
     }
