@@ -227,7 +227,7 @@ namespace ExternalPoliceComputer {
 
             string data = $"{persona.FullName},{birthday},{persona.Gender},{index};";
 
-            File.WriteAllText($"{DataPath}/currentID.data", File.ReadAllText("EPC/data/currentID.data") + data);
+            File.WriteAllText($"{DataPath}/currentID.data", File.ReadAllText($"{DataPath}/currentID.data") + data);
 
             Game.LogTrivial("ExternalPoliceComputer: Updated currentID.data");
         }
