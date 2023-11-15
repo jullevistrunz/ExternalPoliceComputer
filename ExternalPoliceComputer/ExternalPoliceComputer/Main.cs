@@ -9,7 +9,7 @@ namespace ExternalPoliceComputer {
     public class Main : Plugin {
 
         private static bool CurrentlyOnDuty;
-        private static readonly int MaxNumberOfNearbyPedsOrVehicles = 16;
+        private static readonly int MaxNumberOfNearbyPedsOrVehicles = 10;
         private static readonly Ped Player = Game.LocalPlayer.Character;
         private static readonly string DataPath = "EPC/data";
         private static bool UseSTP = true;
@@ -68,7 +68,7 @@ namespace ExternalPoliceComputer {
             while (CurrentlyOnDuty) {
                 UpdateWorldPeds();
                 UpdateWorldCars();
-                GameFiber.Wait(30000);
+                GameFiber.Wait(15000);
             }
         }
 
