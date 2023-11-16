@@ -516,6 +516,16 @@ function generateDirectory() {
       fs.writeFileSync(`data/${key}`, value)
     }
   })
+
+  //img
+  const imgDefaultsDir = fs.readdirSync('imgDefaults')
+  for (const img of imgDefaultsDir) {
+    try {
+      fs.readFileSync(`img/${img}`)
+    } catch {
+      fs.writeFileSync(`img/${img}`, fs.readFileSync(`imgDefaults/${img}`))
+    }
+  }
 }
 
 function getCleanRandomArrest(allCharges) {
