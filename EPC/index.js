@@ -517,8 +517,12 @@ function generateDirectory() {
     }
   })
 
-  //img
   const imgDefaultsDir = fs.readdirSync('imgDefaults')
+  try {
+    fs.readdirSync('img')
+  } catch {
+    fs.mkdirSync('img')
+  }
   for (const img of imgDefaultsDir) {
     try {
       fs.readFileSync(`img/${img}`)
