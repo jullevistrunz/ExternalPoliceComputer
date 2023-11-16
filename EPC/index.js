@@ -3,6 +3,7 @@ const fs = require('fs')
 const url = require('url')
 const os = require('os')
 const port = 80
+const version = '1.3.3'
 
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
@@ -20,8 +21,31 @@ clearGeneratedData()
 
 const config = JSON.parse(fs.readFileSync('config.json'))
 
+// log
+const initialDate = new Date()
+const logName = `EPC_${initialDate.getUTCFullYear()}${
+  initialDate.getUTCMonth() + 1
+}${initialDate.getUTCDate()}_${initialDate.getUTCHours()}${initialDate.getUTCMinutes()}${initialDate.getUTCSeconds()}_${initialDate.getUTCMilliseconds()}`
+try {
+  fs.readdirSync('logs')
+} catch {
+  fs.mkdirSync('logs')
+}
+fs.writeFileSync(`logs/${logName}.log`, '')
+createLog('EPC server log initialized')
+createLog(`Version: ${version}`)
+function createLog(message) {
+  fs.writeFileSync(
+    `logs/${logName}.log`,
+    `${fs.readFileSync(
+      `logs/${logName}.log`
+    )}[${new Date().toISOString()}] ${message}\n`
+  )
+}
+
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
+  createLog(`Incoming request at ${path}`)
   if (path == '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(fs.readFileSync('main/index.html'))
@@ -116,6 +140,7 @@ const server = http.createServer(function (req, res) {
     let body = ''
     req.on('data', (chunk) => {
       body += chunk.toString()
+      createLog(`Payload: ${body}`)
     })
     req.on('end', () => {
       if (dataPath == 'addCitations') {
@@ -227,10 +252,12 @@ const server = http.createServer(function (req, res) {
     res.writeHead(404)
     res.end()
   }
+  createLog(`Responded with status code ${res.statusCode}`)
 })
 server.listen(port, function (error) {
   if (error) {
     console.error('Something went wrong' + error)
+    createLog('Server failed to start')
   } else {
     const nets = os.networkInterfaces()
     let result = ''
@@ -251,6 +278,7 @@ server.listen(port, function (error) {
     console.info(
       `For usage on another device go to http://${os.hostname()}:${port} or http://${result}:${port}`
     )
+    createLog('Server started successfully')
   }
 })
 
