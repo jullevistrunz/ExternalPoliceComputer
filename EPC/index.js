@@ -5,6 +5,11 @@ const os = require('os')
 const port = 80
 const version = '1.3.3'
 
+process.on('uncaughtException', function (err) {
+  console.error(err)
+  createLog(err.stack)
+})
+
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
   ['worldCars.data', ''],
@@ -32,14 +37,18 @@ try {
   fs.mkdirSync('logs')
 }
 fs.writeFileSync(`logs/${logName}.log`, '')
+fs.writeFileSync('logs/EPC_latest.log', '')
 createLog('EPC server log initialized')
 createLog(`Version: ${version}`)
 function createLog(message) {
+  const content = `[${new Date().toISOString()}] ${message}\n`
   fs.writeFileSync(
     `logs/${logName}.log`,
-    `${fs.readFileSync(
-      `logs/${logName}.log`
-    )}[${new Date().toISOString()}] ${message}\n`
+    `${fs.readFileSync(`logs/${logName}.log`)}${content}`
+  )
+  fs.writeFileSync(
+    'logs/EPC_latest.log',
+    `${fs.readFileSync('logs/EPC_latest.log')}${content}`
   )
 }
 
@@ -254,32 +263,27 @@ const server = http.createServer(function (req, res) {
   }
   createLog(`Responded with status code ${res.statusCode}`)
 })
-server.listen(port, function (error) {
-  if (error) {
-    console.error('Something went wrong' + error)
-    createLog('Server failed to start')
-  } else {
-    const nets = os.networkInterfaces()
-    let result = ''
-    for (const name of Object.keys(nets)) {
-      for (const net of nets[name]) {
-        const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
-        if (net.family === familyV4Value && !net.internal) {
-          result = net.address
-        }
+server.listen(port, function () {
+  const nets = os.networkInterfaces()
+  let result = ''
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+      if (net.family === familyV4Value && !net.internal) {
+        result = net.address
       }
     }
-    console.info(
-      'The Node.js server has started. You can minimize this window now and start your game.'
-    )
-    console.info(
-      `For usage on the same device go to http://localhost:${port} or http://127.0.0.1:${port}`
-    )
-    console.info(
-      `For usage on another device go to http://${os.hostname()}:${port} or http://${result}:${port}`
-    )
-    createLog('Server started successfully')
   }
+  console.info(
+    'The Node.js server has started. You can minimize this window now and start your game.'
+  )
+  console.info(
+    `For usage on the same device go to http://localhost:${port} or http://127.0.0.1:${port}`
+  )
+  console.info(
+    `For usage on another device go to http://${os.hostname()}:${port} or http://${result}:${port}`
+  )
+  createLog('Server started successfully')
 })
 
 //funcs
