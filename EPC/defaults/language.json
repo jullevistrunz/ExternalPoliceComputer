@@ -1,0 +1,153 @@
+{
+  "header": {
+    "map": "Map",
+    "alphabet": "Phonetic Alphabet",
+    "searchPed": "Peds",
+    "searchCar": "Vehicles",
+    "court": "Court",
+    "shift": "Shift"
+  },
+  "content": {
+    "fine": "Fine",
+    "jail": "Jail",
+    "currency": "$",
+    "year": "yr.",
+    "month": "mth.",
+    "values": {
+      "male": "Male",
+      "female": "Female",
+      "valid": "Valid",
+      "expired": "Expired",
+      "none": "None",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "alphabetPage": {
+      "lawEnforcement": {
+        "name": "Law Enforcement",
+        "list": [
+          "Adam",
+          "Boy",
+          "Charles",
+          "David",
+          "Edward",
+          "Frank",
+          "George",
+          "Henry",
+          "Ida",
+          "John",
+          "King",
+          "Lincoln",
+          "Mary",
+          "Nora",
+          "Ocean",
+          "Paul",
+          "Queen",
+          "Robert",
+          "Sam",
+          "Tom",
+          "Union",
+          "Victor",
+          "William",
+          "Xray",
+          "Young",
+          "Zebra"
+        ]
+      },
+      "military": {
+        "name": "Military",
+        "list": [
+          "Alpha",
+          "Bravo",
+          "Charlie",
+          "Delta",
+          "Echo",
+          "Foxtrot",
+          "Golf",
+          "Hotel",
+          "India",
+          "Juliette",
+          "Kilo",
+          "Lima",
+          "Mike",
+          "November",
+          "Oscar",
+          "Papa",
+          "Quebec",
+          "Romeo",
+          "Sierra",
+          "Tango",
+          "Uniform",
+          "Victor",
+          "Whisky",
+          "Xray",
+          "Zulu"
+        ]
+      }
+    },
+    "searchPedPage": {
+      "citations": "Citations",
+      "arrests": "Arrests",
+      "inpContainer": {
+        "input": "Search Ped By Name",
+        "button": "Search"
+      },
+      "resultContainer": {
+        "dateOfBirth": "Date Of Birth",
+        "gender": "Sex",
+        "licenseStatus": "License Status",
+        "warrant": "Outstanding Warrant",
+        "probation": "Probation",
+        "parole": "Parole",
+        "caution": "Caution"
+      },
+      "report": {
+        "submit": "Submit",
+        "close": "Close",
+        "description": "Description"
+      }
+    },
+    "searchCarPage": {
+      "inpContainer": {
+        "input": "Search Vehicle By License Plate",
+        "button": "Search"
+      },
+      "resultContainer": {
+        "model": "Model",
+        "color": "Color",
+        "registration": "Registration",
+        "insurance": "Insurance",
+        "stolen": "Stolen",
+        "owner": "Owner"
+      }
+    },
+    "courtPage": {
+      "inpContainer": {
+        "input": "Search Case By Defendant's Name",
+        "button": "Search"
+      },
+      "resultContainer": {
+        "caseNumber": "Case Number",
+        "defendant": "Defendant",
+        "offense": "Offense(s)",
+        "outcome": "Outcome"
+      }
+    },
+    "shiftPage": {
+      "btnContainer": {
+        "startShift": "Start Shift",
+        "stopShift": "Stop Shift"
+      },
+      "offDuty": "Off Duty",
+      "currentShift": "Current Shift",
+      "shifts": "Shifts",
+      "resultContainer": {
+        "start": "Start",
+        "end": "End",
+        "duration": "Duration",
+        "courtCases": "Court Cases",
+        "notes": "Notes"
+      }
+    }
+  }
+}
