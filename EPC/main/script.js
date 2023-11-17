@@ -259,7 +259,10 @@ async function renderPedSearch() {
   )
   const cautions = []
 
-  if (ped.relationshipGroup.toLowerCase().includes('gang')) {
+  if (
+    ped.relationshipGroup &&
+    ped.relationshipGroup.toLowerCase().includes('gang')
+  ) {
     cautions.push('Gang Affiliation')
   }
 
