@@ -136,7 +136,7 @@
     "shiftPage": {
       "btnContainer": {
         "startShift": "Start Shift",
-        "stopShift": "Stop Shift"
+        "stopShift": "End Shift"
       },
       "offDuty": "Off Duty",
       "currentShift": "Current Shift",
