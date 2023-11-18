@@ -1,8 +1,6 @@
 {
   "useStopThePed": true,
   "useLSPDFROwner": false,
-  "wordForJail": "Jail",
-  "currency": "$",
   "showCurrentID": true,
   "autoShowCurrentID": true,
   "warningColorsForPedCarSearch": true,

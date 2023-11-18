@@ -13,6 +13,9 @@
     "currency": "$",
     "year": "yr.",
     "month": "mth.",
+    "lifeInPrison": "Life In Prison",
+    "life": "Life",
+    "grantedProbation": "Granted Probation",
     "values": {
       "male": "Male",
       "female": "Female",
@@ -22,7 +25,8 @@
       "revoked": "Revoked",
       "none": "None",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "unknown": "Unknown"
     },
     "alphabetPage": {
       "lawEnforcement": {
@@ -98,10 +102,15 @@
         "dateOfBirth": "Date Of Birth",
         "gender": "Sex",
         "licenseStatus": "License Status",
+        "for": "For",
         "warrant": "Outstanding Warrant",
         "probation": "Probation",
         "parole": "Parole",
-        "caution": "Caution"
+        "caution": "Caution",
+        "cautions": {
+          "gangAffiliation": "Gang Affiliation"
+        },
+        "pedNotFound": "Ped Not Found"
       },
       "report": {
         "submit": "Submit",
@@ -120,7 +129,8 @@
         "registration": "Registration",
         "insurance": "Insurance",
         "stolen": "Stolen",
-        "owner": "Owner"
+        "owner": "Owner",
+        "vehicleNotFound": "Vehicle Not Found"
       }
     },
     "courtPage": {
@@ -132,7 +142,10 @@
         "caseNumber": "Case Number",
         "defendant": "Defendant",
         "offense": "Offense(s)",
-        "outcome": "Outcome"
+        "outcome": "Outcome",
+        "description": "Description",
+        "courtCaseNotFound": "No Court Cases Found",
+        "courtCaseNotFoundForDefendant": "No Court Cases Found For This Defendant"
       }
     },
     "shiftPage": {
@@ -162,7 +175,12 @@
       "sa": "San Andreas",
       "dl": "Driver License",
       "pedTypes": {
-        "stoppedPed": "Stopped Ped"
+        "stoppedPed": "Stopped Ped",
+        "driver": "Driver",
+        "frontPassenger": "Front Passenger",
+        "rlPassenger": "R-L Passenger",
+        "rrPassenger": "R-R Passenger",
+        "passenger": "Passenger"
       }
     }
   }
