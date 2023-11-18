@@ -4,13 +4,13 @@
   "showCurrentID": true,
   "autoShowCurrentID": true,
   "warningColorsForPedCarSearch": true,
-  "arrestedWithWarrantChance": 0.4,
-  "arrestedWithoutWarrantChance": 0.1,
-  "additionalArrestChance": 0.3,
+  "arrestedWithWarrantChance": 0.2,
+  "arrestedWithoutWarrantChance": 0.05,
+  "additionalArrestChance": 0.1,
   "citationChance": 0.4,
   "additionalCitationChance": 0.4,
   "probationChance": 0.25,
-  "paroleChance": 0.25,
+  "paroleChance": 0.3,
   "showCustomizationLink": true,
   "replaceStaticWithCustomLanguage": true
 }
