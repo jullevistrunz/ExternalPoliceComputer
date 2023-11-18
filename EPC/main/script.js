@@ -1210,7 +1210,6 @@ function disableArrestSubmitButton() {
 
 async function displayCurrentID(autoShowCurrentID, index) {
   const file = await (await fetch('/data/currentID')).text()
-  const language = await (await fetch('/data/language')).json()
 
   document.querySelector('.currentID').dataset.index = index
 
@@ -1218,6 +1217,7 @@ async function displayCurrentID(autoShowCurrentID, index) {
     document.querySelector('.currentID').classList.add('hidden')
     document.querySelector('.showCurrentID-container').classList.add('hidden')
   } else {
+    const language = await (await fetch('/data/language')).json()
     if (!file.split(';')[index]) return displayCurrentID(autoShowCurrentID, 0)
     const el = document.querySelector('.currentID')
     if (el.classList.contains('hidden') && !autoShowCurrentID) {
