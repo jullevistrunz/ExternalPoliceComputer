@@ -1027,7 +1027,9 @@ async function renderShiftPage() {
     currentShiftEl.appendChild(
       createLabelElement(
         langShift.resultContainer.courtCases,
-        data.currentShift.courtCases.length ? courtCases.join('<br>') : 'None'
+        data.currentShift.courtCases.length
+          ? courtCases.join('<br>')
+          : language.content.values.none
       )
     )
     currentShiftEl.appendChild(
@@ -1110,7 +1112,9 @@ async function renderShiftPage() {
     labelContainer.appendChild(
       createLabelElement(
         langShift.resultContainer.courtCases,
-        courtCases.length ? courtCases.join('<br>') : 'None'
+        courtCases.length
+          ? courtCases.join('<br>')
+          : language.content.values.none
       )
     )
     labelContainer.appendChild(
@@ -1121,7 +1125,7 @@ async function renderShiftPage() {
             ? `<div class="shiftNotes">${shift.notes
                 .split('\n')
                 .join('<br>')}</div>`
-            : 'None'
+            : language.content.values.none
         }`
       )
     )
