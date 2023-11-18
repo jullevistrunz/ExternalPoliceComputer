@@ -94,8 +94,9 @@ setInterval(() => {
   updateCurrentShiftDuration()
 }, 1000)
 
-// currentID handler
+// leave space cause prettier sucks (sometimes)
 ;(async function () {
+  // currentID handler
   const config = await (await fetch('/data/config')).json()
   setInterval(() => {
     if (document.visibilityState == 'visible' && config.showCurrentID) {
@@ -107,6 +108,86 @@ setInterval(() => {
       )
     }
   }, 5000)
+
+  // static language replace
+  if (config.replaceStaticWithCustomLanguage) {
+    const language = await (await fetch('/data/language')).json()
+    for (const headerItem of Object.keys(language.header)) {
+      document.querySelector(`.header .${headerItem}`).innerHTML =
+        language.header[headerItem]
+    }
+    document
+      .querySelectorAll('.content .alphabetPage .container .label')
+      .forEach((label, key) => {
+        const langItem =
+          language.content.alphabetPage[
+            Object.keys(language.content.alphabetPage)[key]
+          ]
+        label.querySelector('.name').innerHTML = langItem.name
+        for (const i in langItem.list) {
+          label.querySelectorAll('.item .word')[i].innerHTML = langItem.list[i]
+        }
+      })
+
+    const pagesWithStandardInpContainer = [
+      'searchPedPage',
+      'searchCarPage',
+      'courtPage',
+    ]
+    for (const page of pagesWithStandardInpContainer) {
+      document.querySelector(
+        `.content .${page} .inpContainer input`
+      ).placeholder = language.content[page].inpContainer.input
+      document.querySelector(
+        `.content .${page} .inpContainer button`
+      ).innerHTML = language.content[page].inpContainer.button
+    }
+
+    document.querySelector(
+      '.content .shiftPage .btnContainer .startShift'
+    ).innerHTML = language.content.shiftPage.btnContainer.startShift
+    document.querySelector(
+      '.content .shiftPage .btnContainer .stopShift'
+    ).innerHTML = language.content.shiftPage.btnContainer.stopShift
+    document.querySelector('.content .shiftPage .shiftsTitle').innerHTML =
+      language.content.shiftPage.shifts
+
+    document.querySelector(
+      '.content .searchPedPage .citationReport .result .title > div'
+    ).innerHTML = language.content.searchPedPage.citations
+    document.querySelector(
+      '.content .searchPedPage .arrestReport .result .title > div'
+    ).innerHTML = language.content.searchPedPage.arrests
+    document
+      .querySelectorAll('.content .searchPedPage .result button:not(.close)')
+      .forEach((submitBtn) => {
+        submitBtn.innerHTML = language.content.searchPedPage.report.submit
+      })
+    document
+      .querySelectorAll('.content .searchPedPage .result button.close')
+      .forEach((closeBtn) => {
+        closeBtn.innerHTML = language.content.searchPedPage.report.close
+      })
+    document
+      .querySelectorAll('.content .searchPedPage .result .description')
+      .forEach((descriptionArea) => {
+        descriptionArea.placeholder =
+          language.content.searchPedPage.report.description
+      })
+
+    document.querySelector('.overlay .customizationLink').innerHTML =
+      language.overlay.customizationLink
+    document.querySelector('.overlay .showCurrentID').innerHTML =
+      language.overlay.currentID.show
+    document.querySelector('.overlay .closeCurrentID').innerHTML =
+      language.overlay.currentID.close
+    document.querySelector('.overlay .hideCurrentID').innerHTML =
+      language.overlay.currentID.hide
+    document.querySelector('.overlay .currentID .title .sa').innerHTML =
+      language.overlay.currentID.sa
+    document.querySelector('.overlay .currentID .title .dl').innerHTML =
+      language.overlay.currentID.dl
+  }
 })()
 
 //funcs

@@ -140,6 +140,10 @@ const server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/json' })
       res.write(fs.readFileSync('licenseOptions.json'))
       res.end()
+    } else if (dataPath == 'language') {
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(fs.readFileSync('language.json'))
+      res.end()
     } else {
       res.writeHead(404)
       res.end()

@@ -18,6 +18,8 @@
       "female": "Female",
       "valid": "Valid",
       "expired": "Expired",
+      "suspended": "Suspended",
+      "revoked": "Revoked",
       "none": "None",
       "yes": "Yes",
       "no": "No"
@@ -147,6 +149,20 @@
         "duration": "Duration",
         "courtCases": "Court Cases",
         "notes": "Notes"
+      }
+    }
+  },
+  "overlay": {
+    "customizationLink": "Customize EPC",
+    "currentID": {
+      "show": "Show ID",
+      "close": "Close",
+      "hide": "Hide",
+      "next": "Next",
+      "sa": "San Andreas",
+      "dl": "Driver License",
+      "pedTypes": {
+        "stoppedPed": "Stopped Ped"
       }
     }
   }

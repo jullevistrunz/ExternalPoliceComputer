@@ -13,5 +13,6 @@
   "additionalCitationChance": 0.4,
   "probationChance": 0.25,
   "paroleChance": 0.25,
-  "showCustomizationLink": true
+  "showCustomizationLink": true,
+  "replaceStaticWithCustomLanguage": true
 }
