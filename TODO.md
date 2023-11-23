@@ -4,3 +4,4 @@
 - YourShift implementation [TheGreenCraft]
 - Callout Interface integration ?? [Opus49]
 - give ticket animation
+- improve map [AgentDZN]
