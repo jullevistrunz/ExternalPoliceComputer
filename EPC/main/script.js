@@ -1,12 +1,19 @@
-const mapZoom = 1.5
+;(async function () {
+  const config = await (await fetch('/data/config')).json()
+  const mapZoom = config.defaultMapZoom
+  document.querySelector('.mapPage input').value = mapZoom
 
-document.querySelector('.mapPage input').value = mapZoom
-document.querySelector('.mapPage input').addEventListener('input', function () {
   document
-    .querySelector('.mapPage iframe')
-    .contentDocument.querySelector('img').style.zoom =
-    this.value <= 2.5 && this.value >= 0.2 ? this.value : 1.5
-})
+    .querySelector('.mapPage input')
+    .addEventListener('input', function () {
+      document
+        .querySelector('.mapPage iframe')
+        .contentDocument.querySelector('img').style.zoom =
+        this.value <= 3 && this.value >= 0.1
+          ? this.value
+          : config.defaultMapZoom
+    })
+})()
 
 let lastPage = localStorage.getItem('lastPage')
 if (!lastPage) {
@@ -27,12 +34,15 @@ document.querySelectorAll('.header button').forEach((btn) => {
   })
 })
 
-document.querySelector('.mapPage iframe').addEventListener('load', function () {
-  this.contentWindow.scrollTo(mapScroll.x, mapScroll.y)
-  this.contentDocument.querySelector('img').style.zoom = mapZoom
-  this.contentDocument.head.innerHTML +=
-    '<style>body::-webkit-scrollbar{display:none;}</style>'
-})
+document
+  .querySelector('.mapPage iframe')
+  .addEventListener('load', async function () {
+    const config = await (await fetch('/data/config')).json()
+    this.contentWindow.scrollTo(mapScroll.x, mapScroll.y)
+    this.contentDocument.querySelector('img').style.zoom = config.defaultMapZoom
+    this.contentDocument.head.innerHTML +=
+      '<style>body::-webkit-scrollbar{display:none;}</style>'
+  })
 
 document
   .querySelector('.mapPage iframe')
