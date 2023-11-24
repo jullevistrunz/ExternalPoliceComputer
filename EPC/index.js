@@ -2,7 +2,6 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const port = 80
 const version = '1.3.3'
 
 process.on('uncaughtException', function (err) {
@@ -25,6 +24,7 @@ generateDirectory()
 clearGeneratedData()
 
 const config = JSON.parse(fs.readFileSync('config.json'))
+const port = config.port
 
 // log
 const initialDate = new Date()

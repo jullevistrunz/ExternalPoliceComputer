@@ -12,5 +12,7 @@
   "probationChance": 0.25,
   "paroleChance": 0.3,
   "showCustomizationLink": true,
-  "replaceStaticWithCustomLanguage": true
+  "replaceStaticWithCustomLanguage": true,
+  "port": 80,
+  "defaultMapZoom": 1.5
 }
