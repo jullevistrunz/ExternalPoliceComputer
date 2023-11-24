@@ -12,5 +12,6 @@
   "probationChance": 0.25,
   "paroleChance": 0.3,
   "showCustomizationLink": true,
-  "replaceStaticWithCustomLanguage": false
+  "replaceStaticWithCustomLanguage": false,
+  "port": 80
 }
