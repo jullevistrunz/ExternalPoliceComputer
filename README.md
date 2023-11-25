@@ -22,6 +22,8 @@ A Police Computer Plugin and Server for LSPDFR.
 - `paroleChance`: The probability someone who has a prior arrest is on parole if they are not on probation; value range: `0 - 1`
 - `showCustomizationLink`: If set to `true` a link to the customization page will appear
 - [1.3.3] `replaceStaticWithCustomLanguage`: If set to `true`, EPC will use `EPC/language.json` to replace all static elements; Use this if you have a custom `EPC/language.json`
+- [1.3.3] `port`: The port used by the Node.js http server
+- [1.3.3] `defaultMapZoom`: Map zoom when the page loads
 
 ## Citation and Arrest Options
 
