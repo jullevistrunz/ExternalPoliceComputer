@@ -10,7 +10,7 @@ namespace ExternalPoliceComputer {
 
         private static bool CurrentlyOnDuty;
         private static readonly int MaxNumberOfNearbyPedsOrVehicles = 10;
-        private static readonly Ped Player = Game.LocalPlayer.Character;
+        private static Ped Player => Game.LocalPlayer.Character;
         private static readonly string DataPath = "EPC/data";
         private static bool UseSTP = true;
 
@@ -178,6 +178,10 @@ namespace ExternalPoliceComputer {
         // update world data
         private static void UpdateWorldPeds() {
             Game.LogTrivial("ExternalPoliceComputer: Update worldPeds.data");
+            if (!Player.Exists()) {
+                Game.LogTrivial("ExternalPoliceComputer: Failed to update worldPeds.data; Invalid Player");
+                return;
+            }
             Ped[] allPeds = Player.GetNearbyPeds(MaxNumberOfNearbyPedsOrVehicles);
             string[] persList = new string[allPeds.Length];
 
@@ -195,7 +199,10 @@ namespace ExternalPoliceComputer {
 
         private static void UpdateWorldCars() {
             Game.LogTrivial("ExternalPoliceComputer: Update worldCars.data");
-
+            if (!Player.Exists()) {
+                Game.LogTrivial("ExternalPoliceComputer: Failed to update worldCars.data; Invalid Player");
+                return;
+            }
             Vehicle[] allCars = Player.GetNearbyVehicles(MaxNumberOfNearbyPedsOrVehicles);
             string[] carsList = new string[allCars.Length];
 
