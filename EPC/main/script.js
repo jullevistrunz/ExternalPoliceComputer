@@ -1,5 +1,5 @@
 ;(async function () {
-  const config = await (await fetch('/data/config')).json()
+  const config = await getConfig()
   const mapZoom = config.defaultMapZoom
   document.querySelector('.mapPage input').value = mapZoom
 
@@ -37,7 +37,7 @@ document.querySelectorAll('.header button').forEach((btn) => {
 document
   .querySelector('.mapPage iframe')
   .addEventListener('load', async function () {
-    const config = await (await fetch('/data/config')).json()
+    const config = await getConfig()
     this.contentWindow.scrollTo(mapScroll.x, mapScroll.y)
     this.contentDocument.querySelector('img').style.zoom = config.defaultMapZoom
     this.contentDocument.head.innerHTML +=
@@ -107,7 +107,7 @@ setInterval(() => {
 // leave space cause prettier sucks (sometimes)
 ;(async function () {
   // currentID handler
-  const config = await (await fetch('/data/config')).json()
+  const config = await getConfig()
   setInterval(() => {
     if (document.visibilityState == 'visible' && config.showCurrentID) {
       displayCurrentID(
@@ -121,7 +121,7 @@ setInterval(() => {
 
   // static language replace
   if (config.replaceStaticWithCustomLanguage) {
-    const language = await (await fetch('/data/language')).json()
+    const language = await getLanguage()
     for (const headerItem of Object.keys(language.header)) {
       document.querySelector(`.header .${headerItem}`).innerHTML =
         language.header[headerItem]
@@ -200,9 +200,13 @@ setInterval(() => {
   }
 })()
 
+// clear localStorage's config and language
+localStorage.removeItem('config')
+localStorage.removeItem('language')
+
 //funcs
 async function goToPage(name) {
-  const config = await await (await fetch('/data/config')).json()
+  const config = await getConfig()
 
   document.querySelectorAll('.content > *').forEach((page) => {
     page.classList.add('hidden')
@@ -286,8 +290,8 @@ function createLabelElement(key, value, onClick = null) {
 }
 
 async function renderPedSearch() {
-  const config = await (await fetch('/data/config')).json()
-  const language = await (await fetch('/data/language')).json()
+  const config = await getConfig()
+  const language = await getLanguage()
   const langPed = language.content.searchPedPage
   const langValues = language.content.values
 
@@ -416,8 +420,8 @@ async function renderPedSearch() {
 }
 
 async function renderCarSearch() {
-  const config = await (await fetch('/data/config')).json()
-  const language = await (await fetch('/data/language')).json()
+  const config = await getConfig()
+  const language = await getLanguage()
   const langCar = language.content.searchCarPage
   const langValues = language.content.values
 
@@ -497,7 +501,7 @@ function openPedInSearchPedPage(name) {
 }
 
 async function openCitationReport() {
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
 
   document
     .querySelector('.searchPedPage .citationReport')
@@ -570,7 +574,7 @@ async function openCitationReport() {
 }
 
 async function openArrestReport() {
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
 
   document
     .querySelector('.searchPedPage .arrestReport')
@@ -746,7 +750,7 @@ function closeArrests() {
 }
 
 async function addCitationToCourt(charges, pedName, description) {
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
   const nameList = []
   let fullFine = 0
   for (let charge of charges) {
@@ -779,7 +783,7 @@ async function addCitationToCourt(charges, pedName, description) {
 }
 
 async function addArrestToCourt(charges, pedName, description) {
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
   const nameList = []
   let fullFine = 0
   let fullJailTimeArr = []
@@ -850,7 +854,7 @@ async function renderCourt() {
   const list = document.querySelector('.courtPage .list')
   list.innerHTML = ''
   const court = await (await fetch('/data/court')).json()
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
   const langCourt = language.content.courtPage
 
   court.reverse()
@@ -936,7 +940,7 @@ function sleep(ms) {
 async function findPedInCourt(pedName) {
   if (!pedName) return renderCourt()
   await renderCourt()
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
 
   const courtContainers = document.querySelectorAll(
     '.courtPage .list .container'
@@ -1002,7 +1006,7 @@ async function renderShiftPage() {
   currentShiftEl.innerHTML = ''
 
   const data = await (await fetch('/data/shift')).json()
-  const language = await (await fetch('/data/language')).json()
+  const language = await getLanguage()
   const langShift = language.content.shiftPage
 
   document.querySelector('.shiftPage .startShift').disabled =
@@ -1227,7 +1231,7 @@ async function displayCurrentID(autoShowCurrentID, index) {
     document.querySelector('.currentID').classList.add('hidden')
     document.querySelector('.showCurrentID-container').classList.add('hidden')
   } else {
-    const language = await (await fetch('/data/language')).json()
+    const language = await getLanguage()
     if (!file.split(';')[index]) return displayCurrentID(autoShowCurrentID, 0)
     const el = document.querySelector('.currentID')
     if (el.classList.contains('hidden') && !autoShowCurrentID) {
@@ -1323,4 +1327,22 @@ function tryLanguageValue(value, langValues) {
   return langValues[value.toLowerCase()]
     ? langValues[value.toLowerCase()]
     : value
+}
+
+async function getConfig() {
+  if (localStorage.getItem('config')) {
+    return JSON.parse(localStorage.getItem('config'))
+  }
+  const config = await (await fetch('/data/config')).json()
+  localStorage.setItem('config', JSON.stringify(config))
+  return config
+}
+
+async function getLanguage() {
+  if (localStorage.getItem('language')) {
+    return JSON.parse(localStorage.getItem('language'))
+  }
+  const language = await (await fetch('/data/language')).json()
+  localStorage.setItem('language', JSON.stringify(language))
+  return language
 }
