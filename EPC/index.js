@@ -27,29 +27,14 @@ const config = JSON.parse(fs.readFileSync('config.json'))
 const port = config.port
 
 // log
-const initialDate = new Date()
-const logName = `EPC_${initialDate.getUTCFullYear()}${
-  initialDate.getUTCMonth() + 1
-}${initialDate.getUTCDate()}_${initialDate.getUTCHours()}${initialDate.getUTCMinutes()}${initialDate.getUTCSeconds()}_${initialDate.getUTCMilliseconds()}`
-try {
-  fs.readdirSync('logs')
-} catch {
-  fs.mkdirSync('logs')
-}
-fs.writeFileSync(`logs/${logName}.log`, '')
-fs.writeFileSync('logs/EPC_latest.log', '')
+fs.writeFileSync('EPC.log', '')
 createLog('EPC server log initialized')
 createLog(`Version: ${version}`)
+createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
+createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
 function createLog(message) {
   const content = `[${new Date().toISOString()}] ${message}\n`
-  fs.writeFileSync(
-    `logs/${logName}.log`,
-    `${fs.readFileSync(`logs/${logName}.log`)}${content}`
-  )
-  fs.writeFileSync(
-    'logs/EPC_latest.log',
-    `${fs.readFileSync('logs/EPC_latest.log')}${content}`
-  )
+  fs.writeFileSync('EPC.log', `${fs.readFileSync('EPC.log')}${content}`)
 }
 
 const server = http.createServer(function (req, res) {
@@ -287,7 +272,7 @@ server.listen(port, function () {
   console.info(
     `For usage on another device go to http://${os.hostname()}:${port} or http://${result}:${port}`
   )
-  createLog('Server started successfully')
+  createLog(`Server listening on port ${port}`)
 })
 
 //funcs
