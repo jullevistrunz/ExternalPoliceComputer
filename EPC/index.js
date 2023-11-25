@@ -39,7 +39,6 @@ function createLog(message) {
 
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
-  createLog(`Incoming request at ${path}`)
   if (path == '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(fs.readFileSync('main/index.html'))
@@ -134,6 +133,7 @@ const server = http.createServer(function (req, res) {
       res.end()
     }
   } else if (path.startsWith('/post/')) {
+    createLog(`Post request at: ${path}`)
     const dataPath = path.slice('/post/'.length)
     let body = ''
     req.on('data', (chunk) => {
@@ -245,12 +245,12 @@ const server = http.createServer(function (req, res) {
         res.writeHead(404)
         res.end()
       }
+      createLog(`Responded with status code: ${res.statusCode}`)
     })
   } else {
     res.writeHead(404)
     res.end()
   }
-  createLog(`Responded with status code ${res.statusCode}`)
 })
 server.listen(port, function () {
   const nets = os.networkInterfaces()
