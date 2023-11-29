@@ -5,3 +5,7 @@
 - give ticket animation
 - policing redefined integration (await release) [Echooo]
 - improve map [AgentDZN]
+
+### Next version
+- bug fix: use language.json on customization page
+- create log on initial connection
