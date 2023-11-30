@@ -34,7 +34,7 @@ async function goToPage(name) {
 }
 
 async function loadOptionsPage(type) {
-  const config = await (await fetch('/data/config')).json()
+  const language = await (await fetch('/data/language')).json()
   const options = await (await fetch(`/data/${type}Options`)).json()
   const optionsEl = document.querySelector(`.${type}OptionsPage .options`)
   optionsEl.innerHTML = ''
@@ -81,19 +81,21 @@ async function loadOptionsPage(type) {
         const fineString =
           JSON.parse(this.dataset.charge).minFine ==
           JSON.parse(this.dataset.charge).maxFine
-            ? `Fine: ${config.currency}${
+            ? `Fine: ${language.content.currency}${
                 JSON.parse(this.dataset.charge).minFine
               }`
-            : `Fine: ${config.currency}${
+            : `Fine: ${language.content.currency}${
                 JSON.parse(this.dataset.charge).minFine
-              } - ${config.currency}${JSON.parse(this.dataset.charge).maxFine}`
+              } - ${language.content.currency}${
+                JSON.parse(this.dataset.charge).maxFine
+              }`
         const jailString =
           JSON.parse(this.dataset.charge).minMonths ==
           JSON.parse(this.dataset.charge).maxMonths
-            ? `${config.wordForJail}: ${monthsToYearsAndMonths(
+            ? `${language.content.jail}: ${monthsToYearsAndMonths(
                 JSON.parse(this.dataset.charge).minMonths
               )}`
-            : `${config.wordForJail}: ${monthsToYearsAndMonths(
+            : `${language.content.jail}: ${monthsToYearsAndMonths(
                 JSON.parse(this.dataset.charge).minMonths
               )} - ${monthsToYearsAndMonths(
                 JSON.parse(this.dataset.charge).maxMonths
