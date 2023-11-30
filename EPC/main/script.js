@@ -1,3 +1,9 @@
+// create server log on initial connection
+fetch(
+  `/createLog?message=New Connection ${location.host} ${navigator.userAgent}`
+)
+
+// leave space cause prettier sucks (sometimes)
 ;(async function () {
   const config = await getConfig()
   const mapZoom = config.defaultMapZoom

@@ -8,4 +8,3 @@
 
 ### Next version
 - bug fix: use language.json on customization page
-- create log on initial connection

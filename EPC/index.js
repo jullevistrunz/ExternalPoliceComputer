@@ -32,6 +32,7 @@ createLog('EPC server log initialized')
 createLog(`Version: ${version}`)
 createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
+createLog(`Config: ${JSON.stringify(config)}`)
 function createLog(message) {
   const content = `[${new Date().toISOString()}] ${message}\n`
   fs.writeFileSync('EPC.log', `${fs.readFileSync('EPC.log')}${content}`)
@@ -39,6 +40,7 @@ function createLog(message) {
 
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
+  const query = url.parse(req.url, true).query
   if (path == '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(fs.readFileSync('main/index.html'))
@@ -82,6 +84,10 @@ const server = http.createServer(function (req, res) {
   } else if (path == '/customizationScript') {
     res.writeHead(200, { 'Content-Type': 'text/js' })
     res.write(fs.readFileSync('customization/script.js'))
+    res.end()
+  } else if (path == '/createLog') {
+    createLog('Incoming client log: ' + query.message)
+    res.writeHead(200)
     res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
