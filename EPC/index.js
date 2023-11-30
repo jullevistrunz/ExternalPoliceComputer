@@ -4,25 +4,6 @@ const url = require('url')
 const os = require('os')
 const version = '1.3.3'
 
-process.on('uncaughtException', function (err) {
-  console.error(err)
-  createLog(err.stack)
-})
-
-const dataDefaults = new Map([
-  ['worldPeds.data', ''],
-  ['worldCars.data', ''],
-  ['currentID.data', ''],
-  ['peds.json', '[]'],
-  ['cars.json', '[]'],
-  ['court.json', '[]'],
-  ['shift.json', '{"currentShift":null,"shifts":[]}'],
-])
-
-// clear data on start up
-generateDirectory()
-clearGeneratedData()
-
 const config = JSON.parse(fs.readFileSync('config.json'))
 const port = config.port
 
@@ -37,6 +18,24 @@ function createLog(message) {
   const content = `[${new Date().toISOString()}] ${message}\n`
   fs.writeFileSync('EPC.log', `${fs.readFileSync('EPC.log')}${content}`)
 }
+process.on('uncaughtException', function (err) {
+  console.error(err)
+  createLog(err.stack)
+})
+
+// clear data on start up
+const dataDefaults = new Map([
+  ['worldPeds.data', ''],
+  ['worldCars.data', ''],
+  ['currentID.data', ''],
+  ['peds.json', '[]'],
+  ['cars.json', '[]'],
+  ['court.json', '[]'],
+  ['shift.json', '{"currentShift":null,"shifts":[]}'],
+])
+let fallbackToDefaultLanguage = false
+generateDirectory()
+clearGeneratedData()
 
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
@@ -132,7 +131,11 @@ const server = http.createServer(function (req, res) {
       res.end()
     } else if (dataPath == 'language') {
       res.writeHead(200, { 'Content-Type': 'text/json' })
-      res.write(fs.readFileSync('language.json'))
+      if (fallbackToDefaultLanguage) {
+        res.write(fs.readFileSync('defaults/language.json'))
+      } else {
+        res.write(fs.readFileSync('language.json'))
+      }
       res.end()
     } else {
       res.writeHead(404)
@@ -530,6 +533,24 @@ function generateDirectory() {
   }
   fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
 
+  const defaultLanguage = JSON.parse(fs.readFileSync('defaults/language.json'))
+  const defaultLanguageKeys = []
+  const newLanguage = JSON.parse(fs.readFileSync('language.json'))
+  const newLanguageKeys = []
+  visitDescendants(defaultLanguage, function (key, value) {
+    defaultLanguageKeys.push(key)
+  })
+  visitDescendants(newLanguage, function (key, value) {
+    newLanguageKeys.push(key)
+  })
+  for (const defaultLanguageKey of defaultLanguageKeys) {
+    if (!newLanguageKeys.includes(defaultLanguageKey)) {
+      createLog('Error in language.json; Falling back to default')
+      fallbackToDefaultLanguage = true
+      break
+    }
+  }
+
   try {
     fs.readdirSync('data')
   } catch {
@@ -571,4 +592,15 @@ function getCleanRandomCitation(allCitations) {
   const citation =
     allCitations[Math.floor(Math.random() * allCitations.length)].name
   return citation.replace(regex, '')
+}
+
+// https://stackoverflow.com/a/66282012
+function visitDescendants(obj, cb) {
+  for (const [key, value] of Object.entries(obj)) {
+    if (value && typeof value === 'object') {
+      visitDescendants(value, cb)
+    } else {
+      cb(key, value)
+    }
+  }
 }

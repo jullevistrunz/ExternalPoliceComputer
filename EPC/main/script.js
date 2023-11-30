@@ -174,22 +174,28 @@ setInterval(() => {
     document.querySelector(
       '.content .searchPedPage .arrestReport .result .title > div'
     ).innerHTML = language.content.searchPedPage.arrests
-    document
-      .querySelectorAll('.content .searchPedPage .result button:not(.close)')
-      .forEach((submitBtn) => {
-        submitBtn.innerHTML = language.content.searchPedPage.report.submit
-      })
-    document
-      .querySelectorAll('.content .searchPedPage .result button.close')
-      .forEach((closeBtn) => {
-        closeBtn.innerHTML = language.content.searchPedPage.report.close
-      })
-    document
-      .querySelectorAll('.content .searchPedPage .result .description')
-      .forEach((descriptionArea) => {
-        descriptionArea.placeholder =
-          language.content.searchPedPage.report.description
-      })
+    document.querySelector(
+      '.content .searchPedPage .result .title button:not(.close)'
+    ).innerHTML = language.content.report.submit
+    document.querySelector(
+      '.content .searchPedPage .result .title button.close'
+    ).innerHTML = language.content.report.close
+    document.querySelector(
+      '.content .searchPedPage .result .description'
+    ).placeholder = language.content.report.description
+
+    document.querySelector(
+      '.content .shiftPage .result .title button:not(.close)'
+    ).innerHTML = language.content.report.submit
+    document.querySelector(
+      '.content .shiftPage .result .title button.close'
+    ).innerHTML = language.content.report.close
+    document.querySelector(
+      '.content .shiftPage .result label[for=incidentDescription]'
+    ).innerHTML = language.content.report.description
+    document.querySelector(
+      '.content .shiftPage .result label[for=incidentNumber]'
+    ).innerHTML = language.content.report.incidentNumber
 
     document.querySelector('.overlay .customizationLink').innerHTML =
       language.overlay.customizationLink
@@ -983,6 +989,7 @@ async function startShift() {
       start: currentDate.getTime(),
       notes: '',
       courtCases: [],
+      incidents: [],
     }),
   })
   renderShiftPage()
@@ -1050,6 +1057,21 @@ async function renderShiftPage() {
         data.currentShift.courtCases.length
           ? courtCases.join('<br>')
           : language.content.values.none
+      )
+    )
+    const incidents = []
+    for (const incident of data.currentShift.incidents) {
+      incidents.push(`• ${incident.number}`)
+    }
+    currentShiftEl.appendChild(
+      createLabelElement(
+        langShift.resultContainer.incidents,
+        data.currentShift.incidents.length
+          ? incidents.join('<br>')
+          : language.content.values.none,
+        function () {
+          openIncidentReports(false, data.currentShift)
+        }
       )
     )
     currentShiftEl.appendChild(
@@ -1137,6 +1159,30 @@ async function renderShiftPage() {
           : language.content.values.none
       )
     )
+
+    const incidents = []
+    if (shift.incidents && shift.incidents.length) {
+      for (const incident of shift.incidents) {
+        incidents.push(`• ${incident.number}`)
+      }
+      labelContainer.appendChild(
+        createLabelElement(
+          langShift.resultContainer.incidents,
+          incidents.join('<br>'),
+          function () {
+            openIncidentReports(true, shift)
+          }
+        )
+      )
+    } else {
+      labelContainer.appendChild(
+        createLabelElement(
+          langShift.resultContainer.incidents,
+          language.content.values.none
+        )
+      )
+    }
+
     labelContainer.appendChild(
       createLabelElement(
         langShift.resultContainer.notes,
@@ -1152,6 +1198,47 @@ async function renderShiftPage() {
     list.appendChild(labelContainer)
   }
 }
+
+async function openIncidentReports(disableAddIncidentButton = false, shift) {
+  const language = await getLanguage()
+  const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
+  updateIncidentReportOptions(disableAddIncidentButton, shift)
+}
+
+async function updateIncidentReportOptions(
+  disableAddIncidentButton = false,
+  shift
+) {
+  const language = await getLanguage()
+  const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
+  incidentReportEl.querySelector('.options').innerHTML = ''
+  incidentReportEl.classList.remove('hidden')
+  if (!disableAddIncidentButton) {
+    const addIncidentBtn = document.createElement('button')
+    addIncidentBtn.innerHTML = language.content.report.newIncident
+    addIncidentBtn.addEventListener('click', function () {
+      this.blur()
+      createNewIncidentReport(shift)
+    })
+    incidentReportEl.querySelector('.options').appendChild(addIncidentBtn)
+    const line = document.createElement('div')
+    line.classList.add('line')
+    incidentReportEl.querySelector('.options').appendChild(line)
+  }
+  for (const incident of shift.incidents) {
+    const button = document.createElement('button')
+    button.innerHTML = incident.number
+    button.addEventListener('click', function () {
+      incidentReportEl.querySelector('.result #incidentNumber').value =
+        incident.number
+      incidentReportEl.querySelector('.result #incidentDescription').value =
+        incident.description
+    })
+    incidentReportEl.querySelector('.options').appendChild(button)
+  }
+}
+
+async function createNewIncidentReport(shift) {}
 
 async function goToCourtCaseFromValue(caseNumber) {
   await goToPage('court')

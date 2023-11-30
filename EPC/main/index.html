@@ -313,6 +313,26 @@
         <div class="currentShift"></div>
         <div class="title shiftsTitle">Shifts</div>
         <div class="list"></div>
+        <div class="incidentReport hidden">
+          <div class="options"></div>
+          <div class="result">
+            <div class="title">
+              <button class="submit" disabled="true" onclick="submitIncident()">
+                Submit
+              </button>
+              <button
+                class="close"
+                onclick="document.querySelector('.shiftPage .incidentReport').classList.add('hidden')"
+              >
+                Close
+              </button>
+            </div>
+            <label for="incidentNumber">Incident Number</label>
+            <input type="text" id="incidentNumber" readonly="true" />
+            <label for="incidentDescription">Description</label>
+            <textarea id="incidentDescription"></textarea>
+          </div>
+        </div>
       </div>
     </div>
     <div class="overlay">

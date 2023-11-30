@@ -265,7 +265,8 @@ body input {
 }
 
 .searchPedPage .citationReport,
-.searchPedPage .arrestReport {
+.searchPedPage .arrestReport,
+.shiftPage .incidentReport {
   width: 100%;
   height: calc(100% - var(--header-height));
   background-color: var(--background-color);
@@ -278,6 +279,12 @@ body input {
   width: calc(100% - 40px);
 }
 
+.shiftPage .incidentReport {
+  margin: 0;
+  padding: 20px;
+}
+
+.shiftPage .incidentReport .options,
 .searchPedPage .citationReport .options,
 .searchPedPage .arrestReport .options {
   font-size: 20px;
@@ -309,6 +316,7 @@ body input {
   color: var(--second-accent-color);
 }
 
+.shiftPage .incidentReport .options button,
 .searchPedPage .citationReport .options details button,
 .searchPedPage .arrestReport .options details button {
   font-size: 16px;
@@ -326,13 +334,16 @@ body input {
   text-align: left;
 }
 
+.shiftPage .incidentReport .options button:hover,
 .searchPedPage .citationReport .options details button:hover,
 .searchPedPage .arrestReport .options details button:hover,
+.shiftPage .incidentReport .options button:focus,
 .searchPedPage .citationReport .options details button:focus,
 .searchPedPage .arrestReport .options details button:focus {
   background-color: var(--second-accent-color-half);
 }
 
+.shiftPage .incidentReport .result,
 .searchPedPage .citationReport .result,
 .searchPedPage .arrestReport .result {
   border: 2px solid var(--second-accent-color-half);
@@ -341,12 +352,19 @@ body input {
   position: relative;
 }
 
+.shiftPage .incidentReport .result .title,
 .searchPedPage .citationReport .result .title,
 .searchPedPage .arrestReport .result .title {
   display: grid;
   grid-auto-flow: column;
 }
 
+.shiftPage .incidentReport .result .title {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.shiftPage .incidentReport .result .title button,
 .searchPedPage .citationReport .result .title button,
 .searchPedPage .arrestReport .result .title button {
   font-size: 16px;
@@ -364,26 +382,32 @@ body input {
   text-align: left;
 }
 
+.shiftPage .incidentReport .result .title button:not(:disabled):hover,
 .searchPedPage .citationReport .result .title button:not(:disabled):hover,
 .searchPedPage .arrestReport .result .title button:not(:disabled):hover,
+.shiftPage .incidentReport .result .title button:not(:disabled):focus,
 .searchPedPage .citationReport .result .title button:not(:disabled):focus,
 .searchPedPage .arrestReport .result .title button:not(:disabled):focus {
   background-color: var(--second-accent-color-half);
 }
 
+.shiftPage .incidentReport .result .title button:disabled,
 .searchPedPage .citationReport .result .title button:disabled,
 .searchPedPage .arrestReport .result .title button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
+.shiftPage .incidentReport .result .title button.close,
 .searchPedPage .citationReport .result .title button.close,
 .searchPedPage .arrestReport .result .title button.close {
   border-color: var(--warning-color);
 }
 
+.shiftPage .incidentReport .result .title button.close:hover,
 .searchPedPage .citationReport .result .title button.close:hover,
 .searchPedPage .arrestReport .result .title button.close:hover,
+.shiftPage .incidentReport .result .title button.close:focus,
 .searchPedPage .citationReport .result .title button.close:focus,
 .searchPedPage .arrestReport .result .title button.close:focus {
   background-color: var(--warning-color-half);
@@ -535,9 +559,55 @@ body input {
   overflow-y: auto;
 }
 
+.shiftPage .incidentReport .options .line {
+  margin: 10px 2px;
+  width: calc(100% - 4px);
+  height: 2px;
+  background-color: var(--second-accent-color-half);
+}
+
+.shiftPage .incidentReport .result #incidentNumber {
+  font-family: monospace;
+  height: auto;
+  width: calc(100% - 10px - 4px - 10px);
+  font-size: 20px;
+  font-weight: 600;
+  padding: 5px;
+  margin: 5px;
+  border: 2px solid var(--second-accent-color);
+  background-color: var(--background-color);
+  color: var(--main-color);
+  outline: none;
+  transition: 50ms linear;
+}
+
+.shiftPage .incidentReport .result #incidentDescription {
+  font-family: monospace;
+  resize: none;
+  height: calc(100% - 172px);
+  min-height: 250px;
+  width: calc(100% - 10px - 4px - 10px);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 5px;
+  margin: 5px 5px 0 5px;
+  border: 2px solid var(--second-accent-color);
+  background-color: var(--background-color);
+  color: var(--main-color);
+  outline: none;
+  transition: 50ms linear;
+}
+
+.shiftPage .incidentReport .result label {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 5px;
+  margin-bottom: 10px;
+}
+
 /* remove border radius on iOS */
 input {
-  border-radius: none;
+  border-radius: 0;
 }
 
 .overlay {

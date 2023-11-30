@@ -16,6 +16,13 @@
     "lifeInPrison": "Life In Prison",
     "life": "Life",
     "grantedProbation": "Granted Probation",
+    "report": {
+      "submit": "Submit",
+      "close": "Close",
+      "description": "Description",
+      "incidentNumber": "Incident Number",
+      "newIncident": "New Incident"
+    },
     "values": {
       "male": "Male",
       "female": "Female",
@@ -111,11 +118,6 @@
           "gangAffiliation": "Gang Affiliation"
         },
         "pedNotFound": "Ped Not Found"
-      },
-      "report": {
-        "submit": "Submit",
-        "close": "Close",
-        "description": "Description"
       }
     },
     "searchCarPage": {
@@ -161,6 +163,7 @@
         "end": "End",
         "duration": "Duration",
         "courtCases": "Court Cases",
+        "incidents": "Incidents",
         "notes": "Notes"
       }
     }
