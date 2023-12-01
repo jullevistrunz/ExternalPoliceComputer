@@ -1309,7 +1309,7 @@ async function deleteIncident() {
 }
 
 async function createNewIncidentReport() {
-  const number = `#${new Date()
+  const number = `${new Date()
     .getFullYear()
     .toString()
     .slice(2)}-${Math.random().toString().slice(2, 7)}`
