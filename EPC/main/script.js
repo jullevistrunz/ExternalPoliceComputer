@@ -1200,7 +1200,6 @@ async function renderShiftPage() {
 }
 
 async function openIncidentReports(disableAddIncidentButton = false, shift) {
-  const language = await getLanguage()
   const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
   incidentReportEl.classList.remove('hidden')
   updateIncidentReportOptions(disableAddIncidentButton, shift)
@@ -1213,6 +1212,12 @@ async function updateIncidentReportOptions(
   const language = await getLanguage()
   const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
   incidentReportEl.querySelector('.options').innerHTML = ''
+  incidentReportEl
+    .querySelector('.result #incidentDescription')
+    .setAttribute('readonly', true)
+  incidentReportEl.querySelector('.result #incidentDescription').value = ''
+  incidentReportEl.querySelector('.result #incidentNumber').value = ''
+  incidentReportEl.querySelector('.result .title .submit').disabled = true
   if (!disableAddIncidentButton) {
     const addIncidentBtn = document.createElement('button')
     addIncidentBtn.innerHTML = language.content.report.newIncident
@@ -1233,8 +1238,42 @@ async function updateIncidentReportOptions(
         incident.number
       incidentReportEl.querySelector('.result #incidentDescription').value =
         incident.description
+      disableAddIncidentButton
+        ? incidentReportEl
+            .querySelector('.result #incidentDescription')
+            .setAttribute('readonly', true)
+        : incidentReportEl
+            .querySelector('.result #incidentDescription')
+            .removeAttribute('readonly')
+      incidentReportEl.querySelector('.result .title .submit').disabled =
+        disableAddIncidentButton
     })
     incidentReportEl.querySelector('.options').appendChild(button)
+  }
+}
+
+async function submitIncident() {
+  const shift = await (await fetch('/data/shift')).json()
+  const oldCurrentShift = shift.currentShift
+  const numberInpEl = document.querySelector(
+    '.shiftPage .incidentReport .result #incidentNumber'
+  )
+  const descriptionInpEl = document.querySelector(
+    '.shiftPage .incidentReport .result #incidentDescription'
+  )
+  for (const i in oldCurrentShift.incidents) {
+    if (oldCurrentShift.incidents[i].number == numberInpEl.value) {
+      oldCurrentShift.incidents[i] = {
+        number: numberInpEl.value,
+        description: descriptionInpEl.value,
+      }
+      await fetch('/post/updateCurrentShift', {
+        method: 'post',
+        body: JSON.stringify(oldCurrentShift),
+      })
+      updateIncidentReportOptions(false, oldCurrentShift)
+      break
+    }
   }
 }
 
