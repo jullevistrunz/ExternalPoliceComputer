@@ -9,7 +9,7 @@ namespace ExternalPoliceComputer {
     public class Main : Plugin {
 
         private static bool CurrentlyOnDuty;
-        private static readonly int MaxNumberOfNearbyPedsOrVehicles = 10;
+        private static readonly int MaxNumberOfNearbyPedsOrVehicles = 15;
         private static Ped Player => Game.LocalPlayer.Character;
         private static readonly string DataPath = "EPC/data";
         private static bool UseSTP = true;
