@@ -185,11 +185,14 @@ setInterval(() => {
     ).placeholder = language.content.report.description
 
     document.querySelector(
-      '.content .shiftPage .result .title button:not(.close)'
+      '.content .shiftPage .result .title button.submit'
     ).innerHTML = language.content.report.submit
     document.querySelector(
       '.content .shiftPage .result .title button.close'
     ).innerHTML = language.content.report.close
+    document.querySelector(
+      '.content .shiftPage .result .title button.delete'
+    ).innerHTML = language.content.report.delete
     document.querySelector(
       '.content .shiftPage .result label[for=incidentDescription]'
     ).innerHTML = language.content.report.description
@@ -1218,6 +1221,7 @@ async function updateIncidentReportOptions(
   incidentReportEl.querySelector('.result #incidentDescription').value = ''
   incidentReportEl.querySelector('.result #incidentNumber').value = ''
   incidentReportEl.querySelector('.result .title .submit').disabled = true
+  incidentReportEl.querySelector('.result .title .delete').disabled = true
   if (!disableAddIncidentButton) {
     const addIncidentBtn = document.createElement('button')
     addIncidentBtn.innerHTML = language.content.report.newIncident
@@ -1247,6 +1251,8 @@ async function updateIncidentReportOptions(
             .removeAttribute('readonly')
       incidentReportEl.querySelector('.result .title .submit').disabled =
         disableAddIncidentButton
+      incidentReportEl.querySelector('.result .title .delete').disabled =
+        disableAddIncidentButton
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
@@ -1267,6 +1273,25 @@ async function submitIncident() {
         number: numberInpEl.value,
         description: descriptionInpEl.value,
       }
+      await fetch('/post/updateCurrentShift', {
+        method: 'post',
+        body: JSON.stringify(oldCurrentShift),
+      })
+      updateIncidentReportOptions(false, oldCurrentShift)
+      break
+    }
+  }
+}
+
+async function deleteIncident() {
+  const shift = await (await fetch('/data/shift')).json()
+  const oldCurrentShift = shift.currentShift
+  const numberInpEl = document.querySelector(
+    '.shiftPage .incidentReport .result #incidentNumber'
+  )
+  for (const i in oldCurrentShift.incidents) {
+    if (oldCurrentShift.incidents[i].number == numberInpEl.value) {
+      oldCurrentShift.incidents.splice(i, 1)
       await fetch('/post/updateCurrentShift', {
         method: 'post',
         body: JSON.stringify(oldCurrentShift),

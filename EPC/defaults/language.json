@@ -21,7 +21,8 @@
       "close": "Close",
       "description": "Description",
       "incidentNumber": "Incident Number",
-      "newIncident": "New Incident"
+      "newIncident": "New Incident",
+      "delete": "Delete"
     },
     "values": {
       "male": "Male",

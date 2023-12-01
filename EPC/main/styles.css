@@ -398,12 +398,15 @@ body input {
   opacity: 0.5;
 }
 
+.shiftPage .incidentReport .result .title button.delete,
 .shiftPage .incidentReport .result .title button.close,
 .searchPedPage .citationReport .result .title button.close,
 .searchPedPage .arrestReport .result .title button.close {
   border-color: var(--warning-color);
 }
 
+.shiftPage .incidentReport .result .title button.delete:not(:disabled):hover,
+.shiftPage .incidentReport .result .title button.delete:not(:disabled):focus,
 .shiftPage .incidentReport .result .title button.close:hover,
 .searchPedPage .citationReport .result .title button.close:hover,
 .searchPedPage .arrestReport .result .title button.close:hover,
