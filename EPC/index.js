@@ -4,6 +4,20 @@ const url = require('url')
 const os = require('os')
 const version = '1.3.3'
 
+// clear data on start up
+const dataDefaults = new Map([
+  ['worldPeds.data', ''],
+  ['worldCars.data', ''],
+  ['currentID.data', ''],
+  ['peds.json', '[]'],
+  ['cars.json', '[]'],
+  ['court.json', '[]'],
+  ['shift.json', '{"currentShift":null,"shifts":[]}'],
+])
+let fallbackToDefaultLanguage = false
+generateDirectory()
+clearGeneratedData()
+
 const config = JSON.parse(fs.readFileSync('config.json'))
 const port = config.port
 
@@ -22,20 +36,6 @@ process.on('uncaughtException', function (err) {
   console.error(err)
   createLog(err.stack)
 })
-
-// clear data on start up
-const dataDefaults = new Map([
-  ['worldPeds.data', ''],
-  ['worldCars.data', ''],
-  ['currentID.data', ''],
-  ['peds.json', '[]'],
-  ['cars.json', '[]'],
-  ['court.json', '[]'],
-  ['shift.json', '{"currentShift":null,"shifts":[]}'],
-])
-let fallbackToDefaultLanguage = false
-generateDirectory()
-clearGeneratedData()
 
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
