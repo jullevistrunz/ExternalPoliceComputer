@@ -1202,6 +1202,7 @@ async function renderShiftPage() {
 async function openIncidentReports(disableAddIncidentButton = false, shift) {
   const language = await getLanguage()
   const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
+  incidentReportEl.classList.remove('hidden')
   updateIncidentReportOptions(disableAddIncidentButton, shift)
 }
 
@@ -1212,13 +1213,12 @@ async function updateIncidentReportOptions(
   const language = await getLanguage()
   const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
   incidentReportEl.querySelector('.options').innerHTML = ''
-  incidentReportEl.classList.remove('hidden')
   if (!disableAddIncidentButton) {
     const addIncidentBtn = document.createElement('button')
     addIncidentBtn.innerHTML = language.content.report.newIncident
     addIncidentBtn.addEventListener('click', function () {
       this.blur()
-      createNewIncidentReport(shift)
+      createNewIncidentReport()
     })
     incidentReportEl.querySelector('.options').appendChild(addIncidentBtn)
     const line = document.createElement('div')
@@ -1238,7 +1238,21 @@ async function updateIncidentReportOptions(
   }
 }
 
-async function createNewIncidentReport(shift) {}
+async function createNewIncidentReport() {
+  const number = `#${new Date()
+    .getFullYear()
+    .toString()
+    .slice(2)}-${Math.random().toString().slice(2, 7)}`
+
+  const shift = await (await fetch('/data/shift')).json()
+  const currentShift = shift.currentShift
+  currentShift.incidents.push({ number: number, description: '' })
+  await fetch('/post/updateCurrentShift', {
+    method: 'post',
+    body: JSON.stringify(currentShift),
+  })
+  updateIncidentReportOptions(false, currentShift)
+}
 
 async function goToCourtCaseFromValue(caseNumber) {
   await goToPage('court')
