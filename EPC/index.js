@@ -85,7 +85,7 @@ const server = http.createServer(function (req, res) {
     res.write(fs.readFileSync('customization/script.js'))
     res.end()
   } else if (path == '/createLog') {
-    createLog('Incoming client log: ' + query.message)
+    createLog('[Client Log] ' + query.message)
     res.writeHead(200)
     res.end()
   } else if (path.startsWith('/data/')) {

@@ -1,7 +1,13 @@
 // create server log on initial connection
 fetch(
-  `/createLog?message=New Connection ${location.host} ${navigator.userAgent}`
+  `/createLog?message=[New Connection] ${location.host} ${navigator.userAgent}`
 )
+// server log on error
+window.addEventListener('error', function (errorEvent) {
+  fetch(
+    `/createLog?message=[Error] ${errorEvent.error} (at ${errorEvent.filename}:${errorEvent.lineno}:${errorEvent.colno})`
+  )
+})
 
 // leave space cause prettier sucks (sometimes)
 ;(async function () {
