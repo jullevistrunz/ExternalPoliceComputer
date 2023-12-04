@@ -81,3 +81,15 @@ A Police Computer Plugin and Server for LSPDFR.
 
 - If you need support, have a suggestion or bug report, want to see what's coming in new versions or want to download custom files made by me (or others)
 - https://discord.gg/RW9uy3spVb
+
+## License
+
+- ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
+- The following files are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
+  - [`EPC/arrestOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/arrestOptions.json)
+  - [`EPC/citationOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/citationOptions.json)
+  - [`EPC/config.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/config.json)
+  - [`EPC/custom.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.css)
+  - [`EPC/custom.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.js)
+  - [`EPC/language.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/language.json)
+  - [`EPC/licenseOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/licenseOptions.json)
