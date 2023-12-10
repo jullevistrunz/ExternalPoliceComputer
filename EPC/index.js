@@ -324,7 +324,7 @@ function generatePeds() {
     if (licenseData) {
       licenseData[1] == 'citation'
         ? citations.push(licenseData[0])
-        : arrests.push(licenseData[1])
+        : arrests.push(licenseData[0])
     }
     const probation =
       !arrests.length ||
