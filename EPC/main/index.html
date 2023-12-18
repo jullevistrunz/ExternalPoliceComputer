@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ExternalPoliceComputer</title>
-    <link rel="stylesheet" href="/styles" />
+    <link rel="stylesheet" href="/main/styles.css" />
+    <link rel="stylesheet" href="/main/elements.css" />
     <link rel="stylesheet" href="/customStyles" />
     <link rel="icon" href="/favicon" />
   </head>
@@ -251,7 +252,7 @@
         </div>
         <div class="resultContainer">
           <div class="name"></div>
-          <div class="labelContainer"></div>
+          <div class="informationLabelContainer"></div>
           <div class="citationArrestContainer"></div>
         </div>
         <div class="citationReport hidden">
@@ -320,11 +321,7 @@
               <button class="submit" disabled="true" onclick="submitIncident()">
                 Submit
               </button>
-              <button
-                class="delete"
-                disabled="true"
-                onclick="deleteIncident()"
-              >
+              <button class="delete" disabled="true" onclick="deleteIncident()">
                 Delete
               </button>
               <button
@@ -374,6 +371,7 @@
       </div>
     </div>
   </body>
-  <script src="/script" defer></script>
+  <script src="/main/script.js" defer></script>
+  <script src="/main/elements.js" defer></script>
   <script src="/customScript" defer></script>
 </html>

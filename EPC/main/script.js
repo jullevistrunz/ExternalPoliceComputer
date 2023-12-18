@@ -269,7 +269,7 @@ async function goToPage(name) {
 
 async function searchForPed(pedName) {
   const pedData = await (await fetch('/data/peds')).json()
-  for (ped of pedData) {
+  for (const ped of pedData) {
     if (ped.name.toLowerCase() == pedName.toLowerCase()) {
       return ped
     }
@@ -279,7 +279,7 @@ async function searchForPed(pedName) {
 
 async function searchForCar(licensePlate) {
   const carData = await (await fetch('/data/cars')).json()
-  for (car of carData) {
+  for (const car of carData) {
     if (car.licensePlate.toLowerCase() == licensePlate.toLowerCase()) {
       return car
     }
@@ -316,39 +316,37 @@ async function renderPedSearch() {
   const langPed = language.content.searchPedPage
   const langValues = language.content.values
 
+  const informationLabelContainer = document.querySelector(
+    '.searchPedPage .resultContainer .informationLabelContainer'
+  )
+  const citationArrestContainer = document.querySelector(
+    '.searchPedPage .resultContainer .citationArrestContainer'
+  )
+  citationArrestContainer.innerHTML = ''
+
   const ped = await searchForPed(
     document.querySelector('.searchPedPage .pedInp').value
   )
-
-  const lc = document.querySelector(
-    '.searchPedPage .resultContainer .labelContainer'
-  )
-  lc.innerHTML = ''
-
-  const cac = document.querySelector(
-    '.searchPedPage .resultContainer .citationArrestContainer'
-  )
-  cac.innerHTML = ''
-
   if (!ped) {
-    return (document.querySelector(
-      '.searchPedPage .resultContainer .name'
-    ).innerHTML = langPed.resultContainer.pedNotFound)
+    document.querySelector('.searchPedPage .resultContainer .name').innerHTML =
+      langPed.resultContainer.pedNotFound
+    informationLabelContainer.innerHTML = ''
+    return
   }
+
   document.querySelector('.searchPedPage .resultContainer .name').innerHTML =
     ped.name
 
-  lc.appendChild(
-    createLabelElement(langPed.resultContainer.dateOfBirth, ped.birthday)
-  )
-  lc.appendChild(
-    createLabelElement(
+  const informationLabels = [
+    elements.informationLabel(
+      langPed.resultContainer.dateOfBirth,
+      ped.birthday
+    ),
+    elements.informationLabel(
       langPed.resultContainer.gender,
       tryLanguageValue(ped.gender, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.licenseStatus,
       ped.licenseStatus != 'Valid' && config.warningColorsForPedCarSearch
         ? ped.licenseData
@@ -361,20 +359,16 @@ async function renderPedSearch() {
               langValues
             )}</a>`
         : tryLanguageValue(ped.licenseStatus, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.warrant,
       ped.isWanted == 'True'
         ? config.warningColorsForPedCarSearch
           ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.warrantText}</a>`
           : ped.warrantText
         : langValues.none
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.probation,
       ped.probation != 'No' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -382,10 +376,8 @@ async function renderPedSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(ped.probation, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.parole,
       ped.parole != 'No' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -393,10 +385,10 @@ async function renderPedSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(ped.parole, langValues)
-    )
-  )
-  const cautions = []
+    ),
+  ]
 
+  const cautions = []
   if (
     ped.relationshipGroup &&
     ped.relationshipGroup.toLowerCase().includes('gang')
@@ -407,34 +399,38 @@ async function renderPedSearch() {
         : 'Gang Affiliation'
     )
   }
-
   if (cautions.length) {
     for (const i in cautions) {
       cautions[
         i
       ] = `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
     }
-
-    lc.appendChild(
-      createLabelElement(langPed.resultContainer.caution, cautions.join('<br>'))
+    informationLabels.push(
+      elements.informationLabel(
+        langPed.resultContainer.caution,
+        cautions.join('<br>')
+      )
     )
   }
+  informationLabelContainer.replaceWith(
+    elements.informationLabelContainer(informationLabels)
+  )
 
   const citations = ped.citations.length ? ped.citations : [langValues.none]
-  for (let i in citations) {
+  for (const i in citations) {
     citations[i] = `• ${citations[i]}`
   }
   const arrests = ped.arrests.length ? ped.arrests : [langValues.none]
-  for (let i in arrests) {
+  for (const i in arrests) {
     arrests[i] = `• ${arrests[i]}`
   }
-  cac.appendChild(
-    createLabelElement(langPed.citations, citations.join('<br>'), () => {
+  citationArrestContainer.appendChild(
+    elements.informationLabel(langPed.citations, citations.join('<br>'), () => {
       openCitationReport()
     })
   )
-  cac.appendChild(
-    createLabelElement(langPed.arrests, arrests.join('<br>'), () => {
+  citationArrestContainer.appendChild(
+    elements.informationLabel(langPed.arrests, arrests.join('<br>'), () => {
       openArrestReport()
     })
   )

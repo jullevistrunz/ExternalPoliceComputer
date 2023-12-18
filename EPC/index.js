@@ -44,17 +44,20 @@ const server = http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(fs.readFileSync('main/index.html'))
     res.end()
-  } else if (path == '/styles') {
-    res.writeHead(200, { 'Content-Type': 'text/css' })
-    res.write(fs.readFileSync('main/styles.css'))
+  } else if (path.startsWith('/main')) {
+    const fileName = path.substring('/main/'.length)
+    if (fileName.endsWith('.css')) {
+      res.writeHead(200, { 'Content-Type': 'text/css' })
+    } else if (fileName.endsWith('.js')) {
+      res.writeHead(200, { 'Content-Type': 'text/js' })
+    } else {
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+    }
+    res.write(fs.readFileSync(`main/${fileName}`))
     res.end()
   } else if (path == '/customStyles') {
     res.writeHead(200, { 'Content-Type': 'text/css' })
     res.write(fs.readFileSync('custom.css'))
-    res.end()
-  } else if (path == '/script') {
-    res.writeHead(200, { 'Content-Type': 'text/js' })
-    res.write(fs.readFileSync('main/script.js'))
     res.end()
   } else if (path == '/customScript') {
     res.writeHead(200, { 'Content-Type': 'text/js' })

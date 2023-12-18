@@ -1,0 +1,37 @@
+.informationLabelContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 15px;
+  width: auto;
+  height: auto;
+  gap: 20px 50px;
+}
+
+.informationLabel {
+  width: fit-content;
+  height: min-content;
+  padding: 5px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.informationLabelWithOnClick {
+  cursor: pointer;
+  transition: 50ms linear;
+  border: 2px solid transparent;
+}
+
+.informationLabelWithOnClick:hover {
+  border-color: var(--second-accent-color);
+}
+
+.informationLabel .key {
+  width: auto;
+  height: auto;
+  color: var(--second-accent-color);
+}
+
+.informationLabel .value {
+  width: auto;
+  height: auto;
+}
