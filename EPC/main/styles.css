@@ -84,67 +84,6 @@ body input {
   padding: 10px;
 }
 
-.searchPedPage .inpContainer,
-.courtPage .inpContainer,
-.searchCarPage .inpContainer,
-.shiftPage .btnContainer {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  height: auto;
-  margin: 20px;
-  width: calc(100% - 40px);
-}
-
-.searchCarPage .carInp,
-.searchPedPage .pedInp,
-.courtPage .pedInp {
-  height: auto;
-  width: unset;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px;
-  border: 2px solid transparent;
-  background-color: var(--second-background-color);
-  color: var(--accent-color);
-  outline: none;
-  transition: 50ms linear;
-}
-
-.searchCarPage .carInp:focus,
-.searchPedPage .pedInp:focus,
-.courtPage .pedInp:focus {
-  border-color: var(--accent-color);
-}
-
-.searchCarPage .carBtn,
-.searchPedPage .pedBtn,
-.courtPage .pedBtn,
-.shiftPage .btnContainer button {
-  height: auto;
-  width: unset;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px;
-  border: 2px solid transparent;
-  background-color: var(--second-background-color);
-  color: var(--accent-color);
-  outline: none;
-  cursor: pointer;
-  transition: 50ms linear;
-}
-
-.searchPedPage .pedBtn:hover,
-.searchPedPage .pedBtn:focus,
-.courtPage .pedBtn:hover,
-.courtPage .pedBtn:focus,
-.searchCarPage .carBtn:hover,
-.searchCarPage .carBtn:focus,
-.shiftPage .btnContainer button:not(:disabled):hover,
-.shiftPage .btnContainer button:not(:disabled):focus {
-  border-color: var(--accent-color);
-}
-
 .searchCarPage .resultContainer,
 .searchPedPage .resultContainer {
   width: calc(100% - 60px);

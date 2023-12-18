@@ -982,7 +982,7 @@ async function findPedInCourt(pedName) {
     list.appendChild(title)
     return
   }
-  for (container of elements) {
+  for (const container of elements) {
     list.appendChild(container)
   }
 }
