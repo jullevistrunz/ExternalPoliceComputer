@@ -157,168 +157,7 @@ body input {
   margin-right: 10px;
 }
 
-.searchPedPage .citationReport,
-.searchPedPage .arrestReport,
-.shiftPage .incidentReport {
-  width: 100%;
-  height: calc(100% - var(--header-height));
-  background-color: var(--background-color);
-  position: fixed;
-  z-index: 1;
-  top: var(--header-height);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 20px;
-  width: calc(100% - 40px);
-}
-
-.shiftPage .incidentReport {
-  margin: 0;
-  padding: 20px;
-}
-
-.shiftPage .incidentReport .options,
-.searchPedPage .citationReport .options,
-.searchPedPage .arrestReport .options {
-  font-size: 20px;
-  font-weight: 600;
-  overflow-y: auto;
-  padding-bottom: 20px;
-  padding-right: 10px;
-  height: calc(100% - 20px - 20px);
-}
-
-.searchPedPage .citationReport .options summary,
-.searchPedPage .arrestReport .options summary,
-.courtPage summary {
-  cursor: pointer;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  outline: none;
-}
-
-.searchPedPage .citationReport .options summary:focus,
-.searchPedPage .arrestReport .options summary:focus,
-.courtPage summary:focus {
-  color: var(--second-accent-color);
-}
-
-.searchPedPage .citationReport .options summary::marker,
-.searchPedPage .arrestReport .options summary::marker,
-.courtPage summary::marker {
-  color: var(--second-accent-color);
-}
-
-.shiftPage .incidentReport .options button,
-.searchPedPage .citationReport .options details button,
-.searchPedPage .arrestReport .options details button {
-  font-size: 16px;
-  font-weight: 400;
-  font-family: monospace;
-  padding: 5px;
-  border: 2px solid var(--second-accent-color);
-  color: var(--main-color);
-  outline: none;
-  cursor: pointer;
-  transition: 50ms linear;
-  background-color: transparent;
-  width: calc(100% - 4px);
-  margin: 2px;
-  text-align: left;
-}
-
-.shiftPage .incidentReport .options button:hover,
-.searchPedPage .citationReport .options details button:hover,
-.searchPedPage .arrestReport .options details button:hover,
-.shiftPage .incidentReport .options button:focus,
-.searchPedPage .citationReport .options details button:focus,
-.searchPedPage .arrestReport .options details button:focus {
-  background-color: var(--second-accent-color-half);
-}
-
-.shiftPage .incidentReport .result,
-.searchPedPage .citationReport .result,
-.searchPedPage .arrestReport .result {
-  border: 2px solid var(--second-accent-color-half);
-  height: calc(100% - 40px);
-  overflow-y: auto;
-  position: relative;
-}
-
-.shiftPage .incidentReport .result .title,
-.searchPedPage .citationReport .result .title,
-.searchPedPage .arrestReport .result .title {
-  display: grid;
-  grid-auto-flow: column;
-}
-
-.shiftPage .incidentReport .result .title {
-  margin: 0;
-  margin-bottom: 10px;
-}
-
-.shiftPage .incidentReport .result .title button,
-.searchPedPage .citationReport .result .title button,
-.searchPedPage .arrestReport .result .title button {
-  font-size: 16px;
-  font-weight: 400;
-  font-family: monospace;
-  padding: 5px;
-  border: 2px solid var(--second-accent-color);
-  color: var(--main-color);
-  outline: none;
-  cursor: pointer;
-  transition: 50ms linear;
-  background-color: transparent;
-  width: calc(100% - 4px);
-  margin: 2px;
-  text-align: left;
-}
-
-.shiftPage .incidentReport .result .title button:not(:disabled):hover,
-.searchPedPage .citationReport .result .title button:not(:disabled):hover,
-.searchPedPage .arrestReport .result .title button:not(:disabled):hover,
-.shiftPage .incidentReport .result .title button:not(:disabled):focus,
-.searchPedPage .citationReport .result .title button:not(:disabled):focus,
-.searchPedPage .arrestReport .result .title button:not(:disabled):focus {
-  background-color: var(--second-accent-color-half);
-}
-
-.shiftPage .incidentReport .result .title button:disabled,
-.searchPedPage .citationReport .result .title button:disabled,
-.searchPedPage .arrestReport .result .title button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.shiftPage .incidentReport .result .title button.delete,
-.shiftPage .incidentReport .result .title button.close,
-.searchPedPage .citationReport .result .title button.close,
-.searchPedPage .arrestReport .result .title button.close {
-  border-color: var(--warning-color);
-}
-
-.shiftPage .incidentReport .result .title button.delete:not(:disabled):hover,
-.shiftPage .incidentReport .result .title button.delete:not(:disabled):focus,
-.shiftPage .incidentReport .result .title button.close:hover,
-.searchPedPage .citationReport .result .title button.close:hover,
-.searchPedPage .arrestReport .result .title button.close:hover,
-.shiftPage .incidentReport .result .title button.close:focus,
-.searchPedPage .citationReport .result .title button.close:focus,
-.searchPedPage .arrestReport .result .title button.close:focus {
-  background-color: var(--warning-color-half);
-}
-
-.searchPedPage .citationReport .result .title > div,
-.searchPedPage .arrestReport .result .title > div {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--second-accent-color);
-  margin: 5px;
-}
-
-.searchPedPage .citationReport .result .btn,
-.searchPedPage .arrestReport .result .btn {
+.searchPedPage .reportContainer .result .btn {
   font-size: 16px;
   font-weight: 400;
   font-family: monospace;
@@ -334,17 +173,12 @@ body input {
   text-align: left;
 }
 
-.searchPedPage .citationReport .result .btn:hover,
-.searchPedPage .arrestReport .result .btn:hover,
-.searchPedPage .citationReport .result .btn:focus,
-.searchPedPage .arrestReport .result .btn:focus {
+.searchPedPage .reportContainer .result .btn:hover,
+.searchPedPage .reportContainer .result .btn:focus {
   background-color: var(--warning-color-half);
 }
 
-.searchPedPage .citationReport .result .btn::before,
-.searchPedPage .arrestReport .result .btn::before,
-.searchPedPage .citationReport .result .btn::before,
-.searchPedPage .arrestReport .result .btn::before {
+.searchPedPage .reportContainer .result .btn::before {
   content: '• ';
 }
 
@@ -352,24 +186,6 @@ body input {
 .searchPedPage .arrestReport .result .charges {
   overflow: auto;
   height: 50%;
-}
-
-.searchPedPage .citationReport .result .description,
-.searchPedPage .arrestReport .result .description {
-  font-family: monospace;
-  font-size: 16px;
-  font-weight: 400;
-  position: absolute;
-  bottom: 0;
-  width: calc(100% - 10px);
-  height: calc(50% - 50px);
-  outline: none;
-  border: none;
-  border-top: 2px solid var(--second-accent-color-half);
-  padding: 5px;
-  resize: none;
-  background-color: transparent;
-  color: var(--main-color);
 }
 
 .courtPage .list .title {
@@ -388,8 +204,14 @@ body input {
   overflow-y: auto;
 }
 
+/* for old court data */
 .courtPage summary {
   margin: 0;
+  cursor: pointer;
+  outline: none;
+}
+.courtPage summary::marker {
+  color: var(--second-accent-color);
 }
 
 .courtPage details div {
@@ -464,6 +286,15 @@ body input {
   overflow-y: auto;
 }
 
+.shiftPage .incidentReport {
+  margin: 0;
+  padding: 20px;
+}
+
+.shiftPage .incidentReport .headerButtonContainer {
+  margin-bottom: 10px;
+}
+
 .shiftPage .incidentReport .options .line {
   margin: 10px 2px;
   width: calc(100% - 4px);
@@ -487,6 +318,7 @@ body input {
 }
 
 .shiftPage .incidentReport .result #incidentDescription {
+  position: relative;
   font-family: monospace;
   resize: none;
   height: calc(100% - 172px);
@@ -501,13 +333,6 @@ body input {
   color: var(--main-color);
   outline: none;
   transition: 50ms linear;
-}
-
-.shiftPage .incidentReport .result label {
-  font-size: 20px;
-  font-weight: 600;
-  margin-left: 5px;
-  margin-bottom: 10px;
 }
 
 /* remove border radius on iOS */

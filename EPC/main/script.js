@@ -175,29 +175,29 @@ setInterval(() => {
       language.content.shiftPage.shifts
 
     document.querySelector(
-      '.content .searchPedPage .citationReport .result .title > div'
+      '.content .searchPedPage .citationReport .result .headerButtonContainer > div'
     ).innerHTML = language.content.searchPedPage.citations
     document.querySelector(
-      '.content .searchPedPage .arrestReport .result .title > div'
+      '.content .searchPedPage .arrestReport .result .headerButtonContainer > div'
     ).innerHTML = language.content.searchPedPage.arrests
     document.querySelector(
-      '.content .searchPedPage .result .title button:not(.close)'
+      '.content .searchPedPage .result .headerButtonContainer button:not(.close)'
     ).innerHTML = language.content.report.submit
     document.querySelector(
-      '.content .searchPedPage .result .title button.close'
+      '.content .searchPedPage .result .headerButtonContainer button.close'
     ).innerHTML = language.content.report.close
     document.querySelector(
       '.content .searchPedPage .result .description'
     ).placeholder = language.content.report.description
 
     document.querySelector(
-      '.content .shiftPage .result .title button.submit'
+      '.content .shiftPage .result .headerButtonContainer button.submit'
     ).innerHTML = language.content.report.submit
     document.querySelector(
-      '.content .shiftPage .result .title button.close'
+      '.content .shiftPage .result .headerButtonContainer button.close'
     ).innerHTML = language.content.report.close
     document.querySelector(
-      '.content .shiftPage .result .title button.delete'
+      '.content .shiftPage .result .headerButtonContainer button.delete'
     ).innerHTML = language.content.report.delete
     document.querySelector(
       '.content .shiftPage .result label[for=incidentDescription]'
@@ -539,6 +539,7 @@ async function openCitationReport() {
 
   for (group of citationOptions) {
     const details = document.createElement('details')
+    details.classList.add('mainDropDown')
     const summary = document.createElement('summary')
     summary.innerHTML = group.name
     details.appendChild(summary)
@@ -612,6 +613,7 @@ async function openArrestReport() {
 
   for (group of arrestOptions) {
     const details = document.createElement('details')
+    details.classList.add('mainDropDown')
     const summary = document.createElement('summary')
     summary.innerHTML = group.name
     details.appendChild(summary)
@@ -774,7 +776,7 @@ async function addCitationToCourt(charges, pedName, description) {
       language.content.currency
     }${bigNumberToNiceString(fine)}`
     nameList.push(
-      `<details><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
+      `<details class="mainDropDown"><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
     )
     fullFine += fine
   }
@@ -827,7 +829,7 @@ async function addArrestToCourt(charges, pedName, description) {
       language.content.jail
     }: ${jailTimeString}`
     nameList.push(
-      `<details><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
+      `<details class="mainDropDown"><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
     )
     fullFine += fine
     fullJailTimeArr.push(jailTime)
@@ -1219,8 +1221,12 @@ async function updateIncidentReportOptions(
     .setAttribute('readonly', true)
   incidentReportEl.querySelector('.result #incidentDescription').value = ''
   incidentReportEl.querySelector('.result #incidentNumber').value = ''
-  incidentReportEl.querySelector('.result .title .submit').disabled = true
-  incidentReportEl.querySelector('.result .title .delete').disabled = true
+  incidentReportEl.querySelector(
+    '.result .headerButtonContainer .submit'
+  ).disabled = true
+  incidentReportEl.querySelector(
+    '.result .headerButtonContainer .delete'
+  ).disabled = true
   if (!disableAddIncidentButton) {
     const addIncidentBtn = document.createElement('button')
     addIncidentBtn.innerHTML = language.content.report.newIncident
@@ -1248,10 +1254,12 @@ async function updateIncidentReportOptions(
         : incidentReportEl
             .querySelector('.result #incidentDescription')
             .removeAttribute('readonly')
-      incidentReportEl.querySelector('.result .title .submit').disabled =
-        disableAddIncidentButton
-      incidentReportEl.querySelector('.result .title .delete').disabled =
-        disableAddIncidentButton
+      incidentReportEl.querySelector(
+        '.result .headerButtonContainer .submit'
+      ).disabled = disableAddIncidentButton
+      incidentReportEl.querySelector(
+        '.result .headerButtonContainer .delete'
+      ).disabled = disableAddIncidentButton
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
@@ -1280,6 +1288,8 @@ async function submitIncident() {
       break
     }
   }
+  document.querySelector('.shiftPage .incidentReport').classList.add('hidden')
+  renderShiftPage()
 }
 
 async function deleteIncident() {
@@ -1378,7 +1388,7 @@ function updateCurrentShiftDuration() {
 
 function disableCitationSubmitButton() {
   document.querySelector(
-    '.searchPedPage .citationReport .result .title button:not(.close)'
+    '.searchPedPage .citationReport .result .headerButtonContainer button:not(.close)'
   ).disabled = !document.querySelectorAll(
     '.searchPedPage .citationReport .result .charges button'
   ).length
@@ -1386,7 +1396,7 @@ function disableCitationSubmitButton() {
 
 function disableArrestSubmitButton() {
   document.querySelector(
-    '.searchPedPage .arrestReport .result .title button:not(.close)'
+    '.searchPedPage .arrestReport .result .headerButtonContainer button:not(.close)'
   ).disabled = !document.querySelectorAll(
     '.searchPedPage .arrestReport .result .charges button'
   ).length

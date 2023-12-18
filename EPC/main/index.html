@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ExternalPoliceComputer</title>
-    <link rel="stylesheet" href="/main/styles.css" />
     <link rel="stylesheet" href="/main/elements.css" />
+    <link rel="stylesheet" href="/main/styles.css" />
     <link rel="stylesheet" href="/customStyles" />
     <link rel="icon" href="/favicon" />
   </head>
@@ -259,25 +259,29 @@
           <div class="informationLabelContainer"></div>
           <div class="citationArrestContainer"></div>
         </div>
-        <div class="citationReport hidden">
+        <div class="citationReport reportContainer hidden">
           <div class="options"></div>
           <div class="result">
-            <div class="title">
+            <div class="headerButtonContainer">
               <div>Citations</div>
               <button onclick="submitCitations()" disabled>Submit</button>
-              <button class="close" onclick="closeCitations()">Close</button>
+              <button class="close warning" onclick="closeCitations()">
+                Close
+              </button>
             </div>
             <div class="charges"></div>
             <textarea class="description" placeholder="Description"></textarea>
           </div>
         </div>
-        <div class="arrestReport hidden">
+        <div class="arrestReport reportContainer hidden">
           <div class="options"></div>
           <div class="result">
-            <div class="title">
+            <div class="headerButtonContainer">
               <div>Charges</div>
               <button onclick="submitArrests()" disabled>Submit</button>
-              <button class="close" onclick="closeArrests()">Close</button>
+              <button class="close warning" onclick="closeArrests()">
+                Close
+              </button>
             </div>
             <div class="charges"></div>
             <textarea class="description" placeholder="Description"></textarea>
@@ -318,18 +322,22 @@
         <div class="currentShift"></div>
         <div class="title shiftsTitle">Shifts</div>
         <div class="list"></div>
-        <div class="incidentReport hidden">
+        <div class="incidentReport reportContainer hidden">
           <div class="options"></div>
           <div class="result">
-            <div class="title">
+            <div class="headerButtonContainer">
               <button class="submit" disabled="true" onclick="submitIncident()">
                 Submit
               </button>
-              <button class="delete" disabled="true" onclick="deleteIncident()">
+              <button
+                class="delete warning"
+                disabled="true"
+                onclick="deleteIncident()"
+              >
                 Delete
               </button>
               <button
-                class="close"
+                class="close warning"
                 onclick="document.querySelector('.shiftPage .incidentReport').classList.add('hidden'); renderShiftPage()"
               >
                 Close
@@ -375,7 +383,7 @@
       </div>
     </div>
   </body>
-  <script src="/main/script.js" defer></script>
   <script src="/main/elements.js" defer></script>
+  <script src="/main/script.js" defer></script>
   <script src="/customScript" defer></script>
 </html>
