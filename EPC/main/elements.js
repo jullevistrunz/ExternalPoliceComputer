@@ -1,5 +1,8 @@
 const elements = {
-  // informationLabel
+  /**
+   * @param {HTMLDivElement[]} informationLabels
+   * @returns informationLabelContainer
+   */
   informationLabelContainer: function (informationLabels) {
     const element = document.createElement('div')
     element.classList.add('informationLabelContainer')
@@ -8,7 +11,15 @@ const elements = {
     }
     return element
   },
-  informationLabel: function (key, value, onClick = null) {
+  /**
+   *
+   * @param {String} key
+   * @param {String} value
+   * @param {function} onClick
+   * @param {String[]} classList
+   * @returns informationLabel
+   */
+  informationLabel: function (key, value, onClick = null, classList = null) {
     const element = document.createElement('div')
     element.classList.add('informationLabel')
     const keyEl = document.createElement('div')
@@ -22,6 +33,11 @@ const elements = {
     if (typeof onClick == 'function') {
       element.classList.add('informationLabelWithOnClick')
       element.addEventListener('click', onClick)
+    }
+    if (classList) {
+      for (const classListItem of classList) {
+        element.classList.add(classListItem)
+      }
     }
     return element
   },

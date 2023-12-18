@@ -162,52 +162,6 @@ body input {
   font-weight: 800;
 }
 
-.searchCarPage .resultContainer .labelContainer,
-.searchPedPage .resultContainer .labelContainer,
-.courtPage .container,
-.shiftPage .currentShift,
-.shiftPage .list .container {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 15px;
-  width: auto;
-  height: auto;
-  gap: 20px 50px;
-}
-
-.searchCarPage .resultContainer .label,
-.searchPedPage .resultContainer .label,
-.courtPage .container .label,
-.shiftPage .currentShift .label,
-.shiftPage .list .label {
-  width: fit-content;
-  height: min-content;
-  padding: 5px;
-}
-
-.searchCarPage .resultContainer .key,
-.searchPedPage .resultContainer .key,
-.courtPage .container .key,
-.shiftPage .currentShift .key,
-.shiftPage .list .key {
-  width: auto;
-  height: auto;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--second-accent-color);
-}
-
-.searchCarPage .resultContainer .value,
-.searchPedPage .resultContainer .value,
-.courtPage .container .value,
-.shiftPage .currentShift .value,
-.shiftPage .list .value {
-  width: auto;
-  height: auto;
-  font-size: 20px;
-  font-weight: 600;
-}
-
 .searchPedPage .citationArrestContainer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -218,7 +172,7 @@ body input {
   width: calc(100% - 40px);
 }
 
-.searchPedPage .citationArrestContainer .label {
+.searchPedPage .citationArrestContainer .informationLabel {
   width: calc(100% - 10px);
 }
 
@@ -485,7 +439,7 @@ body input {
   margin: 20px;
 }
 
-.courtPage .container:not(:last-child) {
+.courtPage .informationLabelContainer:not(:last-child) {
   padding-bottom: 15px;
   border-bottom: 2px solid var(--second-accent-color-half);
 }
@@ -506,6 +460,15 @@ body input {
 .shiftPage .btnContainer button:disabled {
   opacity: 0.75;
   cursor: not-allowed;
+}
+
+.shiftPage .currentShift {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 15px;
+  width: auto;
+  height: auto;
+  gap: 20px 50px;
 }
 
 .shiftPage .currentShiftNotes {
@@ -549,7 +512,7 @@ body input {
   color: var(--second-accent-color);
 }
 
-.shiftPage .list .container:not(:first-child) {
+.shiftPage .list .informationLabelContainer:not(:first-child) {
   border-top: 2px solid var(--second-accent-color-half);
   padding-top: 15px;
 }
