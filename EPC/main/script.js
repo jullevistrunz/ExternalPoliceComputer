@@ -175,29 +175,29 @@ setInterval(() => {
       language.content.shiftPage.shifts
 
     document.querySelector(
-      '.content .searchPedPage .citationReport .result .title > div'
+      '.content .searchPedPage .citationReport .result .headerButtonContainer > div'
     ).innerHTML = language.content.searchPedPage.citations
     document.querySelector(
-      '.content .searchPedPage .arrestReport .result .title > div'
+      '.content .searchPedPage .arrestReport .result .headerButtonContainer > div'
     ).innerHTML = language.content.searchPedPage.arrests
     document.querySelector(
-      '.content .searchPedPage .result .title button:not(.close)'
+      '.content .searchPedPage .result .headerButtonContainer button:not(.close)'
     ).innerHTML = language.content.report.submit
     document.querySelector(
-      '.content .searchPedPage .result .title button.close'
+      '.content .searchPedPage .result .headerButtonContainer button.close'
     ).innerHTML = language.content.report.close
     document.querySelector(
       '.content .searchPedPage .result .description'
     ).placeholder = language.content.report.description
 
     document.querySelector(
-      '.content .shiftPage .result .title button.submit'
+      '.content .shiftPage .result .headerButtonContainer button.submit'
     ).innerHTML = language.content.report.submit
     document.querySelector(
-      '.content .shiftPage .result .title button.close'
+      '.content .shiftPage .result .headerButtonContainer button.close'
     ).innerHTML = language.content.report.close
     document.querySelector(
-      '.content .shiftPage .result .title button.delete'
+      '.content .shiftPage .result .headerButtonContainer button.delete'
     ).innerHTML = language.content.report.delete
     document.querySelector(
       '.content .shiftPage .result label[for=incidentDescription]'
@@ -269,7 +269,7 @@ async function goToPage(name) {
 
 async function searchForPed(pedName) {
   const pedData = await (await fetch('/data/peds')).json()
-  for (ped of pedData) {
+  for (const ped of pedData) {
     if (ped.name.toLowerCase() == pedName.toLowerCase()) {
       return ped
     }
@@ -279,7 +279,7 @@ async function searchForPed(pedName) {
 
 async function searchForCar(licensePlate) {
   const carData = await (await fetch('/data/cars')).json()
-  for (car of carData) {
+  for (const car of carData) {
     if (car.licensePlate.toLowerCase() == licensePlate.toLowerCase()) {
       return car
     }
@@ -316,39 +316,37 @@ async function renderPedSearch() {
   const langPed = language.content.searchPedPage
   const langValues = language.content.values
 
+  const informationLabelContainer = document.querySelector(
+    '.searchPedPage .resultContainer .informationLabelContainer'
+  )
+  const citationArrestContainer = document.querySelector(
+    '.searchPedPage .resultContainer .citationArrestContainer'
+  )
+  citationArrestContainer.innerHTML = ''
+
   const ped = await searchForPed(
     document.querySelector('.searchPedPage .pedInp').value
   )
-
-  const lc = document.querySelector(
-    '.searchPedPage .resultContainer .labelContainer'
-  )
-  lc.innerHTML = ''
-
-  const cac = document.querySelector(
-    '.searchPedPage .resultContainer .citationArrestContainer'
-  )
-  cac.innerHTML = ''
-
   if (!ped) {
-    return (document.querySelector(
-      '.searchPedPage .resultContainer .name'
-    ).innerHTML = langPed.resultContainer.pedNotFound)
+    document.querySelector('.searchPedPage .resultContainer .name').innerHTML =
+      langPed.resultContainer.pedNotFound
+    informationLabelContainer.innerHTML = ''
+    return
   }
+
   document.querySelector('.searchPedPage .resultContainer .name').innerHTML =
     ped.name
 
-  lc.appendChild(
-    createLabelElement(langPed.resultContainer.dateOfBirth, ped.birthday)
-  )
-  lc.appendChild(
-    createLabelElement(
+  const informationLabels = [
+    elements.informationLabel(
+      langPed.resultContainer.dateOfBirth,
+      ped.birthday
+    ),
+    elements.informationLabel(
       langPed.resultContainer.gender,
       tryLanguageValue(ped.gender, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.licenseStatus,
       ped.licenseStatus != 'Valid' && config.warningColorsForPedCarSearch
         ? ped.licenseData
@@ -361,20 +359,16 @@ async function renderPedSearch() {
               langValues
             )}</a>`
         : tryLanguageValue(ped.licenseStatus, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.warrant,
       ped.isWanted == 'True'
         ? config.warningColorsForPedCarSearch
           ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.warrantText}</a>`
           : ped.warrantText
         : langValues.none
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.probation,
       ped.probation != 'No' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -382,10 +376,8 @@ async function renderPedSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(ped.probation, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langPed.resultContainer.parole,
       ped.parole != 'No' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -393,10 +385,10 @@ async function renderPedSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(ped.parole, langValues)
-    )
-  )
-  const cautions = []
+    ),
+  ]
 
+  const cautions = []
   if (
     ped.relationshipGroup &&
     ped.relationshipGroup.toLowerCase().includes('gang')
@@ -407,34 +399,38 @@ async function renderPedSearch() {
         : 'Gang Affiliation'
     )
   }
-
   if (cautions.length) {
     for (const i in cautions) {
       cautions[
         i
       ] = `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
     }
-
-    lc.appendChild(
-      createLabelElement(langPed.resultContainer.caution, cautions.join('<br>'))
+    informationLabels.push(
+      elements.informationLabel(
+        langPed.resultContainer.caution,
+        cautions.join('<br>')
+      )
     )
   }
+  informationLabelContainer.replaceWith(
+    elements.informationLabelContainer(informationLabels)
+  )
 
   const citations = ped.citations.length ? ped.citations : [langValues.none]
-  for (let i in citations) {
+  for (const i in citations) {
     citations[i] = `• ${citations[i]}`
   }
   const arrests = ped.arrests.length ? ped.arrests : [langValues.none]
-  for (let i in arrests) {
+  for (const i in arrests) {
     arrests[i] = `• ${arrests[i]}`
   }
-  cac.appendChild(
-    createLabelElement(langPed.citations, citations.join('<br>'), () => {
+  citationArrestContainer.appendChild(
+    elements.informationLabel(langPed.citations, citations.join('<br>'), () => {
       openCitationReport()
     })
   )
-  cac.appendChild(
-    createLabelElement(langPed.arrests, arrests.join('<br>'), () => {
+  citationArrestContainer.appendChild(
+    elements.informationLabel(langPed.arrests, arrests.join('<br>'), () => {
       openArrestReport()
     })
   )
@@ -449,22 +445,22 @@ async function renderCarSearch() {
   const car = await searchForCar(
     document.querySelector('.searchCarPage .carInp').value
   )
-  const lc = document.querySelector(
-    '.searchCarPage .resultContainer .labelContainer'
+  const informationLabelContainer = document.querySelector(
+    '.searchCarPage .resultContainer .informationLabelContainer'
   )
-  lc.innerHTML = ''
 
   if (!car || car.plateStatus == 'Invalid') {
-    return (document.querySelector(
-      '.searchCarPage .resultContainer .name'
-    ).innerHTML = langCar.resultContainer.vehicleNotFound)
+    document.querySelector('.searchCarPage .resultContainer .name').innerHTML =
+      langCar.resultContainer.vehicleNotFound
+    informationLabelContainer.innerHTML = ''
+    return
   }
   document.querySelector('.searchCarPage .resultContainer .name').innerHTML =
     car.licensePlate
 
-  lc.appendChild(createLabelElement(langCar.resultContainer.model, car.model))
-  lc.appendChild(
-    createLabelElement(
+  const informationLabels = [
+    elements.informationLabel(langCar.resultContainer.model, car.model),
+    elements.informationLabel(
       langCar.resultContainer.color,
       car.color
         ? `<div style="background-color: rgb(${car.color.split('-')[0]},${
@@ -473,10 +469,8 @@ async function renderCarSearch() {
             car.color.split('-')[2]
           }); width: 150px; height: 25px;  border: 2px solid var(--main-color)"></div>`
         : language.content.values.unknown
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langCar.resultContainer.registration,
       car.registration != 'Valid' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -484,10 +478,8 @@ async function renderCarSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(car.registration, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langCar.resultContainer.insurance,
       car.insurance != 'Valid' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -495,10 +487,8 @@ async function renderCarSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(car.insurance, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(
+    ),
+    elements.informationLabel(
       langCar.resultContainer.stolen,
       car.stolen != 'No' && config.warningColorsForPedCarSearch
         ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
@@ -506,12 +496,13 @@ async function renderCarSearch() {
             langValues
           )}</a>`
         : tryLanguageValue(car.stolen, langValues)
-    )
-  )
-  lc.appendChild(
-    createLabelElement(langCar.resultContainer.owner, car.owner, () => {
+    ),
+    elements.informationLabel(langCar.resultContainer.owner, car.owner, () => {
       openPedInSearchPedPage(car.owner)
-    })
+    }),
+  ]
+  informationLabelContainer.replaceWith(
+    elements.informationLabelContainer(informationLabels)
   )
 }
 
@@ -548,6 +539,7 @@ async function openCitationReport() {
 
   for (group of citationOptions) {
     const details = document.createElement('details')
+    details.classList.add('mainDropDown')
     const summary = document.createElement('summary')
     summary.innerHTML = group.name
     details.appendChild(summary)
@@ -621,6 +613,7 @@ async function openArrestReport() {
 
   for (group of arrestOptions) {
     const details = document.createElement('details')
+    details.classList.add('mainDropDown')
     const summary = document.createElement('summary')
     summary.innerHTML = group.name
     details.appendChild(summary)
@@ -783,7 +776,7 @@ async function addCitationToCourt(charges, pedName, description) {
       language.content.currency
     }${bigNumberToNiceString(fine)}`
     nameList.push(
-      `<details><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
+      `<details class="mainDropDown"><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
     )
     fullFine += fine
   }
@@ -836,7 +829,7 @@ async function addArrestToCourt(charges, pedName, description) {
       language.content.jail
     }: ${jailTimeString}`
     nameList.push(
-      `<details><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
+      `<details class="mainDropDown"><summary onclick="this.blur()">${charge.name}</summary><div style="opacity: 0.75">${outcome}</div></details>`
     )
     fullFine += fine
     fullJailTimeArr.push(jailTime)
@@ -875,10 +868,10 @@ async function renderCourt() {
   const list = document.querySelector('.courtPage .list')
   list.innerHTML = ''
   const court = await (await fetch('/data/court')).json()
+  court.reverse()
   const language = await getLanguage()
   const langCourt = language.content.courtPage
 
-  court.reverse()
   if (!court.length) {
     const title = document.createElement('div')
     title.classList.add('title')
@@ -887,49 +880,55 @@ async function renderCourt() {
     return
   }
   for (const courtCase of court) {
-    const el = document.createElement('div')
-    el.classList.add('container')
-    el.appendChild(
-      createLabelElement(langCourt.resultContainer.caseNumber, courtCase.number)
-    ).classList.add('caseNumber')
-    el.appendChild(
-      createLabelElement(
+    const informationLabels = [
+      elements.informationLabel(
+        langCourt.resultContainer.caseNumber,
+        courtCase.number,
+        null,
+        ['caseNumber']
+      ),
+      elements.informationLabel(
         langCourt.resultContainer.defendant,
         courtCase.ped,
         () => {
           openPedInSearchPedPage(courtCase.ped)
-        }
-      )
-    ).classList.add('pedName')
-    el.appendChild(
-      createLabelElement(langCourt.resultContainer.offense, courtCase.charge)
-    )
-    el.appendChild(
-      createLabelElement(langCourt.resultContainer.outcome, courtCase.outcome)
-    )
+        },
+        ['pedName']
+      ),
+      elements.informationLabel(
+        langCourt.resultContainer.offense,
+        courtCase.charge
+      ),
+      elements.informationLabel(
+        langCourt.resultContainer.outcome,
+        courtCase.outcome
+      ),
+    ]
+
     if (courtCase.description) {
-      el.appendChild(
-        createLabelElement(
-          langCourt.resultContainer.description,
-          `<div contenteditable class="description">${courtCase.description
-            .split('\n')
-            .join('<br>')}</div>`
-        )
+      const descriptionLabel = elements.informationLabel(
+        langCourt.resultContainer.description,
+        `<div contenteditable class="description">${courtCase.description
+          .split('\n')
+          .join('<br>')}</div>`
       )
-      el.querySelector('.description').addEventListener(
-        'input',
-        async function () {
+      descriptionLabel
+        .querySelector('.description')
+        .addEventListener('input', async function () {
           await fetch('/post/updateCourtDescription', {
             method: 'POST',
             body: JSON.stringify({
-              number: el.querySelector('.caseNumber .value').innerHTML,
+              number: courtCase.number,
               description: this.innerHTML,
             }),
           })
-        }
-      )
+        })
+      informationLabels.push(descriptionLabel)
     }
-    list.appendChild(el)
+
+    const informationLabelContainer =
+      elements.informationLabelContainer(informationLabels)
+    list.appendChild(informationLabelContainer)
   }
 }
 
@@ -964,7 +963,7 @@ async function findPedInCourt(pedName) {
   const language = await getLanguage()
 
   const courtContainers = document.querySelectorAll(
-    '.courtPage .list .container'
+    '.courtPage .list .informationLabelContainer'
   )
   const elements = []
   for (const caseContainer of courtContainers) {
@@ -985,7 +984,7 @@ async function findPedInCourt(pedName) {
     list.appendChild(title)
     return
   }
-  for (container of elements) {
+  for (const container of elements) {
     list.appendChild(container)
   }
 }
@@ -1039,7 +1038,7 @@ async function renderShiftPage() {
     const date = new Date(data.currentShift.start)
     currentShiftEl.dataset.currentShift = JSON.stringify(data.currentShift)
     currentShiftEl.appendChild(
-      createLabelElement(
+      elements.informationLabel(
         langShift.resultContainer.start,
         `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${
           date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
@@ -1048,7 +1047,7 @@ async function renderShiftPage() {
     )
     currentShiftEl
       .appendChild(
-        createLabelElement(
+        elements.informationLabel(
           langShift.resultContainer.duration,
           msToDisplay(getDuration(date.getTime()))
         )
@@ -1061,7 +1060,7 @@ async function renderShiftPage() {
       )
     }
     currentShiftEl.appendChild(
-      createLabelElement(
+      elements.informationLabel(
         langShift.resultContainer.courtCases,
         data.currentShift.courtCases.length
           ? courtCases.join('<br>')
@@ -1073,7 +1072,7 @@ async function renderShiftPage() {
       incidents.push(`• ${incident.number}`)
     }
     currentShiftEl.appendChild(
-      createLabelElement(
+      elements.informationLabel(
         langShift.resultContainer.incidents,
         data.currentShift.incidents.length
           ? incidents.join('<br>')
@@ -1084,7 +1083,7 @@ async function renderShiftPage() {
       )
     )
     currentShiftEl.appendChild(
-      createLabelElement(
+      elements.informationLabel(
         langShift.resultContainer.notes,
         `<textarea class="currentShiftNotes">${data.currentShift.notes}</textarea>`
       )
@@ -1115,13 +1114,12 @@ async function renderShiftPage() {
     : document.querySelector('.shiftPage .shiftsTitle').classList.add('hidden')
 
   for (const shift of data.shifts.reverse()) {
-    const labelContainer = document.createElement('div')
-    labelContainer.classList.add('container')
     const startDate = new Date(shift.start)
     const endDate = new Date(shift.end)
     const duration = shift.end - shift.start
-    labelContainer.appendChild(
-      createLabelElement(
+
+    const informationLabels = [
+      elements.informationLabel(
         langShift.resultContainer.start,
         `${
           startDate.getHours() < 10
@@ -1132,10 +1130,8 @@ async function renderShiftPage() {
             ? `0${startDate.getMinutes()}`
             : startDate.getMinutes()
         }`
-      )
-    )
-    labelContainer.appendChild(
-      createLabelElement(
+      ),
+      elements.informationLabel(
         langShift.resultContainer.end,
         `${
           endDate.getHours() < 10
@@ -1146,22 +1142,21 @@ async function renderShiftPage() {
             ? `0${endDate.getMinutes()}`
             : endDate.getMinutes()
         }`
-      )
-    )
-    labelContainer.appendChild(
-      createLabelElement(
+      ),
+      elements.informationLabel(
         langShift.resultContainer.duration,
         msToDisplay(duration)
-      )
-    )
+      ),
+    ]
+
     const courtCases = []
     for (const courtCase of shift.courtCases) {
       courtCases.push(
         `<a class="courtCaseValue" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</a>`
       )
     }
-    labelContainer.appendChild(
-      createLabelElement(
+    informationLabels.push(
+      elements.informationLabel(
         langShift.resultContainer.courtCases,
         courtCases.length
           ? courtCases.join('<br>')
@@ -1174,8 +1169,8 @@ async function renderShiftPage() {
       for (const incident of shift.incidents) {
         incidents.push(`• ${incident.number}`)
       }
-      labelContainer.appendChild(
-        createLabelElement(
+      informationLabels.push(
+        elements.informationLabel(
           langShift.resultContainer.incidents,
           incidents.join('<br>'),
           function () {
@@ -1184,16 +1179,16 @@ async function renderShiftPage() {
         )
       )
     } else {
-      labelContainer.appendChild(
-        createLabelElement(
+      informationLabels.push(
+        elements.informationLabel(
           langShift.resultContainer.incidents,
           language.content.values.none
         )
       )
     }
 
-    labelContainer.appendChild(
-      createLabelElement(
+    informationLabels.push(
+      elements.informationLabel(
         langShift.resultContainer.notes,
         `${
           shift.notes
@@ -1204,7 +1199,7 @@ async function renderShiftPage() {
         }`
       )
     )
-    list.appendChild(labelContainer)
+    list.appendChild(elements.informationLabelContainer(informationLabels))
   }
 }
 
@@ -1226,8 +1221,12 @@ async function updateIncidentReportOptions(
     .setAttribute('readonly', true)
   incidentReportEl.querySelector('.result #incidentDescription').value = ''
   incidentReportEl.querySelector('.result #incidentNumber').value = ''
-  incidentReportEl.querySelector('.result .title .submit').disabled = true
-  incidentReportEl.querySelector('.result .title .delete').disabled = true
+  incidentReportEl.querySelector(
+    '.result .headerButtonContainer .submit'
+  ).disabled = true
+  incidentReportEl.querySelector(
+    '.result .headerButtonContainer .delete'
+  ).disabled = true
   if (!disableAddIncidentButton) {
     const addIncidentBtn = document.createElement('button')
     addIncidentBtn.innerHTML = language.content.report.newIncident
@@ -1255,10 +1254,12 @@ async function updateIncidentReportOptions(
         : incidentReportEl
             .querySelector('.result #incidentDescription')
             .removeAttribute('readonly')
-      incidentReportEl.querySelector('.result .title .submit').disabled =
-        disableAddIncidentButton
-      incidentReportEl.querySelector('.result .title .delete').disabled =
-        disableAddIncidentButton
+      incidentReportEl.querySelector(
+        '.result .headerButtonContainer .submit'
+      ).disabled = disableAddIncidentButton
+      incidentReportEl.querySelector(
+        '.result .headerButtonContainer .delete'
+      ).disabled = disableAddIncidentButton
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
@@ -1287,6 +1288,8 @@ async function submitIncident() {
       break
     }
   }
+  document.querySelector('.shiftPage .incidentReport').classList.add('hidden')
+  renderShiftPage()
 }
 
 async function deleteIncident() {
@@ -1328,7 +1331,7 @@ async function goToCourtCaseFromValue(caseNumber) {
   await goToPage('court')
   if (!caseNumber) return renderCourt()
   const courtContainers = document.querySelectorAll(
-    '.courtPage .list .container'
+    '.courtPage .list .informationLabelContainer'
   )
   const elements = []
   for (const caseContainer of courtContainers) {
@@ -1385,7 +1388,7 @@ function updateCurrentShiftDuration() {
 
 function disableCitationSubmitButton() {
   document.querySelector(
-    '.searchPedPage .citationReport .result .title button:not(.close)'
+    '.searchPedPage .citationReport .result .headerButtonContainer button:not(.close)'
   ).disabled = !document.querySelectorAll(
     '.searchPedPage .citationReport .result .charges button'
   ).length
@@ -1393,7 +1396,7 @@ function disableCitationSubmitButton() {
 
 function disableArrestSubmitButton() {
   document.querySelector(
-    '.searchPedPage .arrestReport .result .title button:not(.close)'
+    '.searchPedPage .arrestReport .result .headerButtonContainer button:not(.close)'
   ).disabled = !document.querySelectorAll(
     '.searchPedPage .arrestReport .result .charges button'
   ).length
