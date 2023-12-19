@@ -628,7 +628,11 @@ function deepValue(obj, path) {
 // https://stackoverflow.com/a/15093480 (edited)
 function updateObjectUsingPath(obj, value, path) {
   while (path.length > 1) {
-    obj = obj[path.shift()]
+    let newPath = path.shift()
+    if (!obj[newPath]) {
+      obj[newPath] = {}
+    }
+    obj = obj[newPath]
   }
   obj[path.shift()] = value
 }
