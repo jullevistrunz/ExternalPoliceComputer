@@ -4,4 +4,3 @@
 - give ticket animation
 - policing redefined integration (await release) [Echooo]
 - improve map [AgentDZN]
-- search for arrests / citations [CafeRacer13]

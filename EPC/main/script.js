@@ -189,6 +189,12 @@ setInterval(() => {
     document.querySelector(
       '.content .searchPedPage .result .description'
     ).placeholder = language.content.report.description
+    document.querySelector(
+      '.content .searchPedPage .citationReport .searchCharge'
+    ).placeholder = language.content.report.searchCitation
+    document.querySelector(
+      '.content .searchPedPage .arrestReport .searchCharge'
+    ).placeholder = language.content.report.searchArrest
 
     document.querySelector(
       '.content .shiftPage .result .headerButtonContainer button.submit'
@@ -224,6 +230,18 @@ setInterval(() => {
 // clear localStorage's config and language
 localStorage.removeItem('config')
 localStorage.removeItem('language')
+
+// search charges
+document
+  .querySelector('.searchPedPage .citationReport .searchCharge')
+  .addEventListener('input', function () {
+    renderCitationArrestOptions('citation', this.value)
+  })
+document
+  .querySelector('.searchPedPage .arrestReport .searchCharge')
+  .addEventListener('input', function () {
+    renderCitationArrestOptions('arrest', this.value)
+  })
 
 //funcs
 async function goToPage(name) {
@@ -285,29 +303,6 @@ async function searchForCar(licensePlate) {
     }
   }
   return null
-}
-
-function createLabelElement(key, value, onClick = null) {
-  const labelEl = document.createElement('div')
-  labelEl.classList.add('label')
-  const keyEl = document.createElement('div')
-  keyEl.classList.add('key')
-  keyEl.innerHTML = key
-  const valueEl = document.createElement('div')
-  valueEl.classList.add('value')
-  valueEl.innerHTML = value
-  labelEl.appendChild(keyEl)
-  labelEl.appendChild(valueEl)
-  if (typeof onClick == 'function') {
-    labelEl.id = Math.random().toString(36).replace(/^0\./, '_')
-    labelEl.addEventListener('click', onClick)
-    labelEl.style.cursor = 'pointer'
-    labelEl.style.transition = '50ms linear'
-    const style = document.createElement('style')
-    style.innerHTML = `#${labelEl.id} { border: 2px solid transparent; } #${labelEl.id}:hover { border-color: var(--second-accent-color);  }`
-    document.body.appendChild(style)
-  }
-  return labelEl
 }
 
 async function renderPedSearch() {
@@ -512,119 +507,41 @@ function openPedInSearchPedPage(name) {
   document.querySelector('.searchPedPage .pedBtn').click()
 }
 
-async function openCitationReport() {
+async function renderCitationArrestOptions(type, search = null) {
   const language = await getLanguage()
-
-  document
-    .querySelector('.searchPedPage .citationReport')
-    .classList.remove('hidden')
-  const options = document.querySelector(
-    '.searchPedPage .citationReport .options'
+  const options = await (await fetch(`/data/${type}Options`)).json()
+  const optionsEl = document.querySelector(
+    `.searchPedPage .${type}Report .options`
   )
-  options.innerHTML = ''
+  optionsEl.querySelectorAll('.mainDropDown').forEach((el) => {
+    el.remove()
+  })
 
-  const citationOptions = await (await fetch('/data/citationOptions')).json()
-
-  document
-    .querySelectorAll('.searchPedPage .citationReport .result .btn')
-    .forEach((oldBtn) => {
-      oldBtn.remove()
-    })
-
-  disableCitationSubmitButton()
-
-  document.querySelector(
-    '.searchPedPage .citationReport .result .description'
-  ).value = ''
-
-  for (group of citationOptions) {
+  for (const group of options) {
     const details = document.createElement('details')
     details.classList.add('mainDropDown')
-    const summary = document.createElement('summary')
-    summary.innerHTML = group.name
-    details.appendChild(summary)
-    for (charge of group.charges) {
-      const btn = document.createElement('button')
-      btn.dataset.charge = JSON.stringify(charge)
-      btn.innerHTML = charge.name
-      btn.addEventListener('click', function () {
-        this.blur()
-        addCitation(this.dataset.charge)
-        disableCitationSubmitButton()
-      })
-      btn.addEventListener('mouseover', async function () {
-        this.dataset.open = 'true'
-        await sleep(150)
-        if (this.dataset.open == 'false') return
-        this.innerHTML =
-          JSON.parse(this.dataset.charge).minFine ==
-          JSON.parse(this.dataset.charge).maxFine
-            ? `${
-                JSON.parse(this.dataset.charge).name
-              }<br><a style="opacity: 0.75; pointer-events: none;">${
-                language.content.fine
-              }: ${language.content.currency}${
-                JSON.parse(this.dataset.charge).minFine
-              }</a>`
-            : `${
-                JSON.parse(this.dataset.charge).name
-              }<br><a style="opacity: 0.75; pointer-events: none;">${
-                language.content.fine
-              }: ${language.content.currency}${
-                JSON.parse(this.dataset.charge).minFine
-              }-${language.content.currency}${
-                JSON.parse(this.dataset.charge).maxFine
-              }</a>`
-      })
-      btn.addEventListener('mouseleave', function () {
-        this.innerHTML = JSON.parse(this.dataset.charge).name
-        this.dataset.open = 'false'
-      })
-      details.appendChild(btn)
+    if (search) {
+      details.open = true
     }
-    options.appendChild(details)
-  }
-}
-
-async function openArrestReport() {
-  const language = await getLanguage()
-
-  document
-    .querySelector('.searchPedPage .arrestReport')
-    .classList.remove('hidden')
-  const options = document.querySelector(
-    '.searchPedPage .arrestReport .options'
-  )
-  options.innerHTML = ''
-
-  const arrestOptions = await (await fetch('/data/arrestOptions')).json()
-
-  document
-    .querySelectorAll('.searchPedPage .arrestReport .result .btn')
-    .forEach((oldBtn) => {
-      oldBtn.remove()
-    })
-
-  disableArrestSubmitButton()
-
-  document.querySelector(
-    '.searchPedPage .arrestReport .result .description'
-  ).value = ''
-
-  for (group of arrestOptions) {
-    const details = document.createElement('details')
-    details.classList.add('mainDropDown')
     const summary = document.createElement('summary')
     summary.innerHTML = group.name
     details.appendChild(summary)
     for (charge of group.charges) {
+      if (search && !charge.name.toLowerCase().includes(search.toLowerCase())) {
+        continue
+      }
       const btn = document.createElement('button')
       btn.dataset.charge = JSON.stringify(charge)
       btn.innerHTML = charge.name
       btn.addEventListener('click', function () {
         this.blur()
-        addArrest(this.dataset.charge)
-        disableArrestSubmitButton()
+        if (type == 'citation') {
+          addCitation(this.dataset.charge)
+          disableCitationSubmitButton()
+        } else {
+          addArrest(this.dataset.charge)
+          disableArrestSubmitButton()
+        }
       })
       btn.addEventListener('mouseover', async function () {
         this.dataset.open = 'true'
@@ -655,9 +572,14 @@ async function openArrestReport() {
                 JSON.parse(this.dataset.charge).maxMonths,
                 language
               )}`
-        this.innerHTML = `${
-          JSON.parse(this.dataset.charge).name
-        }<br><a style="opacity: 0.75; pointer-events: none;">${fineString} | ${jailString}</a>`
+        this.innerHTML =
+          type == 'arrest'
+            ? `${
+                JSON.parse(this.dataset.charge).name
+              }<br><a style="opacity: 0.75; pointer-events: none;">${fineString} | ${jailString}</a>`
+            : `${
+                JSON.parse(this.dataset.charge).name
+              }<br><a style="opacity: 0.75; pointer-events: none;">${fineString}</a>`
       })
       btn.addEventListener('mouseleave', function () {
         this.innerHTML = JSON.parse(this.dataset.charge).name
@@ -665,8 +587,61 @@ async function openArrestReport() {
       })
       details.appendChild(btn)
     }
-    options.appendChild(details)
+    optionsEl.appendChild(details)
   }
+  if (search) {
+    optionsEl.querySelectorAll('details').forEach((el) => {
+      if (el.querySelectorAll('button').length < 1) el.remove()
+    })
+  }
+}
+
+async function openCitationReport() {
+  document
+    .querySelector('.searchPedPage .citationReport')
+    .classList.remove('hidden')
+
+  document.querySelector(
+    '.searchPedPage .citationReport .options .searchCharge'
+  ).value = ''
+
+  renderCitationArrestOptions('citation')
+
+  document
+    .querySelectorAll('.searchPedPage .citationReport .result .btn')
+    .forEach((oldBtn) => {
+      oldBtn.remove()
+    })
+
+  disableCitationSubmitButton()
+
+  document.querySelector(
+    '.searchPedPage .citationReport .result .description'
+  ).value = ''
+}
+
+async function openArrestReport() {
+  document
+    .querySelector('.searchPedPage .arrestReport')
+    .classList.remove('hidden')
+
+  document.querySelector(
+    '.searchPedPage .arrestReport .options .searchCharge'
+  ).value = ''
+
+  renderCitationArrestOptions('arrest')
+
+  document
+    .querySelectorAll('.searchPedPage .arrestReport .result .btn')
+    .forEach((oldBtn) => {
+      oldBtn.remove()
+    })
+
+  disableArrestSubmitButton()
+
+  document.querySelector(
+    '.searchPedPage .arrestReport .result .description'
+  ).value = ''
 }
 
 function addCitation(charge) {
@@ -1350,7 +1325,7 @@ async function goToCourtCaseFromValue(caseNumber) {
     list.appendChild(title)
     return
   }
-  for (container of elements) {
+  for (const container of elements) {
     list.appendChild(container)
   }
 }

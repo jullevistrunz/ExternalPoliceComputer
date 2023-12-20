@@ -22,7 +22,9 @@
       "description": "Description",
       "incidentNumber": "Incident Number",
       "newIncident": "New Incident",
-      "delete": "Delete"
+      "delete": "Delete",
+      "searchCitation": "Search Citation",
+      "searchArrest": "Search Charge"
     },
     "values": {
       "male": "Male",

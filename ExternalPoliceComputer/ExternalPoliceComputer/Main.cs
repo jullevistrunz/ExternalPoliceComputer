@@ -26,6 +26,13 @@ namespace ExternalPoliceComputer {
         private static void Functions_OnOnDutyStateChanged(bool OnDuty) {
             CurrentlyOnDuty = OnDuty;
             if (OnDuty) {
+
+                if (!Directory.Exists(DataPath)) {
+                    Game.DisplayNotification("ExternalPoliceComputer failed to load. If you need support join the Discord.");
+                    Game.LogTrivial("ExternalPoliceComputer: Loading aborted. Couldn't find data path.");
+                    return;
+                }
+
                 LSPD_First_Response.Mod.API.Events.OnPulloverStarted += Events_OnPulloverStarted;
                 LSPD_First_Response.Mod.API.Events.OnPursuitEnded += Events_OnPursuitEnded;
 

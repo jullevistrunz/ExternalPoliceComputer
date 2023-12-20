@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.3.3'
+const version = '1.3.4'
 
 // clear data on start up
 const dataDefaults = new Map([
@@ -45,16 +45,21 @@ const server = http.createServer(function (req, res) {
     res.write(fs.readFileSync('main/index.html'))
     res.end()
   } else if (path.startsWith('/main')) {
-    const fileName = path.substring('/main/'.length)
-    if (fileName.endsWith('.css')) {
-      res.writeHead(200, { 'Content-Type': 'text/css' })
-    } else if (fileName.endsWith('.js')) {
-      res.writeHead(200, { 'Content-Type': 'text/js' })
-    } else {
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
+    try {
+      const fileName = path.substring('/main/'.length)
+      if (fileName.endsWith('.css')) {
+        res.writeHead(200, { 'Content-Type': 'text/css' })
+      } else if (fileName.endsWith('.js')) {
+        res.writeHead(200, { 'Content-Type': 'text/js' })
+      } else {
+        res.writeHead(200, { 'Content-Type': 'text/plain' })
+      }
+      res.write(fs.readFileSync(`main/${fileName}`))
+      res.end()
+    } catch {
+      res.writeHead(404)
+      res.end()
     }
-    res.write(fs.readFileSync(`main/${fileName}`))
-    res.end()
   } else if (path == '/customStyles') {
     res.writeHead(200, { 'Content-Type': 'text/css' })
     res.write(fs.readFileSync('custom.css'))
@@ -537,22 +542,23 @@ function generateDirectory() {
   fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
 
   const defaultLanguage = JSON.parse(fs.readFileSync('defaults/language.json'))
-  const defaultLanguageKeys = []
   const newLanguage = JSON.parse(fs.readFileSync('language.json'))
-  const newLanguageKeys = []
-  visitDescendants(defaultLanguage, function (key, value) {
-    defaultLanguageKeys.push(key)
-  })
-  visitDescendants(newLanguage, function (key, value) {
-    newLanguageKeys.push(key)
-  })
-  for (const defaultLanguageKey of defaultLanguageKeys) {
-    if (!newLanguageKeys.includes(defaultLanguageKey)) {
-      createLog('Error in language.json; Falling back to default')
-      fallbackToDefaultLanguage = true
-      break
+
+  const defaultLanguagePaths = getObjectPaths(defaultLanguage)
+  const newLanguagePaths = getObjectPaths(newLanguage)
+  const newLanguagePathStrings = newLanguagePaths.map((item) => item.join('.'))
+
+  for (const i in defaultLanguagePaths) {
+    if (!newLanguagePathStrings.includes(defaultLanguagePaths[i].join('.'))) {
+      updateObjectUsingPath(
+        newLanguage,
+        deepValue(defaultLanguage, defaultLanguagePaths[i]),
+        defaultLanguagePaths[i]
+      )
     }
   }
+
+  fs.writeFileSync('language.json', JSON.stringify(newLanguage, null, 2))
 
   try {
     fs.readdirSync('data')
@@ -597,13 +603,36 @@ function getCleanRandomCitation(allCitations) {
   return citation.replace(regex, '')
 }
 
-// https://stackoverflow.com/a/66282012
-function visitDescendants(obj, cb) {
+// https://en.wikipedia.org/wiki/Depth-first_search (sort of)
+function getObjectPaths(obj, path = []) {
+  let paths = []
   for (const [key, value] of Object.entries(obj)) {
-    if (value && typeof value === 'object') {
-      visitDescendants(value, cb)
+    const newPath = [...path, key]
+    if (typeof value === 'object' && value) {
+      paths = paths.concat(getObjectPaths(value, newPath))
     } else {
-      cb(key, value)
+      paths.push(newPath)
     }
   }
+  return paths
+}
+
+// https://stackoverflow.com/a/8817473 (edited)
+function deepValue(obj, path) {
+  for (const i in path) {
+    obj = obj[path[i]]
+  }
+  return obj
+}
+
+// https://stackoverflow.com/a/15093480 (edited)
+function updateObjectUsingPath(obj, value, path) {
+  while (path.length > 1) {
+    let newPath = path.shift()
+    if (!obj[newPath]) {
+      obj[newPath] = {}
+    }
+    obj = obj[newPath]
+  }
+  obj[path.shift()] = value
 }
