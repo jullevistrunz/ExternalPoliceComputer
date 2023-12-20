@@ -1,5 +1,5 @@
 - Bolo ambient event implementation (await his API update) [Echooo]
-- callout page [[JakeTheFR](https://discord.com/channels/724616964944953354/1158786778845683712/1172242700343455764)]
+- callout page [[JakeTheFR](https://discord.com/channels/724616964944953354/1158786778845683712/1172242700343455764)] and [[Astro](https://discord.com/channels/724616964944953354/1158786778845683712/1187169424227172453)]
 - YourShift implementation [TheGreenCraft]
 - give ticket animation
 - policing redefined integration (await release) [Echooo]
