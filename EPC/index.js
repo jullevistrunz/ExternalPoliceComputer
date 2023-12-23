@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.3.4'
+const version = '1.3.5'
 
 // clear data on start up
 const dataDefaults = new Map([
@@ -27,10 +27,27 @@ createLog('EPC server log initialized')
 createLog(`Version: ${version}`)
 createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
-createLog(`Config: ${JSON.stringify(config)}`)
+createLog(`Config:\n${multiLineLog(config)}`)
+createLog(
+  `Custom file size:\n${multiLineLog({
+    js: `Default ${fs.statSync('defaults/custom.js').size} Custom ${
+      fs.statSync('custom.js').size
+    }`,
+    css: `Default ${fs.statSync('defaults/custom.css').size} Custom ${
+      fs.statSync('custom.css').size
+    }`,
+  })}`
+)
 function createLog(message) {
   const content = `[${new Date().toISOString()}] ${message}\n`
   fs.writeFileSync('EPC.log', `${fs.readFileSync('EPC.log')}${content}`)
+}
+function multiLineLog(obj) {
+  const arr = []
+  for (const [key, value] of Object.entries(obj)) {
+    arr.push(`\t${key}: ${value}`)
+  }
+  return arr.join('\n')
 }
 process.on('uncaughtException', function (err) {
   console.error(err)
