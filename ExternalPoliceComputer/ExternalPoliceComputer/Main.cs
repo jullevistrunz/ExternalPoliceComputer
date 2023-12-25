@@ -4,19 +4,28 @@ using Rage;
 using StopThePed.API;
 using System;
 using System.IO;
+using LSPD_First_Response.Mod.Callouts;
+using LSPD_First_Response.Engine.Scripting;
+using System.Collections.Specialized;
+using System.Web;
+using System.Linq;
 
 namespace ExternalPoliceComputer {
-    public class Main : Plugin {
+    internal class Main : Plugin {
 
-        private static bool CurrentlyOnDuty;
-        private static readonly int MaxNumberOfNearbyPedsOrVehicles = 15;
-        private static Ped Player => Game.LocalPlayer.Character;
-        private static readonly string DataPath = "EPC/data";
-        private static bool UseSTP = true;
+        internal static bool CurrentlyOnDuty;
+        internal static readonly int MaxNumberOfNearbyPedsOrVehicles = 15;
+        internal static Ped Player => Game.LocalPlayer.Character;
+        internal static readonly string DataPath = "EPC/data";
+        internal static bool UseSTP = true;
+        internal static bool UseCI = true;
+        internal static string Callsign;
+        
+        
 
         public override void Initialize() {
             LSPD_First_Response.Mod.API.Functions.OnOnDutyStateChanged += Functions_OnOnDutyStateChanged;
-            Game.LogTrivial("Plugin ExternalPoliceComputer has been initialized.");
+            Game.LogTrivial("ExternalPoliceComputer has been initialized.");
         }
 
         public override void Finally() {
@@ -33,6 +42,13 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
+                try {
+                    AddCalloutEventWithCI();
+                } catch {
+                    UseCI = false;
+                }
+                Game.LogTrivial($"ExternalPoliceComputer: CalloutInterface: {UseCI}.");
+
                 LSPD_First_Response.Mod.API.Events.OnPulloverStarted += Events_OnPulloverStarted;
                 LSPD_First_Response.Mod.API.Events.OnPursuitEnded += Events_OnPursuitEnded;
 
@@ -40,28 +56,23 @@ namespace ExternalPoliceComputer {
 
                 try {
                     AddEventsWithSTP();
-
-                    UpdateWorldPeds();
-                    UpdateWorldCars();
-
-                    Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
                 } catch {
                     UseSTP = false;
-                    Game.LogTrivial("ExternalPoliceComputer: STP isn't accessible.");
-
+                    
                     LSPD_First_Response.Mod.API.Events.OnPedPresentedId += Events_OnPedPresentedId;
                     LSPD_First_Response.Mod.API.Events.OnPedArrested += Events_OnPedArrested;
                     LSPD_First_Response.Mod.API.Events.OnPedFrisked += Events_OnPedFrisked;
                     LSPD_First_Response.Mod.API.Events.OnPedStopped += Events_OnPedStopped;
-
-                    UpdateWorldPeds();
-                    UpdateWorldCars();
-
-                    Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
                 }
+                Game.LogTrivial($"ExternalPoliceComputer: STP: {UseSTP}");
+
+                UpdateWorldPeds();
+                UpdateWorldCars();
+
+                Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }
         }
-      
+
         private static void AddEventsWithSTP() {
             StopThePed.API.Events.askIdEvent += Events_askIdEvent;
             StopThePed.API.Events.pedArrestedEvent += Events_pedArrestedEvent;
@@ -69,6 +80,73 @@ namespace ExternalPoliceComputer {
             StopThePed.API.Events.askDriverLicenseEvent += Events_askDriverLicenseEvent;
             StopThePed.API.Events.askPassengerIdEvent += Events_askPassengerIdEvent;
             StopThePed.API.Events.stopPedEvent += Events_stopPedEvent;
+        }
+
+        private static void AddCalloutEventWithCI() {
+            UseCI = CalloutInterfaceAPI.Functions.IsCalloutInterfaceAvailable;
+            Callsign = IPT.Common.Handlers.PlayerHandler.GetCallsign();
+
+            LSPD_First_Response.Mod.API.Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
+            LSPD_First_Response.Mod.API.Events.OnCalloutFinished += Events_OnCalloutFinished;
+            LSPD_First_Response.Mod.API.Events.OnCalloutAccepted += Events_OnCalloutAccepted;
+
+            void Events_OnCalloutDisplayed(LHandle handle) {
+                if (UseCI) {
+                    Game.LogTrivial("ExternalPoliceComputer: Update callout.data");
+                    Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
+                    string agency = LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName();
+                    string priority = "Code 2";
+                    string description = "";
+                    string name = callout.FriendlyName;
+
+                    // opus49 came up with this (and I just modified it a bit)
+                    if (callout.ScriptInfo is CalloutInterfaceAPI.CalloutInterfaceAttribute calloutInterfaceInfo) {
+                        if (calloutInterfaceInfo.Agency.Length > 0) {
+                            agency = calloutInterfaceInfo.Agency;
+                        }
+                        if (calloutInterfaceInfo.Priority.Length > 0) {
+                            priority = calloutInterfaceInfo.Priority;
+                        }
+                        description = calloutInterfaceInfo.Description;
+                        name = calloutInterfaceInfo.Name;
+                    }
+
+                    string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
+                    WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
+                    string area = zone.RealAreaName;
+
+                    string calloutData = $"name={name}&description={description}&message={callout.CalloutMessage}&advisory={callout.CalloutAdvisory}&callsign={Callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={area}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&additionalMessage=";
+
+                    File.WriteAllText($"{DataPath}/callout.data", calloutData);
+                    Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
+                }
+            }
+
+            void Events_OnCalloutAccepted(LHandle handle) {
+                Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
+                UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
+            }
+
+            void Events_OnCalloutFinished(LHandle handle) {
+                Game.LogTrivial("ExternalPoliceComputer: Clear callout.data");
+                File.WriteAllText($"{DataPath}/callout.data", "");
+                Game.LogTrivial("ExternalPoliceComputer: Cleared callout.data");
+            }
+        }
+
+        internal static void UpdateCalloutData(string key, string value) {
+            Game.LogTrivial("ExternalPoliceComputer: Update callout.data");
+            NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
+
+            calloutData.Set(key, value);
+
+            string[] calloutDataQueryArr = new string[calloutData.Count];
+            for (int i = 0; i < calloutData.Count; i++) {
+                calloutDataQueryArr[i] = $"{calloutData.GetKey(i)}={calloutData.GetValues(i).FirstOrDefault()}";
+            }
+
+            File.WriteAllText($"{Main.DataPath}/callout.data", string.Join("&", calloutDataQueryArr));
+            Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
         }
 
         private static void Interval() {

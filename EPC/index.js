@@ -2,13 +2,14 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.3.5'
+const version = '1.4.0'
 
 // clear data on start up
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
   ['worldCars.data', ''],
   ['currentID.data', ''],
+  ['callout.data', ''],
   ['peds.json', '[]'],
   ['cars.json', '[]'],
   ['court.json', '[]'],
@@ -161,6 +162,13 @@ const server = http.createServer(function (req, res) {
       } else {
         res.write(fs.readFileSync('language.json'))
       }
+      res.end()
+    } else if (dataPath == 'callout') {
+      const rawCalloutData = fs.readFileSync('/data/callout.data')
+      const calloutParams = new URLSearchParams(rawCalloutData)
+      const calloutData = paramsToObject(calloutParams)
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(JSON.stringify(calloutData))
       res.end()
     } else {
       res.writeHead(404)
@@ -520,6 +528,7 @@ function getRandomArrests(allCharges, isWanted) {
 function clearGeneratedData() {
   fs.writeFileSync('data/cars.json', '[]')
   fs.writeFileSync('data/currentID.data', '')
+  fs.writeFileSync('data/callout.data', '')
   const peds = JSON.parse(fs.readFileSync('data/peds.json'))
   const court = JSON.parse(fs.readFileSync('data/court.json'))
   const newPeds = []
