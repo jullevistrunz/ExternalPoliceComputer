@@ -550,6 +550,11 @@ input {
   background-color: var(--background-color);
 }
 
+.calloutPage .informationLabelContainer {
+  display: grid;
+  grid-auto-flow: column;
+}
+
 /* overwrite */
 .hidden {
   display: none;

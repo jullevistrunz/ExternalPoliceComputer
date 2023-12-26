@@ -131,6 +131,15 @@ setInterval(() => {
     }
   }, 5000)
 
+  // calloutPage handler
+  if (!config.showCalloutPage) {
+    document.querySelector('.header .callout').classList.add('hidden')
+  } else if (config.autoShowCalloutPage) {
+    setInterval(() => {
+      updateCalloutPage()
+    }, 1000)
+  }
+
   // static language replace
   if (config.replaceStaticWithCustomLanguage) {
     const language = await getLanguage()
@@ -243,6 +252,8 @@ document
     renderCitationArrestOptions('arrest', this.value)
   })
 
+let calloutPageInterval
+
 //funcs
 async function goToPage(name) {
   const config = await getConfig()
@@ -282,6 +293,15 @@ async function goToPage(name) {
     await renderCourt()
   } else if (name == 'shift') {
     await renderShiftPage()
+  } else if (name == 'callout') {
+    if (!config.autoShowCalloutPage) {
+      calloutPageInterval = setInterval(() => {
+        updateCalloutPage()
+      }, 1000)
+    }
+  }
+  if (calloutPageInterval && name != 'callout') {
+    clearInterval(calloutPageInterval)
   }
 }
 
@@ -1500,4 +1520,45 @@ async function getLanguage() {
   const language = await (await fetch('/data/language')).json()
   localStorage.setItem('language', JSON.stringify(language))
   return language
+}
+
+async function updateCalloutPage() {
+  const language = await getLanguage()
+  const calloutData = await (await fetch('/data/callout')).json()
+  const calloutPage = document.querySelector('.content .calloutPage')
+  if (
+    !Object.keys(calloutData).length ||
+    JSON.stringify(calloutData) == calloutPage.dataset.calloutData
+  ) {
+    return
+  }
+  console.log(calloutData)
+  calloutPage.innerHTML = ''
+  const informationLabels = [
+    elements.informationLabel(
+      language.content.calloutPage.keys.street,
+      `${calloutData.postal} ${calloutData.street}`
+    ),
+    elements.informationLabel(
+      language.content.calloutPage.keys.area,
+      calloutData.area
+    ),
+    elements.informationLabel(
+      language.content.calloutPage.keys.county,
+      language.content.calloutPage.values.counties[calloutData.county]
+        ? language.content.calloutPage.values.counties[calloutData.county]
+        : calloutData.county
+    ),
+    elements.informationLabel(
+      language.content.calloutPage.keys.priority,
+      calloutData.priority
+    ),
+  ]
+
+  const informationLabelContainer =
+    elements.informationLabelContainer(informationLabels)
+
+  calloutPage.dataset.calloutData = JSON.stringify(calloutData)
+
+  calloutPage.appendChild(informationLabelContainer)
 }

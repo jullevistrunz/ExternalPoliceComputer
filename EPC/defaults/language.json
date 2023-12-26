@@ -5,7 +5,8 @@
     "searchPed": "Peds",
     "searchCar": "Vehicles",
     "court": "Court",
-    "shift": "Shift"
+    "shift": "Shift",
+    "callout": "Callout"
   },
   "content": {
     "fine": "Fine",
@@ -168,6 +169,25 @@
         "courtCases": "Court Cases",
         "incidents": "Incidents",
         "notes": "Notes"
+      }
+    },
+    "calloutPage": {
+      "keys": {
+        "street": "Street",
+        "area": "Area",
+        "county": "County",
+        "agency": "Agency",
+        "priority": "Priority"
+      },
+      "values": {
+        "counties": {
+          "LosSantos": "Los Santos City",
+          "LosSantosCounty": "Los Santos County",
+          "BlaineCounty": "Blaine County",
+          "SanAndreas": "San Andreas",
+          "CayoPerico": "Cayo Perico",
+          "NorthYankton": "North Yankton"
+        }
       }
     }
   },

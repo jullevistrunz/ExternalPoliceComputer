@@ -14,5 +14,7 @@
   "showCustomizationLink": true,
   "replaceStaticWithCustomLanguage": true,
   "port": 80,
-  "defaultMapZoom": 1.5
+  "defaultMapZoom": 1.5,
+  "showCalloutPage": true,
+  "autoShowCalloutPage": false
 }

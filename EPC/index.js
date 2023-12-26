@@ -53,6 +53,7 @@ function multiLineLog(obj) {
 process.on('uncaughtException', function (err) {
   console.error(err)
   createLog(err.stack)
+  process.exit()
 })
 
 const server = http.createServer(function (req, res) {
@@ -164,7 +165,7 @@ const server = http.createServer(function (req, res) {
       }
       res.end()
     } else if (dataPath == 'callout') {
-      const rawCalloutData = fs.readFileSync('/data/callout.data')
+      const rawCalloutData = fs.readFileSync('data/callout.data', 'utf-8')
       const calloutParams = new URLSearchParams(rawCalloutData)
       const calloutData = paramsToObject(calloutParams)
       res.writeHead(200, { 'Content-Type': 'text/json' })
