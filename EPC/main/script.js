@@ -295,6 +295,7 @@ async function goToPage(name) {
     await renderShiftPage()
   } else if (name == 'callout') {
     if (!config.autoShowCalloutPage) {
+      updateCalloutPage()
       calloutPageInterval = setInterval(() => {
         updateCalloutPage()
       }, 1000)
@@ -1554,11 +1555,21 @@ async function updateCalloutPage() {
       calloutData.priority
     ),
   ]
-
   const informationLabelContainer =
     elements.informationLabelContainer(informationLabels)
-
   calloutPage.dataset.calloutData = JSON.stringify(calloutData)
-
   calloutPage.appendChild(informationLabelContainer)
+
+  const calloutDetails = document.createElement('textarea')
+  calloutDetails.dataset.msEditor = false
+  calloutDetails.readOnly = true
+  calloutDetails.classList.add('calloutDetails')
+  calloutDetails.innerHTML = `${calloutData.message}\n${calloutData.advisory}${
+    calloutData.acceptanceState == 'Running' ||
+    calloutData.acceptanceState == 'Ended'
+      ? `\n${language.content.calloutPage.unit} ${calloutData.callsign} ${language.content.calloutPage.attached}`
+      : ''
+  }\n${calloutData.additionalMessage.replaceAll('\\n', '\n')}`
+
+  calloutPage.appendChild(calloutDetails)
 }

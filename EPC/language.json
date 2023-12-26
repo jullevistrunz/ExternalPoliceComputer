@@ -188,7 +188,9 @@
           "CayoPerico": "Cayo Perico",
           "NorthYankton": "North Yankton"
         }
-      }
+      },
+      "unit": "Unit",
+      "attached": "Attached"
     }
   },
   "overlay": {
