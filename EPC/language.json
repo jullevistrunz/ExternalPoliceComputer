@@ -193,7 +193,9 @@
       "unit": "Unit",
       "attached": "Attached At",
       "calloutNotFound": "Listening For Callouts",
-      "close": "Incident Closed At"
+      "close": "Incident Closed At",
+      "calloutReport": "---- Callout Report ----",
+      "additionalReport": "---- Additional Report ----"
     }
   },
   "overlay": {

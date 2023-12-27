@@ -115,7 +115,7 @@ namespace ExternalPoliceComputer {
                     string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
                     WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
 
-                    string calloutData = $"name={name}&description={description}&message={callout.CalloutMessage}&advisory={callout.CalloutAdvisory}&callsign={Callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime().ToString("s")}&additionalMessage=";
+                    string calloutData = $"id={new Random().Next(10000, 100000)}&name={name}&description={description}&message={callout.CalloutMessage}&advisory={callout.CalloutAdvisory}&callsign={Callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime().ToString("s")}&additionalMessage=";
 
                     File.WriteAllText($"{DataPath}/callout.data", calloutData);
                     Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");

@@ -17,5 +17,6 @@
   "defaultMapZoom": 1.5,
   "showCalloutPage": true,
   "autoShowCalloutPage": true,
-  "clearCalloutPageTime": null
+  "clearCalloutPageTime": null,
+  "automaticIncidentReports": true
 }

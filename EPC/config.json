@@ -16,6 +16,7 @@
   "port": 80,
   "defaultMapZoom": 1.5,
   "showCalloutPage": true,
-  "autoShowCalloutPage": false,
-  "clearCalloutPageTime": null
+  "autoShowCalloutPage": true,
+  "clearCalloutPageTime": null,
+  "automaticIncidentReports": true
 }
