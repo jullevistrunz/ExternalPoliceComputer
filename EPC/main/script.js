@@ -1527,14 +1527,18 @@ async function updateCalloutPage() {
   const language = await getLanguage()
   const calloutData = await (await fetch('/data/callout')).json()
   const calloutPage = document.querySelector('.content .calloutPage')
-  if (
-    !Object.keys(calloutData).length ||
-    JSON.stringify(calloutData) == calloutPage.dataset.calloutData
-  ) {
+  if (JSON.stringify(calloutData) == calloutPage.dataset.calloutData) {
+    return
+  }
+  calloutPage.innerHTML = ''
+  if (!Object.keys(calloutData).length) {
+    const title = document.createElement('div')
+    title.classList.add('title')
+    title.innerHTML = language.content.calloutPage.calloutNotFound
+    calloutPage.appendChild(title)
     return
   }
   console.log(calloutData)
-  calloutPage.innerHTML = ''
   const informationLabels = [
     elements.informationLabel(
       language.content.calloutPage.keys.street,
@@ -1560,16 +1564,37 @@ async function updateCalloutPage() {
   calloutPage.dataset.calloutData = JSON.stringify(calloutData)
   calloutPage.appendChild(informationLabelContainer)
 
-  const calloutDetails = document.createElement('textarea')
+  const calloutDetails = document.createElement('div')
   calloutDetails.dataset.msEditor = false
   calloutDetails.readOnly = true
   calloutDetails.classList.add('calloutDetails')
-  calloutDetails.innerHTML = `${calloutData.message}\n${calloutData.advisory}${
+  const displayedDate = new Date(calloutData.displayedTime)
+  calloutDetails.innerHTML = `<a class="systemMessage">${
+    language.content.calloutPage.open
+  } ${displayedDate.toLocaleDateString()} ${displayedDate.toLocaleTimeString()}</a><br>${
+    calloutData.message
+  }<br>${calloutData.advisory}`
+
+  if (
     calloutData.acceptanceState == 'Running' ||
     calloutData.acceptanceState == 'Ended'
-      ? `\n${language.content.calloutPage.unit} ${calloutData.callsign} ${language.content.calloutPage.attached}`
-      : ''
-  }\n${calloutData.additionalMessage.replaceAll('\\n', '\n')}`
+  ) {
+    const acceptedDate = new Date(calloutData.acceptedTime)
+    calloutDetails.innerHTML += `<br><a class="systemMessage">${
+      language.content.calloutPage.unit
+    } ${calloutData.callsign} (${calloutData.agency.toUpperCase()}) ${
+      language.content.calloutPage.attached
+    } ${acceptedDate.toLocaleDateString()} ${acceptedDate.toLocaleTimeString()}</a>`
+  }
+  calloutDetails.innerHTML +=
+    '<br>' + calloutData.additionalMessage.replaceAll('\\n', '<br>')
+
+  if (calloutData.acceptanceState == 'Ended') {
+    const finishedDate = new Date(calloutData.finishedTime)
+    calloutDetails.innerHTML += `<a class="systemMessage">${
+      language.content.calloutPage.close
+    } ${finishedDate.toLocaleDateString()} ${finishedDate.toLocaleTimeString()}</a>`
+  }
 
   calloutPage.appendChild(calloutDetails)
 }

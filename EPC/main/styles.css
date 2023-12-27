@@ -563,16 +563,23 @@ input {
   font-family: monospace;
   font-size: 20px;
   padding: 10px;
-  font-weight: 600;
+  font-weight: 400;
+  line-height: 1.6;
   margin: 20px;
   margin-top: 5px;
   width: calc(100% - 40px - 20px - 4px);
-  height: calc(100% - 25px - 20px - 4px - 64px - 40px);
+  height: calc(100% - 25px - 20px - 63px - 40px);
   resize: none;
 }
 
-.calloutPage .calloutDetails:focus {
-  outline: none;
+.calloutPage .calloutDetails .systemMessage {
+  opacity: 0.5;
+}
+
+.calloutPage .title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 20px;
 }
 
 /* overwrite */

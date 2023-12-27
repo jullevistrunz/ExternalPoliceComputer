@@ -173,7 +173,7 @@
     },
     "calloutPage": {
       "keys": {
-        "street": "Street",
+        "street": "Address",
         "area": "Area",
         "county": "County",
         "agency": "Agency",
@@ -189,8 +189,11 @@
           "NorthYankton": "North Yankton"
         }
       },
+      "open": "Incident Opened At",
       "unit": "Unit",
-      "attached": "Attached"
+      "attached": "Attached At",
+      "calloutNotFound": "Listening For Callouts",
+      "close": "Incident Closed At"
     }
   },
   "overlay": {

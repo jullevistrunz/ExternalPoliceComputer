@@ -56,6 +56,8 @@ process.on('uncaughtException', function (err) {
   process.exit()
 })
 
+let clearedCalloutData = false
+
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
   const query = url.parse(req.url, true).query
@@ -168,6 +170,12 @@ const server = http.createServer(function (req, res) {
       const rawCalloutData = fs.readFileSync('data/callout.data', 'utf-8')
       const calloutParams = new URLSearchParams(rawCalloutData)
       const calloutData = paramsToObject(calloutParams)
+      if (calloutData.acceptanceState == 'Ended' && !clearedCalloutData && config.clearCalloutPageTime) {
+        setTimeout(() => {
+          fs.writeFileSync('data/callout.data', '')
+          clearedCalloutData = true
+        }, config.clearCalloutPageTime)
+      }
       res.writeHead(200, { 'Content-Type': 'text/json' })
       res.write(JSON.stringify(calloutData))
       res.end()

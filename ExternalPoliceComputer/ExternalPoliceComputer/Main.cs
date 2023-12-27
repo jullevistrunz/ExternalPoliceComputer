@@ -9,6 +9,7 @@ using LSPD_First_Response.Engine.Scripting;
 using System.Collections.Specialized;
 using System.Web;
 using System.Linq;
+using IPT.Common;
 
 namespace ExternalPoliceComputer {
     internal class Main : Plugin {
@@ -113,9 +114,8 @@ namespace ExternalPoliceComputer {
 
                     string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
                     WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
-                    string area = zone.RealAreaName;
 
-                    string calloutData = $"name={name}&description={description}&message={callout.CalloutMessage}&advisory={callout.CalloutAdvisory}&callsign={Callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={area}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&additionalMessage=";
+                    string calloutData = $"name={name}&description={description}&message={callout.CalloutMessage}&advisory={callout.CalloutAdvisory}&callsign={Callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime().ToString("s")}&additionalMessage=";
 
                     File.WriteAllText($"{DataPath}/callout.data", calloutData);
                     Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
@@ -125,12 +125,13 @@ namespace ExternalPoliceComputer {
             void Events_OnCalloutAccepted(LHandle handle) {
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
                 UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
+                UpdateCalloutData("acceptedTime", DateTime.Now.ToLocalTime().ToString("s"));
             }
 
             void Events_OnCalloutFinished(LHandle handle) {
-                Game.LogTrivial("ExternalPoliceComputer: Clear callout.data");
-                File.WriteAllText($"{DataPath}/callout.data", "");
-                Game.LogTrivial("ExternalPoliceComputer: Cleared callout.data");
+                Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
+                UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
+                UpdateCalloutData("finishedTime", DateTime.Now.ToLocalTime().ToString("s"));
             }
         }
 
