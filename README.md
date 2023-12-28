@@ -24,6 +24,11 @@ A Police Computer Plugin and Server for LSPDFR.
 - `replaceStaticWithCustomLanguage`: If set to `true`, EPC will use `EPC/language.json` to replace all static elements; Use this if you have a custom `EPC/language.json`
 - `port`: The port used by the Node.js http server
 - `defaultMapZoom`: Map zoom when the page loads
+- `showCalloutPage`: `false` to disable the callout page; might be helpful for lower end devices
+- `autoShowCalloutPage`: If set to `true`, EPC will automatically switch to the callout page if a new callout is being displayed
+- `updateCalloutPageInterval`: Interval in ms to update the callout page from the game's data
+- `clearCalloutPageTime`: Time in ms to clear the callout page after the callout ended; `null` to never clear
+- `automaticIncidentReports`: If set to `true`, EPC will create an incident report when a callout ends
 
 ## Citation and Arrest Options
 
