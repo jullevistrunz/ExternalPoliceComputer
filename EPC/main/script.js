@@ -135,9 +135,10 @@ setInterval(() => {
   if (!config.showCalloutPage) {
     document.querySelector('.header .callout').classList.add('hidden')
   } else if (config.autoShowCalloutPage) {
+    updateCalloutPage()
     setInterval(() => {
       updateCalloutPage()
-    }, 2000)
+    }, config.updateCalloutPageInterval)
   }
 
   // static language replace
@@ -298,7 +299,7 @@ async function goToPage(name) {
       updateCalloutPage()
       calloutPageInterval = setInterval(() => {
         updateCalloutPage()
-      }, 1000)
+      }, config.updateCalloutPageInterval)
     }
   }
   if (calloutPageInterval && name != 'callout') {
@@ -1530,6 +1531,7 @@ async function updateCalloutPage() {
   if (JSON.stringify(calloutData) == calloutPage.dataset.calloutData) {
     return
   }
+  calloutPage.dataset.calloutData = JSON.stringify(calloutData)
   calloutPage.innerHTML = ''
   if (!Object.keys(calloutData).length) {
     const title = document.createElement('div')
@@ -1537,6 +1539,10 @@ async function updateCalloutPage() {
     title.innerHTML = language.content.calloutPage.calloutNotFound
     calloutPage.appendChild(title)
     return
+  }
+
+  if (config.autoShowCalloutPage && calloutData.acceptanceState == 'Pending') {
+    goToPage('callout')
   }
 
   const informationLabels = [
@@ -1561,7 +1567,7 @@ async function updateCalloutPage() {
   ]
   const informationLabelContainer =
     elements.informationLabelContainer(informationLabels)
-  calloutPage.dataset.calloutData = JSON.stringify(calloutData)
+
   calloutPage.appendChild(informationLabelContainer)
 
   const calloutDetails = document.createElement('div')
@@ -1607,17 +1613,25 @@ async function updateCalloutPage() {
     const description = `${language.content.calloutPage.calloutReport}\n${
       language.content.calloutPage.open
     } ${displayedDate.toLocaleDateString()} ${displayedDate.toLocaleTimeString()}\n${
-      calloutData.message
-    }\n${calloutData.advisory}\n${language.content.calloutPage.unit} ${
+      calloutData.postal
+    } ${calloutData.street}, ${calloutData.area}, ${
+      language.content.calloutPage.values.counties[calloutData.county]
+        ? language.content.calloutPage.values.counties[calloutData.county]
+        : calloutData.county
+    }, ${calloutData.priority}\n${calloutData.message}\n${
+      calloutData.advisory
+    }\n${language.content.calloutPage.unit} ${
       calloutData.callsign
     } (${calloutData.agency.toUpperCase()}) ${
       language.content.calloutPage.attached
-    } ${acceptedDate.toLocaleDateString()} ${acceptedDate.toLocaleTimeString()}\n${
-      language.content.calloutPage.close
-    } ${finishedDate.toLocaleDateString()} ${finishedDate.toLocaleTimeString()}\n${calloutData.additionalMessage.replaceAll(
+    } ${acceptedDate.toLocaleDateString()} ${acceptedDate.toLocaleTimeString()}\n${calloutData.additionalMessage.replaceAll(
       '<br>',
       '\n'
-    )}\n${language.content.calloutPage.additionalReport}\n`
+    )}${
+      language.content.calloutPage.close
+    } ${finishedDate.toLocaleDateString()} ${finishedDate.toLocaleTimeString()}\n\n${
+      language.content.calloutPage.additionalReport
+    }\n`
 
     for (const incident of shift.currentShift.incidents) {
       if (
