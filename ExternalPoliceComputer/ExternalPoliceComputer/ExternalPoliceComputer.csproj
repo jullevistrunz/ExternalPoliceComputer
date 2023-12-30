@@ -59,6 +59,8 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddEvents.cs" />
+    <Compile Include="DependencyCheck.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1545,6 +1545,13 @@ async function updateCalloutPage() {
     goToPage('callout')
   }
 
+  for (const calloutDataItem of Object.keys(calloutData)) {
+    calloutData[calloutDataItem] = calloutData[calloutDataItem].replace(
+      /~(.*?)~/g,
+      ''
+    )
+  }
+
   const informationLabels = [
     elements.informationLabel(
       language.content.calloutPage.keys.street,
@@ -1578,7 +1585,7 @@ async function updateCalloutPage() {
     language.content.calloutPage.open
   } ${displayedDate.toLocaleDateString()} ${displayedDate.toLocaleTimeString()}</a><br>${
     calloutData.message
-  }<br>${calloutData.advisory}`
+  }${calloutData.advisory ? `<br>${calloutData.advisory}` : ''}`
   const acceptedDate = new Date(calloutData.acceptedTime)
   if (
     calloutData.acceptanceState == 'Running' ||
@@ -1618,8 +1625,8 @@ async function updateCalloutPage() {
       language.content.calloutPage.values.counties[calloutData.county]
         ? language.content.calloutPage.values.counties[calloutData.county]
         : calloutData.county
-    }, ${calloutData.priority}\n${calloutData.message}\n${
-      calloutData.advisory
+    }, ${calloutData.priority}\n${calloutData.message}${
+      calloutData.advisory ? `\n${calloutData.advisory}` : ''
     }\n${language.content.calloutPage.unit} ${
       calloutData.callsign
     } (${calloutData.agency.toUpperCase()}) ${
