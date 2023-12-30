@@ -16,7 +16,6 @@ namespace ExternalPoliceComputer {
         internal static Ped Player => Game.LocalPlayer.Character;
         internal static readonly string DataPath = "EPC/data";
         internal static bool UseSTP = true;
-        internal static bool UseCI = true;
 
         public override void Initialize() {
             LSPD_First_Response.Mod.API.Functions.OnOnDutyStateChanged += Functions_OnOnDutyStateChanged;
@@ -42,14 +41,8 @@ namespace ExternalPoliceComputer {
                     Game.LogTrivial("ExternalPoliceComputer: Loading aborted. Couldn't find CalloutInterfaceAPI.");
                     return;
                 }
-
-                UseCI = DependencyCheck.IsCIAvailable();
-
-                Game.LogTrivial($"ExternalPoliceComputer: CalloutInterface: {UseCI}.");
-
-                if (UseCI) {
-                    AddEvents.AddCalloutEventWithCI();
-                }
+                
+                AddEvents.AddCalloutEventWithCI();
 
                 LSPD_First_Response.Mod.API.Events.OnPulloverStarted += Events_OnPulloverStarted;
                 LSPD_First_Response.Mod.API.Events.OnPursuitEnded += Events_OnPursuitEnded;
