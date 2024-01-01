@@ -8,7 +8,7 @@ namespace ExternalPoliceComputer {
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void SendMessage(string message) {
-            if (Main.UseCI && File.ReadAllText($"{Main.DataPath}/callout.data").Length > 0) {
+            if (Main.useCI && File.ReadAllText($"{Main.DataPath}/callout.data").Length > 0) {
 
                 NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
 
