@@ -28,10 +28,10 @@ A Police Computer Plugin and Server for LSPDFR.
 ## Citation and Arrest Options
 
 - Files: `EPC/citationOptions.json` & `EPC/arrestOptions.json`
-- `minFine`: Minimum fine in $ for a charge
-- `maxFine`: Maximum fine in $ for a charge
-- `minMonth`: Minimum jail time in months for charge (arrests only)
-- `maxMonth`: Maximum jail time in months for a charge (arrests only), `null` for life in prison
+- `minFine`: Minimum fine in $ for the charge
+- `maxFine`: Maximum fine in $ for the charge
+- `minMonth`: Minimum jail time in months for the charge (arrests only)
+- `maxMonth`: Maximum jail time in months for the charge (arrests only), `null` for life in prison
 - `probation`: Chance of probation 0-1 (arrests only)
 - The offense part will be removed for charges including multiple offenses in warrants / prior arrests/citations; [Test it here](https://regex101.com/r/d6yqZV/1)
 
