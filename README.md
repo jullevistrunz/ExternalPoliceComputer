@@ -69,7 +69,7 @@ You can edit all words used by EPC to your liking
 
 - File: `EPC/custom.css`
 
-For simple customization you may change colors, size, etc. in the `:root` selector. You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
+You may change colors, size, etc. in the `:root` selector for simple customization. You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
 
 ## Custom JavaScript
 
@@ -86,7 +86,7 @@ You can add your own JS code if you know what you're doing. Versions made by me 
 
 ## API
 
-If you're callout dev, you can send messages to EPC's callout page once the callout has been accepted
+If you're a callout dev, you can send messages to EPC's callout page once the callout has been accepted
 
 ```c#
 ExternalPoliceComputer.Functions.SendMessage("Additional Message");
@@ -103,7 +103,7 @@ ExternalPoliceComputer.Functions.SendMessage("1st Line");
 ExternalPoliceComputer.Functions.SendMessage("2nd Line");
 ```
 
-Add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
+You can add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
 
 ## Discord Server
 
