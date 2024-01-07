@@ -1,6 +1,6 @@
 # [ExternalPoliceComputer 1.4.0](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
 
-A Police Computer Plugin and Server for LSPDFR.
+A Police Computer Plugin and Node.js Server for LSPDFR.
 
 ## Config
 
@@ -38,19 +38,21 @@ A Police Computer Plugin and Server for LSPDFR.
 - `minMonth`: Minimum jail time in months for the charge (arrests only)
 - `maxMonth`: Maximum jail time in months for the charge (arrests only), `null` for life in prison
 - `probation`: Chance of probation 0-1 (arrests only)
-- The offense part will be removed for charges including multiple offenses in warrants / prior arrests/citations; [Test it here](https://regex101.com/r/d6yqZV/1)
+
+The offense part will be removed for charges including multiple offenses in warrants / prior arrests/citations; [Test it here](https://regex101.com/r/d6yqZV/1)
 
 ## License Options
 
 - File: `EPC/licenseOptions.json`
-- Reasons for suspended/revoked license
+
+Reasons for suspended/revoked license
 
 ## Language
 
 - File: `EPC/language.json`
-- Set `replaceStaticWithCustomLanguage` to `true` in `EPC/config.json`
-- You can edit all words used by EPC to your liking
-- If the file contains any errors, EPC will fall back to default settings
+
+Set `replaceStaticWithCustomLanguage` to `true` in `EPC/config.json`.
+You can edit all words used by EPC to your liking
 
 ## Map
 
@@ -66,44 +68,57 @@ A Police Computer Plugin and Server for LSPDFR.
 ## Custom Styles
 
 - File: `EPC/custom.css`
-- For simple customization you may change colors, etc., and size in the `:root` selector
-- You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
+
+For simple customization you may change colors, size, etc. in the `:root` selector. You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
 
 ## Custom JavaScript
 
 - File: `EPC/custom.js`
-- You can add your own JS code if you know what you're doing
-- Versions made by me (or others) can be found on Discord
+
+You can add your own JS code if you know what you're doing. Versions made by me (or others) can be found on Discord
 
 ## Steam overlay
 
-- In steam go to Steam<a>&rarr;</a>Settings<a>&rarr;</a>In Game
+- In steam go to Steam <a>&rarr;</a> Settings <a>&rarr;</a> In Game
 - Make sure _Enable the Steam Overlay while in-game_ is enabled
 - Set _Overlay shortcut key(s)_ to whatever key you want to use to open ExternalPoliceComputer
 - Set _Web browser home page_ to `http://127.0.0.1`
 
 ## API
 
-- If you're callout dev, you can send messages to EPC's callout page once the callout has been accepted
-- Example:
+If you're callout dev, you can send messages to EPC's callout page once the callout has been accepted
 
 ```c#
 ExternalPoliceComputer.Functions.SendMessage("Additional Message");
 ```
 
+Multiple lines are supported by using one of the two:
+
+```c#
+ExternalPoliceComputer.Functions.SendMessage("1st Line<br>2nd Line");
+```
+
+```c#
+ExternalPoliceComputer.Functions.SendMessage("1st Line");
+ExternalPoliceComputer.Functions.SendMessage("2nd Line");
+```
+
+Add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
+
 ## Discord Server
 
-- If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download custom files made by me (or others)
-- https://discord.gg/RW9uy3spVb
+If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download custom files made by me (or others), you can join https://discord.gg/RW9uy3spVb
 
 ## License
 
-- ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
-- The following files are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
-  - [`EPC/arrestOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/arrestOptions.json)
-  - [`EPC/citationOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/citationOptions.json)
-  - [`EPC/config.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/config.json)
-  - [`EPC/custom.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.css)
-  - [`EPC/custom.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.js)
-  - [`EPC/language.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/language.json)
-  - [`EPC/licenseOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/licenseOptions.json)
+ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
+
+The following files are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
+
+- [`EPC/arrestOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/arrestOptions.json)
+- [`EPC/citationOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/citationOptions.json)
+- [`EPC/config.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/config.json)
+- [`EPC/custom.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.css)
+- [`EPC/custom.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.js)
+- [`EPC/language.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/language.json)
+- [`EPC/licenseOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/licenseOptions.json)
