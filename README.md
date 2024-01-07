@@ -82,6 +82,15 @@ A Police Computer Plugin and Server for LSPDFR.
 - Set _Overlay shortcut key(s)_ to whatever key you want to use to open ExternalPoliceComputer
 - Set _Web browser home page_ to `http://127.0.0.1`
 
+## API
+
+- If you're callout dev, you can send messages to EPC's callout page once the callout has been accepted
+- Example:
+
+```c#
+ExternalPoliceComputer.Functions.SendMessage("Additional Message");
+```
+
 ## Discord Server
 
 - If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download custom files made by me (or others)
