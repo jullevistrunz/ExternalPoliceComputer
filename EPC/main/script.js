@@ -29,8 +29,8 @@ window.addEventListener('error', function (errorEvent) {
 
 let lastPage = localStorage.getItem('lastPage')
 if (!lastPage) {
-  localStorage.setItem('lastPage', 'map')
-  lastPage = 'map'
+  localStorage.setItem('lastPage', 'shift')
+  lastPage = 'shift'
 }
 
 let mapScroll = JSON.parse(localStorage.getItem('mapScroll'))
@@ -130,6 +130,16 @@ setInterval(() => {
       )
     }
   }, 5000)
+
+  // calloutPage handler
+  if (!config.showCalloutPage) {
+    document.querySelector('.header .callout').classList.add('hidden')
+  } else if (config.autoShowCalloutPage) {
+    updateCalloutPage()
+    setInterval(() => {
+      updateCalloutPage()
+    }, config.updateCalloutPageInterval)
+  }
 
   // static language replace
   if (config.replaceStaticWithCustomLanguage) {
@@ -243,6 +253,8 @@ document
     renderCitationArrestOptions('arrest', this.value)
   })
 
+let calloutPageInterval
+
 //funcs
 async function goToPage(name) {
   const config = await getConfig()
@@ -282,6 +294,16 @@ async function goToPage(name) {
     await renderCourt()
   } else if (name == 'shift') {
     await renderShiftPage()
+  } else if (name == 'callout') {
+    if (!config.autoShowCalloutPage) {
+      updateCalloutPage()
+      calloutPageInterval = setInterval(() => {
+        updateCalloutPage()
+      }, config.updateCalloutPageInterval)
+    }
+  }
+  if (calloutPageInterval && name != 'callout') {
+    clearInterval(calloutPageInterval)
   }
 }
 
@@ -1286,15 +1308,14 @@ async function deleteIncident() {
   }
 }
 
-async function createNewIncidentReport() {
-  const number = `${new Date()
-    .getFullYear()
-    .toString()
-    .slice(2)}-${Math.random().toString().slice(2, 7)}`
-
+async function createNewIncidentReport(
+  id = Math.floor(Math.random() * 90000) + 10000,
+  description = ''
+) {
+  const number = `${new Date().getFullYear().toString().slice(2)}-${id}`
   const shift = await (await fetch('/data/shift')).json()
   const currentShift = shift.currentShift
-  currentShift.incidents.push({ number: number, description: '' })
+  currentShift.incidents.push({ number: number, description: description })
   await fetch('/post/updateCurrentShift', {
     method: 'post',
     body: JSON.stringify(currentShift),
@@ -1500,4 +1521,139 @@ async function getLanguage() {
   const language = await (await fetch('/data/language')).json()
   localStorage.setItem('language', JSON.stringify(language))
   return language
+}
+
+async function updateCalloutPage() {
+  const language = await getLanguage()
+  const config = await getConfig()
+  const calloutData = await (await fetch('/data/callout')).json()
+  const calloutPage = document.querySelector('.content .calloutPage')
+  if (JSON.stringify(calloutData) == calloutPage.dataset.calloutData) {
+    return
+  }
+  calloutPage.dataset.calloutData = JSON.stringify(calloutData)
+  calloutPage.innerHTML = ''
+  if (!Object.keys(calloutData).length) {
+    const title = document.createElement('div')
+    title.classList.add('title')
+    title.innerHTML = language.content.calloutPage.calloutNotFound
+    calloutPage.appendChild(title)
+    return
+  }
+
+  if (config.autoShowCalloutPage && calloutData.acceptanceState == 'Pending') {
+    goToPage('callout')
+  }
+
+  for (const calloutDataItem of Object.keys(calloutData)) {
+    calloutData[calloutDataItem] = calloutData[calloutDataItem].replace(
+      /~(.*?)~/g,
+      ''
+    )
+  }
+
+  const informationLabels = [
+    elements.informationLabel(
+      language.content.calloutPage.keys.street,
+      `${calloutData.postal} ${calloutData.street}`
+    ),
+    elements.informationLabel(
+      language.content.calloutPage.keys.area,
+      calloutData.area
+    ),
+    elements.informationLabel(
+      language.content.calloutPage.keys.county,
+      language.content.calloutPage.values.counties[calloutData.county]
+        ? language.content.calloutPage.values.counties[calloutData.county]
+        : calloutData.county
+    ),
+    elements.informationLabel(
+      language.content.calloutPage.keys.priority,
+      calloutData.priority
+    ),
+  ]
+  const informationLabelContainer =
+    elements.informationLabelContainer(informationLabels)
+
+  calloutPage.appendChild(informationLabelContainer)
+
+  const calloutDetails = document.createElement('div')
+  calloutDetails.readOnly = true
+  calloutDetails.classList.add('calloutDetails')
+  const displayedDate = new Date(calloutData.displayedTime)
+  calloutDetails.innerHTML = `<a class="systemMessage">${
+    language.content.calloutPage.open
+  } ${displayedDate.toLocaleDateString()} ${displayedDate.toLocaleTimeString()}</a><br>${
+    calloutData.message
+  }${calloutData.advisory ? `<br>${calloutData.advisory}` : ''}`
+  const acceptedDate = new Date(calloutData.acceptedTime)
+  if (
+    (calloutData.acceptanceState == 'Running' ||
+      calloutData.acceptanceState == 'Ended') &&
+    calloutData.acceptedTime
+  ) {
+    calloutDetails.innerHTML += `<br><a class="systemMessage">${
+      language.content.calloutPage.unit
+    } ${calloutData.callsign} (${calloutData.agency.toUpperCase()}) ${
+      language.content.calloutPage.attached
+    } ${acceptedDate.toLocaleDateString()} ${acceptedDate.toLocaleTimeString()}</a>`
+  }
+  calloutDetails.innerHTML += '<br>' + calloutData.additionalMessage
+
+  const finishedDate = new Date(calloutData.finishedTime)
+  if (calloutData.acceptanceState == 'Ended') {
+    calloutDetails.innerHTML += `<a class="systemMessage">${
+      language.content.calloutPage.close
+    } ${finishedDate.toLocaleDateString()} ${finishedDate.toLocaleTimeString()}</a>`
+  }
+
+  calloutPage.appendChild(calloutDetails)
+
+  if (
+    calloutData.acceptanceState == 'Ended' &&
+    config.automaticIncidentReports &&
+    calloutData.acceptedTime
+  ) {
+    const shift = await (await fetch('/data/shift')).json()
+    if (!shift.currentShift) {
+      return
+    }
+    // I should be executed for this
+    const description = `${language.content.calloutPage.calloutReport}\n${
+      language.content.calloutPage.open
+    } ${displayedDate.toLocaleDateString()} ${displayedDate.toLocaleTimeString()}\n${
+      calloutData.postal
+    } ${calloutData.street}, ${calloutData.area}, ${
+      language.content.calloutPage.values.counties[calloutData.county]
+        ? language.content.calloutPage.values.counties[calloutData.county]
+        : calloutData.county
+    }, ${calloutData.priority}\n${calloutData.message}${
+      calloutData.advisory ? `\n${calloutData.advisory}` : ''
+    }\n${language.content.calloutPage.unit} ${
+      calloutData.callsign
+    } (${calloutData.agency.toUpperCase()}) ${
+      language.content.calloutPage.attached
+    } ${acceptedDate.toLocaleDateString()} ${acceptedDate.toLocaleTimeString()}\n${calloutData.additionalMessage.replaceAll(
+      '<br>',
+      '\n'
+    )}${
+      language.content.calloutPage.close
+    } ${finishedDate.toLocaleDateString()} ${finishedDate.toLocaleTimeString()}\n\n${
+      language.content.calloutPage.additionalReport
+    }\n`
+
+    for (const incident of shift.currentShift.incidents) {
+      if (
+        incident.number ==
+        `${new Date().getFullYear().toString().slice(2)}-${calloutData.id}`
+      )
+        return
+    }
+
+    await createNewIncidentReport(calloutData.id, description)
+
+    if (lastPage == 'shift') {
+      renderShiftPage()
+    }
+  }
 }

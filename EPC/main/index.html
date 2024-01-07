@@ -17,6 +17,7 @@
       <button class="searchCar">Vehicles</button>
       <button class="court">Court</button>
       <button class="shift">Shift</button>
+      <button class="callout">Callout</button>
     </div>
     <div class="content">
       <div class="mapPage hidden">
@@ -358,10 +359,14 @@
             <label for="incidentNumber">Incident Number</label>
             <input type="text" id="incidentNumber" readonly="true" />
             <label for="incidentDescription">Description</label>
-            <textarea id="incidentDescription"></textarea>
+            <textarea
+              id="incidentDescription"
+              data-ms-editor="false"
+            ></textarea>
           </div>
         </div>
       </div>
+      <div class="calloutPage hidden"></div>
     </div>
     <div class="overlay">
       <a href="/customization" class="customizationLink">Customize EPC</a>

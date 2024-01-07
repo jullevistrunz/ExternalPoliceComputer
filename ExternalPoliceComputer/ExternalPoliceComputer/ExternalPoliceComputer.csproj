@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ExternalPoliceComputer</RootNamespace>
     <AssemblyName>ExternalPoliceComputer</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -31,6 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CalloutInterface, Version=1.4.1.3, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\CalloutInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="CalloutInterfaceAPI">
+      <HintPath>..\..\References\CalloutInterfaceAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="IPT.Common">
+      <HintPath>..\..\References\IPT.Common.dll</HintPath>
+    </Reference>
     <Reference Include="LSPD First Response">
       <HintPath>..\..\References\LSPD First Response.dll</HintPath>
     </Reference>
@@ -46,8 +56,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependencyCheck.cs" />
+    <Compile Include="Functions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -2,13 +2,14 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.3.4'
+const version = '1.4.0'
 
 // clear data on start up
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
   ['worldCars.data', ''],
   ['currentID.data', ''],
+  ['callout.data', ''],
   ['peds.json', '[]'],
   ['cars.json', '[]'],
   ['court.json', '[]'],
@@ -27,15 +28,35 @@ createLog('EPC server log initialized')
 createLog(`Version: ${version}`)
 createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
-createLog(`Config: ${JSON.stringify(config)}`)
+createLog(`Config:\n${multiLineLog(config)}`)
+createLog(
+  `Custom file size:\n${multiLineLog({
+    js: `Default ${fs.statSync('defaults/custom.js').size} Custom ${
+      fs.statSync('custom.js').size
+    }`,
+    css: `Default ${fs.statSync('defaults/custom.css').size} Custom ${
+      fs.statSync('custom.css').size
+    }`,
+  })}`
+)
 function createLog(message) {
   const content = `[${new Date().toISOString()}] ${message}\n`
   fs.writeFileSync('EPC.log', `${fs.readFileSync('EPC.log')}${content}`)
 }
+function multiLineLog(obj) {
+  const arr = []
+  for (const [key, value] of Object.entries(obj)) {
+    arr.push(`\t${key}: ${value}`)
+  }
+  return arr.join('\n')
+}
 process.on('uncaughtException', function (err) {
   console.error(err)
   createLog(err.stack)
+  process.exit()
 })
+
+let clearedCalloutData
 
 const server = http.createServer(function (req, res) {
   const path = url.parse(req.url, true).pathname
@@ -144,6 +165,23 @@ const server = http.createServer(function (req, res) {
       } else {
         res.write(fs.readFileSync('language.json'))
       }
+      res.end()
+    } else if (dataPath == 'callout') {
+      const rawCalloutData = fs.readFileSync('data/callout.data', 'utf-8')
+      const calloutParams = new URLSearchParams(rawCalloutData)
+      const calloutData = paramsToObject(calloutParams)
+      if (
+        calloutData.acceptanceState == 'Ended' &&
+        clearedCalloutData != calloutData.id &&
+        config.clearCalloutPageTime
+      ) {
+        clearedCalloutData = calloutData.id
+        setTimeout(() => {
+          fs.writeFileSync('data/callout.data', '')
+        }, config.clearCalloutPageTime)
+      }
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(JSON.stringify(calloutData))
       res.end()
     } else {
       res.writeHead(404)
@@ -503,6 +541,7 @@ function getRandomArrests(allCharges, isWanted) {
 function clearGeneratedData() {
   fs.writeFileSync('data/cars.json', '[]')
   fs.writeFileSync('data/currentID.data', '')
+  fs.writeFileSync('data/callout.data', '')
   const peds = JSON.parse(fs.readFileSync('data/peds.json'))
   const court = JSON.parse(fs.readFileSync('data/court.json'))
   const newPeds = []

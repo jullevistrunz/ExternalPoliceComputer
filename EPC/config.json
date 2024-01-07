@@ -14,5 +14,10 @@
   "showCustomizationLink": true,
   "replaceStaticWithCustomLanguage": true,
   "port": 80,
-  "defaultMapZoom": 1.5
+  "defaultMapZoom": 1.5,
+  "showCalloutPage": true,
+  "autoShowCalloutPage": true,
+  "updateCalloutPageInterval": 2000,
+  "clearCalloutPageTime": null,
+  "automaticIncidentReports": true
 }
