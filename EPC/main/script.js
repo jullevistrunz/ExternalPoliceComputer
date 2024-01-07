@@ -1588,8 +1588,9 @@ async function updateCalloutPage() {
   }${calloutData.advisory ? `<br>${calloutData.advisory}` : ''}`
   const acceptedDate = new Date(calloutData.acceptedTime)
   if (
-    calloutData.acceptanceState == 'Running' ||
-    calloutData.acceptanceState == 'Ended'
+    (calloutData.acceptanceState == 'Running' ||
+      calloutData.acceptanceState == 'Ended') &&
+    calloutData.acceptedTime
   ) {
     calloutDetails.innerHTML += `<br><a class="systemMessage">${
       language.content.calloutPage.unit
@@ -1610,7 +1611,8 @@ async function updateCalloutPage() {
 
   if (
     calloutData.acceptanceState == 'Ended' &&
-    config.automaticIncidentReports
+    config.automaticIncidentReports &&
+    calloutData.acceptedTime
   ) {
     const shift = await (await fetch('/data/shift')).json()
     if (!shift.currentShift) {
