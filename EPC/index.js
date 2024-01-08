@@ -30,7 +30,7 @@ createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
 createLog(`Config:\n${multiLineLog(config)}`)
 createLog(
-  `Custom file size:\n${multiLineLog({
+  `Custom files:\n${multiLineLog({
     js: `Default ${fs.statSync('defaults/custom.js').size} Custom ${
       fs.statSync('custom.js').size
     }`,
@@ -39,6 +39,25 @@ createLog(
     }`,
   })}`
 )
+
+const dataDir = fs.readdirSync('data')
+const dataFiles = {}
+for (const file of dataDir) {
+  const defaultSize = new TextEncoder().encode(dataDefaults.get(file)).length
+  const dataSize = fs.statSync(`data/${file}`).size
+  dataFiles[file] = `${
+    defaultSize > dataSize ? '[WARNING] ' : ''
+  }Default ${defaultSize} Data ${dataSize}`
+}
+createLog(`Data files:\n${multiLineLog(dataFiles)}`)
+const EPCDir = fs.readdirSync('./')
+const EPCFiles = []
+for (const file of EPCDir) {
+  EPCFiles.push(
+    `[${fs.statSync(file).isDirectory() ? 'Directory' : 'File'}] ${file}`
+  )
+}
+createLog(`EPC Directory:\n  ${EPCFiles.join('\n  ')}`)
 function createLog(message) {
   const content = `[${new Date().toISOString()}] ${message}\n`
   fs.writeFileSync('EPC.log', `${fs.readFileSync('EPC.log')}${content}`)
@@ -46,7 +65,7 @@ function createLog(message) {
 function multiLineLog(obj) {
   const arr = []
   for (const [key, value] of Object.entries(obj)) {
-    arr.push(`\t${key}: ${value}`)
+    arr.push(`  ${key}: ${value}`)
   }
   return arr.join('\n')
 }
