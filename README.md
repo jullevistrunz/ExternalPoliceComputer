@@ -103,7 +103,7 @@ ExternalPoliceComputer.Functions.SendMessage("1st Line");
 ExternalPoliceComputer.Functions.SendMessage("2nd Line");
 ```
 
-You can add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
+You must add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
 
 ## Discord Server
 
