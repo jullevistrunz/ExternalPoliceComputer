@@ -86,7 +86,7 @@ You can add your own JS code if you know what you're doing. Versions made by me 
 
 ## API
 
-If you're callout dev, you can send messages to EPC's callout page once the callout has been accepted
+If you're a callout dev, you can send messages to EPC's callout page once the callout has been accepted
 
 ```c#
 ExternalPoliceComputer.Functions.SendMessage("Additional Message");
