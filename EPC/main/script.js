@@ -1547,7 +1547,9 @@ async function updateCalloutPage() {
     ),
     elements.informationLabel(
       language.content.calloutPage.keys.priority,
-      calloutData.priority
+      calloutData.priority == 'default'
+        ? language.content.calloutPage.defaultPriority
+        : calloutData.priority
     ),
   ]
   const informationLabelContainer =
