@@ -92,7 +92,7 @@ namespace ExternalPoliceComputer {
                 Game.LogTrivial("ExternalPoliceComputer: Update callout.data");
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
                 string agency = LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName();
-                string priority = "Code 2";
+                string priority = "default";
                 string description = "";
                 string name = callout.FriendlyName;
                 string callsign = IPT.Common.Handlers.PlayerHandler.GetCallsign();
