@@ -1,4 +1,4 @@
-# [ExternalPoliceComputer 1.4.0](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
+# [ExternalPoliceComputer 1.4.1](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
 
 A Police Computer Plugin and Node.js Server for LSPDFR.
 
