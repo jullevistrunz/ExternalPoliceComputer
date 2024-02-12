@@ -105,14 +105,14 @@ namespace ExternalPoliceComputer {
                     if (calloutInterfaceInfo.Priority.Length > 0) {
                         priority = calloutInterfaceInfo.Priority;
                     }
-                    description = calloutInterfaceInfo.Description;
-                    name = calloutInterfaceInfo.Name;
+                    description = MakeStringWorkWithMyStupidQueryStrings(calloutInterfaceInfo.Description);
+                    name = MakeStringWorkWithMyStupidQueryStrings(calloutInterfaceInfo.Name);
                 }
 
                 string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
                 WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
 
-                string calloutData = $"id={new Random().Next(10000, 100000)}&name={name}&description={description}&message={callout.CalloutMessage}&advisory={callout.CalloutAdvisory}&callsign={callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime():s}&additionalMessage=";
+                string calloutData = $"id={new Random().Next(10000, 100000)}&name={name}&description={description}&message={MakeStringWorkWithMyStupidQueryStrings(callout.CalloutMessage)}&advisory={MakeStringWorkWithMyStupidQueryStrings(callout.CalloutAdvisory)}&callsign={callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime():s}&additionalMessage=";
                 File.WriteAllText($"{Main.DataPath}/callout.data", calloutData);
                 Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
             }
@@ -143,6 +143,13 @@ namespace ExternalPoliceComputer {
 
             File.WriteAllText($"{Main.DataPath}/callout.data", string.Join("&", calloutDataQueryArr));
             Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
+        }
+
+        internal static string MakeStringWorkWithMyStupidQueryStrings(string message) {
+            message = message.Replace("&", "%26");
+            message = message.Replace("=", "%3D");
+            message = message.Replace("?", "%3F");
+            return message;
         }
 
         private static void Interval() {
