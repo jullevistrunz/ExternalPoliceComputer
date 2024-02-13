@@ -146,6 +146,7 @@ namespace ExternalPoliceComputer {
         }
 
         internal static string MakeStringWorkWithMyStupidQueryStrings(string message) {
+            if (String.IsNullOrEmpty(message)) return message;
             message = message.Replace("&", "%26");
             message = message.Replace("=", "%3D");
             message = message.Replace("?", "%3F");
