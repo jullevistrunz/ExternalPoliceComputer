@@ -10,6 +10,8 @@ namespace ExternalPoliceComputer {
         public static void SendMessage(string message) {
             if (Main.useCI && File.ReadAllText($"{Main.DataPath}/callout.data").Length > 0) {
 
+                message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
+
                 NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
 
                 Main.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");

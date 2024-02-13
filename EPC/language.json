@@ -195,7 +195,8 @@
       "calloutNotFound": "Listening For Callouts",
       "close": "Incident Closed At",
       "calloutReport": "---- Callout Report ----",
-      "additionalReport": "---- Additional Report ----"
+      "additionalReport": "---- Additional Report ----",
+      "defaultPriority": "Code 2"
     }
   },
   "overlay": {
