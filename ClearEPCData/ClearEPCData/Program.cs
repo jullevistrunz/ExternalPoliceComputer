@@ -8,13 +8,13 @@ namespace ClearEPCData {
 
             Option[] options = {
                 new Option("shift.json", () => {
-                    File.WriteAllText("data/shift.json", "[]");
+                    File.WriteAllText("data/shift.json", "{\"currentShift\":null,\"shifts\":[]}");
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Successfully reset shift.json");
                     Console.ResetColor();
                 }),
                 new Option("court.json & peds.json", () => {
-                    File.WriteAllText("data/court.json", "{\"currentShift\":null,\"shifts\":[]}");
+                    File.WriteAllText("data/court.json", "[]");
                     File.WriteAllText("data/peds.json", "[]");
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Successfully reset court.json & peds.json");
