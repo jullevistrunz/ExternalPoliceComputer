@@ -19,5 +19,6 @@
   "autoShowCalloutPage": true,
   "updateCalloutPageInterval": 2000,
   "clearCalloutPageTime": null,
-  "automaticIncidentReports": true
+  "automaticIncidentReports": true,
+  "disableExternalCautions": false
 }

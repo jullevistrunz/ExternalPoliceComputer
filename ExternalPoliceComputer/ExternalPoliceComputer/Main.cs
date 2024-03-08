@@ -89,7 +89,6 @@ namespace ExternalPoliceComputer {
             LSPD_First_Response.Mod.API.Events.OnCalloutFinished += Events_OnCalloutFinished;
             LSPD_First_Response.Mod.API.Events.OnCalloutAccepted += Events_OnCalloutAccepted;
             void Events_OnCalloutDisplayed(LHandle handle) {
-                Game.LogTrivial("ExternalPoliceComputer: Update callout.data");
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
                 string agency = LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName();
                 string priority = "default";
@@ -113,26 +112,24 @@ namespace ExternalPoliceComputer {
                 WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
 
                 string calloutData = $"id={new Random().Next(10000, 100000)}&name={name}&description={description}&message={MakeStringWorkWithMyStupidQueryStrings(callout.CalloutMessage)}&advisory={MakeStringWorkWithMyStupidQueryStrings(callout.CalloutAdvisory)}&callsign={callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime():s}&additionalMessage=";
-                File.WriteAllText($"{Main.DataPath}/callout.data", calloutData);
-                Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
+                File.WriteAllText($"{DataPath}/callout.data", calloutData);
             }
 
             void Events_OnCalloutAccepted(LHandle handle) {
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
-                Main.UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
-                Main.UpdateCalloutData("acceptedTime", DateTime.Now.ToLocalTime().ToString("s"));
+                UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
+                UpdateCalloutData("acceptedTime", DateTime.Now.ToLocalTime().ToString("s"));
             }
 
             void Events_OnCalloutFinished(LHandle handle) {
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
-                Main.UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
-                Main.UpdateCalloutData("finishedTime", DateTime.Now.ToLocalTime().ToString("s"));
+                UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
+                UpdateCalloutData("finishedTime", DateTime.Now.ToLocalTime().ToString("s"));
             }
         }
 
         internal static void UpdateCalloutData(string key, string value) {
-            Game.LogTrivial("ExternalPoliceComputer: Update callout.data");
-            NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
+            NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{DataPath}/callout.data"));
 
             calloutData.Set(key, value);
 
@@ -141,12 +138,11 @@ namespace ExternalPoliceComputer {
                 calloutDataQueryArr[i] = $"{calloutData.GetKey(i)}={calloutData.GetValues(i).FirstOrDefault()}";
             }
 
-            File.WriteAllText($"{Main.DataPath}/callout.data", string.Join("&", calloutDataQueryArr));
-            Game.LogTrivial("ExternalPoliceComputer: Updated callout.data");
+            File.WriteAllText($"{DataPath}/callout.data", string.Join("&", calloutDataQueryArr));
         }
 
         internal static string MakeStringWorkWithMyStupidQueryStrings(string message) {
-            if (String.IsNullOrEmpty(message)) return message;
+            if (string.IsNullOrEmpty(message)) return message;
             message = message.Replace("&", "%26");
             message = message.Replace("=", "%3D");
             message = message.Replace("?", "%3F");
@@ -266,7 +262,6 @@ namespace ExternalPoliceComputer {
 
         // update world data
         private static void UpdateWorldPeds() {
-            Game.LogTrivial("ExternalPoliceComputer: Update worldPeds.data");
             if (!Player.Exists()) {
                 Game.LogTrivial("ExternalPoliceComputer: Failed to update worldPeds.data; Invalid Player");
                 return;
@@ -282,12 +277,9 @@ namespace ExternalPoliceComputer {
             }
 
             File.WriteAllText($"{DataPath}/worldPeds.data", string.Join(",", persList));
-
-            Game.LogTrivial("ExternalPoliceComputer: Updated worldPeds.data");
         }
 
         private static void UpdateWorldCars() {
-            Game.LogTrivial("ExternalPoliceComputer: Update worldCars.data");
             if (!Player.Exists()) {
                 Game.LogTrivial("ExternalPoliceComputer: Failed to update worldCars.data; Invalid Player");
                 return;
@@ -302,12 +294,9 @@ namespace ExternalPoliceComputer {
                 }
             }
             File.WriteAllText($"{DataPath}/worldCars.data", string.Join(",", carsList));
-            Game.LogTrivial("ExternalPoliceComputer: Updated worldCars.data");
         }
 
         private static void UpdateCurrentID(Ped ped) {
-            Game.LogTrivial("ExternalPoliceComputer: Update currentID.data");
-
             int index = 0;
             if (ped.IsInAnyVehicle(false)) {
                 index = ped.SeatIndex + 2;
@@ -324,8 +313,6 @@ namespace ExternalPoliceComputer {
             string data = $"{persona.FullName},{birthday},{persona.Gender},{index};";
 
             File.WriteAllText($"{DataPath}/currentID.data", File.ReadAllText($"{DataPath}/currentID.data") + data);
-
-            Game.LogTrivial("ExternalPoliceComputer: Updated currentID.data");
         }
 
         private static void AddWorldPed(Ped ped) {

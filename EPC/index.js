@@ -2,11 +2,12 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.4.1'
+const version = '1.4.2'
 
 // clear data on start up
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
+  ['pedsCautions.data', ''],
   ['worldCars.data', ''],
   ['currentID.data', ''],
   ['callout.data', ''],
@@ -74,6 +75,26 @@ process.on('uncaughtException', function (err) {
   createLog(err.stack)
   process.exit()
 })
+
+if (!config.disableExternalCautions) {
+  fs.watchFile('data/pedsCautions.data', function () {
+    const peds = JSON.parse(fs.readFileSync('data/peds.json'))
+    const pedsCautionsData = fs.readFileSync('data/pedsCautions.data', 'utf-8')
+    const pedsCautionsDataArray = pedsCautionsData.split(',')
+    for (const cautionPed of pedsCautionsDataArray) {
+      const pedAndCautions = [
+        cautionPed.split('=')[0],
+        cautionPed.split('=')[1].split(';'),
+      ]
+      for (const i in peds) {
+        if (peds[i].name == pedAndCautions[0]) {
+          peds[i].cautions = pedAndCautions[1]
+        }
+      }
+    }
+    fs.writeFileSync('data/peds.json', JSON.stringify(peds))
+  })
+}
 
 let clearedCalloutData
 
@@ -368,7 +389,7 @@ function generatePeds() {
   }
 
   let pedNameArr = new Array()
-  for (ped of pedData) {
+  for (const ped of pedData) {
     pedNameArr.push(ped.name)
   }
 
@@ -411,6 +432,7 @@ function generatePeds() {
       probation: probation,
       parole: parole,
       licenseData: licenseData[0],
+      cautions: [],
     }
     pedData.push(ped)
   }
@@ -561,6 +583,7 @@ function clearGeneratedData() {
   fs.writeFileSync('data/cars.json', '[]')
   fs.writeFileSync('data/currentID.data', '')
   fs.writeFileSync('data/callout.data', '')
+  fs.writeFileSync('data/pedsCautions.data', '')
   const peds = JSON.parse(fs.readFileSync('data/peds.json'))
   const court = JSON.parse(fs.readFileSync('data/court.json'))
   const newPeds = []

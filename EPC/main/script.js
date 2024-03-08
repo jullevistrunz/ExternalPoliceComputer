@@ -416,11 +416,14 @@ async function renderPedSearch() {
         : 'Gang Affiliation'
     )
   }
+  for (const caution of ped.cautions) {
+    cautions.push(caution)
+  }
   if (cautions.length) {
     for (const i in cautions) {
-      cautions[
-        i
-      ] = `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
+      cautions[i] = config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
+        : `• ${cautions[i]}`
     }
     informationLabels.push(
       elements.informationLabel(

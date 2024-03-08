@@ -1,4 +1,4 @@
-# [ExternalPoliceComputer 1.4.1](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
+# [ExternalPoliceComputer 1.4.2](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
 
 A Police Computer Plugin and Node.js Server for LSPDFR.
 
@@ -29,6 +29,7 @@ A Police Computer Plugin and Node.js Server for LSPDFR.
 - `updateCalloutPageInterval`: Interval in ms to update the callout page from the game's data
 - `clearCalloutPageTime`: Time in ms to clear the callout page after the callout ended; `null` to never clear
 - `automaticIncidentReports`: If set to `true`, EPC will create an incident report when a callout ends
+- `disableExternalCautions`: If set to `true`, EPC will not check for ped or vehicle cautions from third party plugins
 
 ## Citation and Arrest Options
 
