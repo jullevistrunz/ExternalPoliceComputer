@@ -90,6 +90,7 @@ if (!config.disableExternalCautions) {
       for (const i in peds) {
         if (peds[i].name == pedAndCautions[0]) {
           peds[i].cautions = pedAndCautions[1]
+          break
         }
       }
     }
@@ -107,6 +108,7 @@ if (!config.disableExternalCautions) {
       for (const i in cars) {
         if (cars[i].licensePlate == carAndCautions[0]) {
           cars[i].cautions = carAndCautions[1]
+          break
         }
       }
     }
