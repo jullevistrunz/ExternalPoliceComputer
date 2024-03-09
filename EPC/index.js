@@ -81,6 +81,7 @@ if (!config.disableExternalCautions) {
   fs.watchFile('data/pedsCautions.data', function () {
     const peds = JSON.parse(fs.readFileSync('data/peds.json'))
     const pedsCautionsData = fs.readFileSync('data/pedsCautions.data', 'utf-8')
+    if (!pedsCautionsData) return
     const pedsCautionsDataArray = pedsCautionsData.split(',')
     for (const cautionPed of pedsCautionsDataArray) {
       const pedAndCautions = [
@@ -99,6 +100,7 @@ if (!config.disableExternalCautions) {
   fs.watchFile('data/carsCautions.data', function () {
     const cars = JSON.parse(fs.readFileSync('data/cars.json'))
     const carsCautionsData = fs.readFileSync('data/carsCautions.data', 'utf-8')
+    if (!carsCautionsData) return
     const carsCautionsDataArray = carsCautionsData.split(',')
     for (const cautionCar of carsCautionsDataArray) {
       const carAndCautions = [
