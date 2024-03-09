@@ -87,6 +87,8 @@ You can add your own JS code if you know what you're doing. Versions made by me 
 
 ## API
 
+### Callout messages
+
 If you're a callout dev, you can send messages to EPC's callout page once the callout has been accepted
 
 ```c#
@@ -105,6 +107,22 @@ ExternalPoliceComputer.Functions.SendMessage("2nd Line");
 ```
 
 Add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
+
+### Caution messages
+
+Sending caution messages, that will be displayed when looking up a ped:
+
+```c#
+ExternalPoliceComputer.Functions.AddCautionToPed("Full name", "Caution message");
+```
+
+Sending caution messages, that will be displayed when looking up a vehicle:
+
+```c#
+ExternalPoliceComputer.Functions.AddCautionToCar("License plate", "Caution message");
+```
+
+You can send multiple messages to the same ped or vehicle, by calling the method multiple times.
 
 ## Discord Server
 
