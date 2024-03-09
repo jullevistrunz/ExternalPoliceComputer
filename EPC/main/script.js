@@ -522,8 +522,6 @@ async function renderCarSearch() {
     }),
   ]
 
-  console.log(car.cautions)
-
   if (car.cautions.length) {
     for (const i in car.cautions) {
       car.cautions[i] = config.warningColorsForPedCarSearch

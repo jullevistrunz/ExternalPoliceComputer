@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Rage;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace ExternalPoliceComputer {
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToPed(string name, string message) {
             string pedsCautionsData = File.ReadAllText($"{Main.DataPath}/pedsCautions.data");
-            List<string> pedsCautionsDataList = pedsCautionsData.Split(',').ToList();
+            List<string> pedsCautionsDataList = pedsCautionsData != "" ? pedsCautionsData.Split(',').ToList() : new List<string>();
 
             bool pedHasCautions = false;
             
@@ -32,7 +33,7 @@ namespace ExternalPoliceComputer {
                     pedHasCautions = true;
                     List<string> pedsCautions = pedsCautionsDataList[i].Split('=')[1].Split(';').ToList();
                     pedsCautions.Add(message);
-                    pedsCautionsDataList[i].Split('=')[1] = string.Join(";", pedsCautions);
+                    pedsCautionsDataList[i] = $"{name}={string.Join(";", pedsCautions)}";
                     break;
                 }
             }
@@ -48,7 +49,7 @@ namespace ExternalPoliceComputer {
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToCar(string licensePlate, string message) {
             string carsCautionsData = File.ReadAllText($"{Main.DataPath}/carsCautions.data");
-            List<string> carsCautionsDataList = carsCautionsData.Split(',').ToList();
+            List<string> carsCautionsDataList = carsCautionsData != "" ? carsCautionsData.Split(',').ToList() : new List<string>();
 
             bool carHasCautions = false;
 
@@ -57,7 +58,7 @@ namespace ExternalPoliceComputer {
                     carHasCautions = true;
                     List<string> carsCautions = carsCautionsDataList[i].Split('=')[1].Split(';').ToList();
                     carsCautions.Add(message);
-                    carsCautionsDataList[i].Split('=')[1] = string.Join(";", carsCautions);
+                    carsCautionsDataList[i] = $"{licensePlate}={string.Join(";", carsCautions)}";
                     break;
                 }
             }
