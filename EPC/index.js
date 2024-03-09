@@ -9,6 +9,7 @@ const dataDefaults = new Map([
   ['worldPeds.data', ''],
   ['pedsCautions.data', ''],
   ['worldCars.data', ''],
+  ['carsCautions.data', ''],
   ['currentID.data', ''],
   ['callout.data', ''],
   ['peds.json', '[]'],
@@ -93,6 +94,23 @@ if (!config.disableExternalCautions) {
       }
     }
     fs.writeFileSync('data/peds.json', JSON.stringify(peds))
+  })
+  fs.watchFile('data/carsCautions.data', function () {
+    const cars = JSON.parse(fs.readFileSync('data/cars.json'))
+    const carsCautionsData = fs.readFileSync('data/carsCautions.data', 'utf-8')
+    const carsCautionsDataArray = carsCautionsData.split(',')
+    for (const cautionCar of carsCautionsDataArray) {
+      const carAndCautions = [
+        cautionCar.split('=')[0],
+        cautionCar.split('=')[1].split(';'),
+      ]
+      for (const i in cars) {
+        if (cars[i].licensePlate == carAndCautions[0]) {
+          cars[i].cautions = carAndCautions[1]
+        }
+      }
+    }
+    fs.writeFileSync('data/cars.json', JSON.stringify(cars))
   })
 }
 
@@ -516,6 +534,7 @@ function generateCars() {
       stolen: worldCar.isStolen == 'True' ? 'Yes' : 'No',
       plateStatus: plateStatus,
       color: worldCar.color,
+      cautions: [],
     }
     carData.push(car)
   }
@@ -584,6 +603,7 @@ function clearGeneratedData() {
   fs.writeFileSync('data/currentID.data', '')
   fs.writeFileSync('data/callout.data', '')
   fs.writeFileSync('data/pedsCautions.data', '')
+  fs.writeFileSync('data/carsCautions.data', '')
   const peds = JSON.parse(fs.readFileSync('data/peds.json'))
   const court = JSON.parse(fs.readFileSync('data/court.json'))
   const newPeds = []

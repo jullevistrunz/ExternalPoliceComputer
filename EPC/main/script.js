@@ -521,6 +521,23 @@ async function renderCarSearch() {
       openPedInSearchPedPage(car.owner)
     }),
   ]
+
+  console.log(car.cautions)
+
+  if (car.cautions.length) {
+    for (const i in car.cautions) {
+      car.cautions[i] = config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">• ${car.cautions[i]}</a>`
+        : `• ${car.cautions[i]}`
+    }
+    informationLabels.push(
+      elements.informationLabel(
+        langCar.resultContainer.caution,
+        car.cautions.join('<br>')
+      )
+    )
+  }
+
   informationLabelContainer.replaceWith(
     elements.informationLabelContainer(informationLabels)
   )

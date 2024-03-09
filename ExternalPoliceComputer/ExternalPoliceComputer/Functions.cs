@@ -43,5 +43,30 @@ namespace ExternalPoliceComputer {
 
             File.WriteAllText($"{Main.DataPath}/pedsCautions.data", string.Join(",", pedsCautionsDataList));
         }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void AddCautionToCar(string licensePlate, string message) {
+            string carsCautionsData = File.ReadAllText($"{Main.DataPath}/carsCautions.data");
+            List<string> carsCautionsDataList = carsCautionsData.Split(',').ToList();
+
+            bool carHasCautions = false;
+
+            for (int i = 0; i < carsCautionsDataList.Count; i++) {
+                if (carsCautionsDataList[i].StartsWith(licensePlate)) {
+                    carHasCautions = true;
+                    List<string> carsCautions = carsCautionsDataList[i].Split('=')[1].Split(';').ToList();
+                    carsCautions.Add(message);
+                    carsCautionsDataList[i].Split('=')[1] = string.Join(";", carsCautions);
+                    break;
+                }
+            }
+
+            if (!carHasCautions) {
+                carsCautionsDataList.Add($"{licensePlate}={message}");
+            }
+
+            File.WriteAllText($"{Main.DataPath}/carsCautions.data", string.Join(",", carsCautionsDataList));
+        }
     }
 }
