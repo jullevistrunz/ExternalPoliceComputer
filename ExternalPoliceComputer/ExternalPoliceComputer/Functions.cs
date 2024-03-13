@@ -24,7 +24,9 @@ namespace ExternalPoliceComputer {
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToPed(string name, string message) {
             string pedsCautionsData = File.ReadAllText($"{Main.DataPath}/pedsCautions.data");
-            List<string> pedsCautionsDataList = pedsCautionsData != "" ? pedsCautionsData.Split(',').ToList() : new List<string>();
+            List<string> pedsCautionsDataList = !string.IsNullOrEmpty(pedsCautionsData) ? pedsCautionsData.Split(',').ToList() : new List<string>();
+
+            message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
 
             bool pedHasCautions = false;
             
@@ -49,7 +51,9 @@ namespace ExternalPoliceComputer {
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToCar(string licensePlate, string message) {
             string carsCautionsData = File.ReadAllText($"{Main.DataPath}/carsCautions.data");
-            List<string> carsCautionsDataList = carsCautionsData != "" ? carsCautionsData.Split(',').ToList() : new List<string>();
+            List<string> carsCautionsDataList = !string.IsNullOrEmpty(carsCautionsData) ? carsCautionsData.Split(',').ToList() : new List<string>();
+
+            message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
 
             bool carHasCautions = false;
 

@@ -146,6 +146,7 @@ namespace ExternalPoliceComputer {
             message = message.Replace("&", "%26");
             message = message.Replace("=", "%3D");
             message = message.Replace("?", "%3F");
+            message = message.Replace(";", "%3B");
             return message;
         }
 
