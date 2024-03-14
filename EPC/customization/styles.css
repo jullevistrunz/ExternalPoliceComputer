@@ -295,6 +295,16 @@ body input {
   background-color: var(--background-color);
 }
 
+.pluginsPage .informationLabel .value {
+  font-size: 16px;
+  font-family: monospace;
+  font-weight: 400;
+}
+
+.pluginsPage .informationLabel .key {
+  position: relative;
+}
+
 /* overwrite */
 .hidden {
   display: none;

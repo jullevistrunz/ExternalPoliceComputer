@@ -255,6 +255,29 @@ document
 
 let calloutPageInterval
 
+  // load active plugins
+;(async function () {
+  const plugins = await (await fetch('/data/activePlugins')).json()
+  for (const plugin of plugins) {
+    const files = await (
+      await fetch(`data/filesInPluginDir?name=${plugin}`)
+    ).json()
+
+    for (const file of files) {
+      if (file.endsWith('.css')) {
+        const el = document.createElement('link')
+        el.rel = 'stylesheet'
+        el.href = `/plugins/${plugin}/${file}`
+        document.head.appendChild(el)
+      } else if (file.endsWith('.js')) {
+        const el = document.createElement('script')
+        el.src = `/plugins/${plugin}/${file}`
+        document.body.appendChild(el)
+      }
+    }
+  }
+})()
+
 //funcs
 async function goToPage(name) {
   const config = await getConfig()

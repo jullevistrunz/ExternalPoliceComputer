@@ -179,6 +179,17 @@ const server = http.createServer(function (req, res) {
     createLog('[Client Log] ' + query.message)
     res.writeHead(200)
     res.end()
+  } else if (path.startsWith('/plugins/')) {
+    const pluginFileName = path.substring('/plugins/'.length)
+    if (!fs.existsSync(`plugins/${pluginFileName}`)) {
+      res.writeHead(404)
+      return res.end()
+    }
+    res.writeHead(200, {
+      'Content-Type': `text/${pluginFileName.endsWith('.css') ? 'css' : 'js'}`,
+    })
+    res.write(fs.readFileSync(`plugins/${pluginFileName}`))
+    res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
     if (dataPath == 'peds') {
@@ -244,6 +255,48 @@ const server = http.createServer(function (req, res) {
       }
       res.writeHead(200, { 'Content-Type': 'text/json' })
       res.write(JSON.stringify(calloutData))
+      res.end()
+    } else if (dataPath == 'plugins') {
+      const plugins = fs.readdirSync('plugins')
+      const pluginsObj = {}
+      for (const plugin of plugins) {
+        if (!fs.statSync(`plugins/${plugin}`).isDirectory()) continue
+
+        let size = 0
+        const files = fs.readdirSync(`plugins/${plugin}`)
+        const filesObj = {}
+
+        for (const file of files) {
+          if (
+            !fs.statSync(`plugins/${plugin}/${file}`).isFile() ||
+            !(file.endsWith('.js') || file.endsWith('.css'))
+          )
+            continue
+          const fileSize = fs.statSync(`plugins/${plugin}/${file}`).size
+          filesObj[file] = {
+            type: file.endsWith('.css') ? 'css' : 'js',
+            size: fileSize,
+          }
+          size += fileSize
+        }
+
+        pluginsObj[plugin] = {
+          files: filesObj,
+          size: size,
+        }
+      }
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(JSON.stringify(pluginsObj))
+      res.end()
+    } else if (dataPath == 'activePlugins') {
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(fs.readFileSync('customization/plugins.json'))
+      res.end()
+    } else if (dataPath == 'filesInPluginDir') {
+      const pluginName = query.name
+      const files = fs.readdirSync(`plugins/${pluginName}`)
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(JSON.stringify(files))
       res.end()
     } else {
       res.writeHead(404)
@@ -356,6 +409,29 @@ const server = http.createServer(function (req, res) {
       } else if (dataPath == 'updateLicenseOptions') {
         body = JSON.parse(body)
         fs.writeFileSync('licenseOptions.json', JSON.stringify(body, null, 2))
+        res.writeHead(200)
+        res.end()
+      } else if (dataPath == 'addActivePlugin') {
+        const activePlugins = JSON.parse(
+          fs.readFileSync('customization/plugins.json')
+        )
+        activePlugins.push(body)
+        activePlugins.sort()
+        fs.writeFileSync(
+          'customization/plugins.json',
+          JSON.stringify(activePlugins)
+        )
+        res.writeHead(200)
+        res.end()
+      } else if (dataPath == 'removeActivePlugin') {
+        const activePlugins = JSON.parse(
+          fs.readFileSync('customization/plugins.json')
+        )
+        activePlugins.splice(activePlugins.indexOf(body), 1)
+        fs.writeFileSync(
+          'customization/plugins.json',
+          JSON.stringify(activePlugins)
+        )
         res.writeHead(200)
         res.end()
       } else {
@@ -630,9 +706,7 @@ function getRandomPed() {
 function generateDirectory() {
   const defaultsDir = fs.readdirSync('defaults')
   for (const item of defaultsDir) {
-    try {
-      fs.readFileSync(item)
-    } catch {
+    if (!fs.existsSync(item)) {
       fs.writeFileSync(item, fs.readFileSync(`defaults/${item}`))
     }
   }
@@ -665,33 +739,21 @@ function generateDirectory() {
 
   fs.writeFileSync('language.json', JSON.stringify(newLanguage, null, 2))
 
-  try {
-    fs.readdirSync('data')
-  } catch {
-    fs.mkdirSync('data')
-  }
+  if (!fs.existsSync('data')) fs.mkdirSync('data')
 
   dataDefaults.forEach(function (value, key) {
-    try {
-      fs.readFileSync(`data/${key}`)
-    } catch {
-      fs.writeFileSync(`data/${key}`, value)
-    }
+    if (!fs.existsSync(`data/${key}`)) fs.writeFileSync(`data/${key}`, value)
   })
 
   const imgDefaultsDir = fs.readdirSync('imgDefaults')
-  try {
-    fs.readdirSync('img')
-  } catch {
-    fs.mkdirSync('img')
-  }
+  if (!fs.existsSync('img')) fs.mkdirSync('img')
   for (const img of imgDefaultsDir) {
-    try {
-      fs.readFileSync(`img/${img}`)
-    } catch {
+    if (!fs.existsSync(`img/${img}`)) {
       fs.writeFileSync(`img/${img}`, fs.readFileSync(`imgDefaults/${img}`))
     }
   }
+
+  if (!fs.existsSync('plugins')) fs.mkdirSync('plugins')
 }
 
 function getCleanRandomArrest(allCharges) {
