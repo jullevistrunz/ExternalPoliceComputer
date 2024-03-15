@@ -31,16 +31,6 @@ createLog(`Version: ${version}`)
 createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
 createLog(`Config:\n${multiLineLog(config)}`)
-createLog(
-  `Custom files:\n${multiLineLog({
-    js: `Default ${fs.statSync('defaults/custom.js').size} Custom ${
-      fs.statSync('custom.js').size
-    }`,
-    css: `Default ${fs.statSync('defaults/custom.css').size} Custom ${
-      fs.statSync('custom.css').size
-    }`,
-  })}`
-)
 
 const dataDir = fs.readdirSync('data')
 const dataFiles = {}
@@ -144,10 +134,18 @@ const server = http.createServer(function (req, res) {
       res.end()
     }
   } else if (path == '/customStyles') {
+    if (!fs.existsSync('custom.css')) {
+      res.writeHead(200, { 'Content-Type': 'text/css' })
+      return res.end('')
+    }
     res.writeHead(200, { 'Content-Type': 'text/css' })
     res.write(fs.readFileSync('custom.css'))
     res.end()
   } else if (path == '/customScript') {
+    if (!fs.existsSync('custom.js')) {
+      res.writeHead(200, { 'Content-Type': 'text/js' })
+      return res.end('')
+    }
     res.writeHead(200, { 'Content-Type': 'text/js' })
     res.write(fs.readFileSync('custom.js'))
     res.end()
