@@ -70,21 +70,17 @@ You can edit all words used by EPC to your liking
 
 - File: `EPC/custom.css`
 
-For simple customization you may change colors, size, etc. in the `:root` selector. You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
-
-> obsolete; use [plugins](#plugins) instead
+> deprecated; use [plugins](#plugins) instead
 
 ## Custom JavaScript
 
 - File: `EPC/custom.js`
 
-You can add your own JS code if you know what you're doing. Versions made by me (or others) can be found on Discord
-
-> obsolete; use [plugins](#plugins) instead
+> deprecated; use [plugins](#plugins) instead
 
 ## Plugins
 
-Plugins can be added by creating a new folder in `EPC/plugins`. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order.
+Plugins can be added by creating a new folder in `EPC/plugins`. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order. Check out the [Discord](#discord-server) for plugins made by the community.
 
 ### Examples
 
