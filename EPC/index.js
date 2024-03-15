@@ -181,13 +181,22 @@ const server = http.createServer(function (req, res) {
     res.end()
   } else if (path.startsWith('/plugins/')) {
     const pluginFileName = path.substring('/plugins/'.length)
-    if (!fs.existsSync(`plugins/${pluginFileName}`)) {
+    if (
+      !fs.existsSync(`plugins/${pluginFileName}`) ||
+      !JSON.parse(fs.readFileSync('customization/plugins.json')).includes(
+        pluginFileName.split('/')[0]
+      )
+    ) {
       res.writeHead(404)
       return res.end()
     }
-    res.writeHead(200, {
-      'Content-Type': `text/${pluginFileName.endsWith('.css') ? 'css' : 'js'}`,
-    })
+    if (pluginFileName.endsWith('.css')) {
+      res.writeHead(200, { 'Content-Type': 'text/css' })
+    } else if (pluginFileName.endsWith('.js')) {
+      res.writeHead(200, { 'Content-Type': 'text/js' })
+    } else {
+      res.writeHead(200)
+    }
     res.write(fs.readFileSync(`plugins/${pluginFileName}`))
     res.end()
   } else if (path.startsWith('/data/')) {
@@ -267,11 +276,7 @@ const server = http.createServer(function (req, res) {
         const filesObj = {}
 
         for (const file of files) {
-          if (
-            !fs.statSync(`plugins/${plugin}/${file}`).isFile() ||
-            !(file.endsWith('.js') || file.endsWith('.css'))
-          )
-            continue
+          if (!fs.statSync(`plugins/${plugin}/${file}`).isFile()) continue
           const fileSize = fs.statSync(`plugins/${plugin}/${file}`).size
           filesObj[file] = {
             type: file.endsWith('.css') ? 'css' : 'js',
