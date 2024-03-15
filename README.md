@@ -72,11 +72,71 @@ You can edit all words used by EPC to your liking
 
 For simple customization you may change colors, size, etc. in the `:root` selector. You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
 
+> obsolete; use [plugins](#plugins) instead
+
 ## Custom JavaScript
 
 - File: `EPC/custom.js`
 
 You can add your own JS code if you know what you're doing. Versions made by me (or others) can be found on Discord
+
+> obsolete; use [plugins](#plugins) instead
+
+## Plugins
+
+Plugins can be added by creating a new folder in `EPC/plugins`. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order.
+
+### Examples
+
+Creating a plugin that will log to the console twice using different js files and change the styling using two different css files (this is just to demonstrate that you can use multiple files in one plugin).
+
+- File: [`testPlugin/test1.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test1.js)
+
+```js
+console.log('test1')
+```
+
+- File: [`testPlugin/test2.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test2.js)
+
+```js
+console.log('test2')
+```
+
+- File: [`testPlugin/test1.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test1.css)
+
+```css
+/* Changing the main color to lavender */
+:root {
+  --main-color: lavender;
+}
+```
+
+- File: [`testPlugin/test2.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test2.css)
+
+```css
+/* Making all informationLabel titles underlined */
+.informationLabel .key {
+  text-decoration: underline;
+}
+```
+
+---
+
+Creating a plugin that will add a background image
+
+- File: [`imageTest/image.jpg`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/imageTest/image.jpg)
+
+- File: [`imageTest/imageTest.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/imageTest/imageTest.css)
+
+```css
+.content {
+  background-image: url('/plugins/imageTest/image.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  image-rendering: optimizeQuality;
+}
+```
 
 ## Steam overlay
 
