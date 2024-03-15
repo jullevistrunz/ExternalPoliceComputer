@@ -588,6 +588,7 @@ async function loadPluginsPage() {
 
   const pluginElements = []
   for (const plugin of Object.keys(plugins)) {
+    if (!Object.keys(plugins[plugin].files).length) continue
     let filesString = ''
     for (const file of Object.keys(plugins[plugin].files)) {
       filesString += `&nbsp;- ${file} <div style="display: inline; opacity: 0.5;">${formatBytes(

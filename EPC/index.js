@@ -32,6 +32,33 @@ createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
 createLog(`Config:\n${multiLineLog(config)}`)
 
+// plugins log (is this good? probably not)
+;(function () {
+  const plugins = fs.readdirSync('plugins')
+  const pluginsObj = {}
+  for (const plugin of plugins) {
+    if (!fs.statSync(`plugins/${plugin}`).isDirectory()) continue
+
+    let size = 0
+    const files = fs.readdirSync(`plugins/${plugin}`)
+    let filesString = ''
+
+    for (const file of files) {
+      if (!fs.statSync(`plugins/${plugin}/${file}`).isFile()) continue
+      const fileSize = fs.statSync(`plugins/${plugin}/${file}`).size
+      filesString += `\n\t\t\t${file}: ${fileSize}`
+      size += fileSize
+    }
+
+    pluginsObj[
+      plugin
+    ] = `\n\t\tFiles: ${filesString}\n\t\tSize: ${size}\n\t\tEnabled on load: ${JSON.parse(
+      fs.readFileSync('customization/plugins.json')
+    ).includes(plugin)}`
+  }
+  createLog(`Plugins:\n${multiLineLog(pluginsObj)}`)
+})()
+
 const dataDir = fs.readdirSync('data')
 const dataFiles = {}
 for (const file of dataDir) {
@@ -107,6 +134,20 @@ if (!config.disableExternalCautions) {
     fs.writeFileSync('data/cars.json', JSON.stringify(cars))
   })
 }
+
+// check if active plugins exist
+;(function () {
+  const activePlugins = JSON.parse(
+    fs.readFileSync('customization/plugins.json')
+  )
+  const installedPlugins = fs.readdirSync('plugins')
+  for (const i in activePlugins) {
+    if (!installedPlugins.includes(activePlugins[i])) {
+      activePlugins.splice(i, 1)
+    }
+  }
+  fs.writeFileSync('customization/plugins.json', JSON.stringify(activePlugins))
+})()
 
 let clearedCalloutData
 
@@ -277,7 +318,6 @@ const server = http.createServer(function (req, res) {
           if (!fs.statSync(`plugins/${plugin}/${file}`).isFile()) continue
           const fileSize = fs.statSync(`plugins/${plugin}/${file}`).size
           filesObj[file] = {
-            type: file.endsWith('.css') ? 'css' : 'js',
             size: fileSize,
           }
           size += fileSize
