@@ -595,6 +595,49 @@ input {
   margin: 20px;
 }
 
+.warnCustomFilesPopUp {
+  position: fixed;
+  background-color: var(--background-color);
+  width: 300px;
+  bottom: 10px;
+  right: 10px;
+  border: 2px solid var(--warning-color-half);
+  padding: 5px;
+  pointer-events: all;
+}
+
+.warnCustomFilesPopUp button {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: monospace;
+  padding: 5px;
+  border: 2px solid var(--second-accent-color);
+  color: var(--main-color);
+  outline: none;
+  cursor: pointer;
+  transition: 50ms linear;
+  background-color: transparent;
+  width: 100%;
+  text-align: left;
+  margin-top: 5px;
+}
+
+.warnCustomFilesPopUp button:hover {
+  background-color: var(--second-accent-color-half);
+}
+
+.warnCustomFilesPopUp .text {
+  font-size: 16px;
+  font-weight: 400;
+  text-align: justify;
+  margin: 0 2px;
+}
+
+.warnCustomFilesPopUp a {
+  color: var(--second-accent-color);
+}
+
 /* overwrite */
 .hidden {
   display: none;

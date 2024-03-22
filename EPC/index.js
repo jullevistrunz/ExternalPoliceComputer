@@ -181,7 +181,7 @@ const server = http.createServer(function (req, res) {
     }
     res.writeHead(200, { 'Content-Type': 'text/css' })
     res.write(fs.readFileSync('custom.css'))
-    res.end()
+    res.end('\n.warnCustomFilesPopUp { visibility: visible; display: block; }')
   } else if (path == '/customScript') {
     if (!fs.existsSync('custom.js')) {
       res.writeHead(200, { 'Content-Type': 'text/js' })
@@ -189,7 +189,9 @@ const server = http.createServer(function (req, res) {
     }
     res.writeHead(200, { 'Content-Type': 'text/js' })
     res.write(fs.readFileSync('custom.js'))
-    res.end()
+    res.end(
+      ";document.querySelector('.warnCustomFilesPopUp').classList.remove('hidden')"
+    )
   } else if (path == '/map') {
     res.writeHead(200, { 'Content-Type': 'image/jpeg' })
     res.write(fs.readFileSync('img/map.jpeg'))

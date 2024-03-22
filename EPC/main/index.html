@@ -398,6 +398,20 @@
           Hide
         </button>
       </div>
+      <div class="warnCustomFilesPopUp hidden">
+        <div class="text">
+          You still have deprecated custom files installed. Make sure to switch
+          to plugins and delete your old custom files. If you need help consider
+          joining the
+          <a href="http://discord.gg/RW9uy3spVb" target="_blank">Discord</a>.
+        </div>
+        <button
+          class="closeButton"
+          onclick="document.querySelector('.warnCustomFilesPopUp').classList.add('hidden')"
+        >
+          Close
+        </button>
+      </div>
     </div>
   </body>
   <script src="/main/elements.js" defer></script>
