@@ -1648,7 +1648,11 @@ async function updateCalloutPage() {
       language.content.calloutPage.values.counties[calloutData.county]
         ? language.content.calloutPage.values.counties[calloutData.county]
         : calloutData.county
-    }, ${calloutData.priority}\n${calloutData.message}${
+    }, ${
+      calloutData.priority == 'default'
+        ? language.content.calloutPage.defaultPriority
+        : calloutData.priority
+    }\n${calloutData.message}${
       calloutData.advisory ? `\n${calloutData.advisory}` : ''
     }\n${language.content.calloutPage.unit} ${
       calloutData.callsign
