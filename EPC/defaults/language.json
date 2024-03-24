@@ -25,7 +25,8 @@
       "newIncident": "New Incident",
       "delete": "Delete",
       "searchCitation": "Search Citation",
-      "searchArrest": "Search Charge"
+      "searchArrest": "Search Charge",
+      "addCourtCase": "Add Court Case"
     },
     "values": {
       "male": "Male",
