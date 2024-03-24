@@ -66,18 +66,6 @@ You can edit all words used by EPC to your liking
 - File: `EPC/img/logo.png`
 - Source: https://forum.gta.world/en/topic/52002-san-andreas-state-government/ | https://i.ibb.co/6bwcmKr/icon-2000px.png
 
-## Custom Styles
-
-- File: `EPC/custom.css`
-
-> deprecated; use [plugins](#plugins) instead
-
-## Custom JavaScript
-
-- File: `EPC/custom.js`
-
-> deprecated; use [plugins](#plugins) instead
-
 ## Plugins
 
 Plugins can be added by creating a new folder in `EPC/plugins`. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order. Check out the [Discord](#discord-server) for plugins made by the community.
@@ -134,6 +122,18 @@ Creating a plugin that will add a background image
 }
 ```
 
+## Custom Styles
+
+- File: `EPC/custom.css`
+
+> deprecated; use [plugins](#plugins) instead
+
+## Custom JavaScript
+
+- File: `EPC/custom.js`
+
+> deprecated; use [plugins](#plugins) instead
+
 ## Steam overlay
 
 - In steam go to Steam <a>&rarr;</a> Settings <a>&rarr;</a> In Game
@@ -188,7 +188,7 @@ If you need support, have a suggestion or bug report, want to see what's coming 
 
 ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
 
-The following files are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
+The following files / folders are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
 
 - [`EPC/arrestOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/arrestOptions.json)
 - [`EPC/citationOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/citationOptions.json)
@@ -197,3 +197,4 @@ The following files are excluded and licensed under the [MIT License](https://gi
 - [`EPC/custom.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.js)
 - [`EPC/language.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/language.json)
 - [`EPC/licenseOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/licenseOptions.json)
+- [`EPC/plugins`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/plugins)
