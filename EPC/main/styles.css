@@ -339,40 +339,18 @@ body input {
   position: relative;
   font-family: monospace;
   resize: none;
-  height: calc(100% - 172px - 200px);
+  height: calc(100% - 172px);
   min-height: 250px;
   width: calc(100% - 10px - 4px - 10px);
   font-size: 16px;
   font-weight: 400;
   padding: 5px;
-  margin: 5px;
+  margin: 5px 5px 0 5px;
   border: 2px solid var(--second-accent-color);
   background-color: var(--background-color);
   color: var(--main-color);
   outline: none;
   transition: 50ms linear;
-}
-
-.shiftPage .incidentReport .result #courtCases {
-  width: calc(100% - 10px);
-  margin: 5px 5px 0 5px;
-}
-
-.shiftPage .incidentReport .result #courtCases .addCourtCase {
-  margin: 0;
-  width: 100%;
-}
-
-.shiftPage .incidentReport .result #courtCases .list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin: 5px 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.shiftPage .incidentReport .result #courtCases .list .courtCaseValue {
-  display: block;
 }
 
 /* remove border radius on iOS */

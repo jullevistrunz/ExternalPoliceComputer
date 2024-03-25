@@ -221,12 +221,6 @@ setInterval(() => {
     document.querySelector(
       '.content .shiftPage .result label[for=incidentNumber]'
     ).innerHTML = language.content.report.incidentNumber
-    document.querySelector(
-      '.content .shiftPage .result label.courtCasesLabel'
-    ).innerHTML = language.content.shiftPage.resultContainer.courtCases
-    document.querySelector(
-      '.content .shiftPage .result #courtCases .addCourtCase'
-    ).innerHTML = language.content.report.addCourtCase
 
     document.querySelector('.overlay .customizationLink').innerHTML =
       language.overlay.customizationLink
@@ -445,10 +439,8 @@ async function renderPedSearch() {
         : 'Gang Affiliation'
     )
   }
-  if (ped.cautions) {
-    for (const caution of ped.cautions) {
-      cautions.push(caution)
-    }
+  for (const caution of ped.cautions) {
+    cautions.push(caution)
   }
   if (cautions.length) {
     for (const i in cautions) {
@@ -1273,12 +1265,8 @@ async function updateIncidentReportOptions(
     button.addEventListener('click', function () {
       incidentReportEl.querySelector('.result #incidentNumber').value =
         incident.number
-
       incidentReportEl.querySelector('.result #incidentDescription').value =
         incident.description
-
-      incidentReportEl.querySelector('.result #courtCases .list').innerHTML = ''
-
       disableAddIncidentButton
         ? incidentReportEl
             .querySelector('.result #incidentDescription')
@@ -1286,28 +1274,12 @@ async function updateIncidentReportOptions(
         : incidentReportEl
             .querySelector('.result #incidentDescription')
             .removeAttribute('readonly')
-
       incidentReportEl.querySelector(
         '.result .headerButtonContainer .submit'
       ).disabled = disableAddIncidentButton
       incidentReportEl.querySelector(
         '.result .headerButtonContainer .delete'
       ).disabled = disableAddIncidentButton
-      incidentReportEl.querySelector(
-        '.result #courtCases .addCourtCase'
-      ).disabled = disableAddIncidentButton
-
-      for (const courtCase of incident.courtCases) {
-        const aEl = document.createElement('a')
-        aEl.classList.add('courtCaseValue')
-        aEl.innerHTML = courtCase
-        aEl.addEventListener('click', function () {
-          goToCourtCaseFromValue(courtCase)
-        })
-        incidentReportEl
-          .querySelector('.result #courtCases .list')
-          .appendChild(aEl)
-      }
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
@@ -1322,18 +1294,11 @@ async function submitIncident() {
   const descriptionInpEl = document.querySelector(
     '.shiftPage .incidentReport .result #incidentDescription'
   )
-  let courtCases = []
-  for (const courtCase of document.querySelectorAll(
-    '.shiftPage .incidentReport .result #courtCases .list .courtCaseValue'
-  )) {
-    courtCases.push(courtCase.innerHTML)
-  }
   for (const i in oldCurrentShift.incidents) {
     if (oldCurrentShift.incidents[i].number == numberInpEl.value) {
       oldCurrentShift.incidents[i] = {
         number: numberInpEl.value,
         description: descriptionInpEl.value,
-        courtCases: courtCases,
       }
       await fetch('/post/updateCurrentShift', {
         method: 'post',
@@ -1373,11 +1338,7 @@ async function createNewIncidentReport(
   const number = `${new Date().getFullYear().toString().slice(2)}-${id}`
   const shift = await (await fetch('/data/shift')).json()
   const currentShift = shift.currentShift
-  currentShift.incidents.push({
-    number: number,
-    description: description,
-    courtCases: [],
-  })
+  currentShift.incidents.push({ number: number, description: description })
   await fetch('/post/updateCurrentShift', {
     method: 'post',
     body: JSON.stringify(currentShift),
@@ -1544,6 +1505,7 @@ function hideCurrentID() {
   document.querySelector('.showCurrentID-container').classList.remove('hidden')
 }
 
+//? mainly for custom.js
 function reassignEventListener(
   selector = '*',
   eventType = 'click',
