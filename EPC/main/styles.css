@@ -351,6 +351,35 @@ body input {
   color: var(--main-color);
   outline: none;
   transition: 50ms linear;
+  white-space: pre-wrap;
+}
+
+.shiftPage .incidentReport .result #incidentDescription span.link {
+  border-bottom: 1px solid var(--second-accent-color-half);
+  color: var(--second-accent-color);
+  cursor: pointer;
+  transition: 50ms linear;
+}
+
+.shiftPage .incidentReport .result #incidentDescription span.link:hover {
+  border-color: var(--second-accent-color);
+}
+
+.overlay .incidentReportLinkSuggestions {
+  position: absolute;
+  background-color: var(--background-color);
+  border: 2px solid var(--second-accent-color);
+  padding: 5px;
+}
+
+.overlay .incidentReportLinkSuggestions > div {
+  pointer-events: all;
+  cursor: pointer;
+  transition: 50ms linear;
+}
+
+.overlay .incidentReportLinkSuggestions > div:hover {
+  color: var(--second-accent-color);
 }
 
 /* remove border radius on iOS */

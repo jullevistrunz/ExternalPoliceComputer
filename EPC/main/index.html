@@ -358,11 +358,8 @@
             </div>
             <label for="incidentNumber">Incident Number</label>
             <input type="text" id="incidentNumber" readonly="true" />
-            <label for="incidentDescription">Description</label>
-            <textarea
-              id="incidentDescription"
-              data-ms-editor="false"
-            ></textarea>
+            <label class="incidentDescriptionLabel">Description</label>
+            <div id="incidentDescription" data-ms-editor="false"></div>
           </div>
         </div>
       </div>
@@ -412,6 +409,7 @@
           Close
         </button>
       </div>
+      <div class="incidentReportLinkSuggestions hidden"></div>
     </div>
   </body>
   <script src="/main/elements.js" defer></script>

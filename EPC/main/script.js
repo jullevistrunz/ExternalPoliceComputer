@@ -216,7 +216,7 @@ setInterval(() => {
       '.content .shiftPage .result .headerButtonContainer button.delete'
     ).innerHTML = language.content.report.delete
     document.querySelector(
-      '.content .shiftPage .result label[for=incidentDescription]'
+      '.content .shiftPage .result .incidentDescriptionLabel'
     ).innerHTML = language.content.report.description
     document.querySelector(
       '.content .shiftPage .result label[for=incidentNumber]'
@@ -439,9 +439,12 @@ async function renderPedSearch() {
         : 'Gang Affiliation'
     )
   }
-  for (const caution of ped.cautions) {
-    cautions.push(caution)
+  if (ped.cautions) {
+    for (const caution of ped.cautions) {
+      cautions.push(caution)
+    }
   }
+
   if (cautions.length) {
     for (const i in cautions) {
       cautions[i] = config.warningColorsForPedCarSearch
@@ -1238,8 +1241,8 @@ async function updateIncidentReportOptions(
   incidentReportEl.querySelector('.options').innerHTML = ''
   incidentReportEl
     .querySelector('.result #incidentDescription')
-    .setAttribute('readonly', true)
-  incidentReportEl.querySelector('.result #incidentDescription').value = ''
+    .setAttribute('contenteditable', true)
+  incidentReportEl.querySelector('.result #incidentDescription').innerHTML = ''
   incidentReportEl.querySelector('.result #incidentNumber').value = ''
   incidentReportEl.querySelector(
     '.result .headerButtonContainer .submit'
@@ -1262,18 +1265,220 @@ async function updateIncidentReportOptions(
   for (const incident of shift.incidents) {
     const button = document.createElement('button')
     button.innerHTML = incident.number
-    button.addEventListener('click', function () {
+    button.addEventListener('click', async function () {
       incidentReportEl.querySelector('.result #incidentNumber').value =
         incident.number
-      incidentReportEl.querySelector('.result #incidentDescription').value =
-        incident.description
-      disableAddIncidentButton
+
+      incidentReportEl.querySelector('.result #incidentDescription').innerHTML =
+        convertCleanTextToRenderedText(incident.description)
+
+      removeAllEventListeners(
+        incidentReportEl.querySelector('.result #incidentDescription')
+      )
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('keypress', function (e) {
+          if (e.key == 'Enter' && e.shiftKey) {
+            e.preventDefault()
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('input', function () {
+          for (let i = 0; i < this.children.length; i++) {
+            for (let j = 0; j < this.children[i].childNodes.length; j++) {
+              if (this.children[i].childNodes[j].nodeType == 3) {
+                // convert textNodes to spans
+                const newSpan = document.createElement('span')
+                newSpan.innerHTML = this.children[i].childNodes[j].nodeValue
+                this.children[i].childNodes[j].replaceWith(newSpan)
+                moveCursorToElement(newSpan)
+              }
+            }
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('keydown', function (e) {
+          if (e.key == 'Backspace') {
+            const selection = window.getSelection()
+            const range = selection.getRangeAt(0)
+            const selectedNode =
+              selection.anchorNode.nodeType == 3
+                ? selection.anchorNode.parentNode.parentNode
+                : selection.anchorNode
+            const previousNode = selectedNode.previousSibling
+            if (
+              selectedNode.tagName == 'DIV' &&
+              previousNode &&
+              range.startOffset == 0
+            ) {
+              const tempEl = document.createElement('span')
+              tempEl.id = 'temp'
+              previousNode.appendChild(tempEl)
+              previousNode.innerHTML += selectedNode.innerHTML
+              moveCursorToElement(document.getElementById('temp'))
+              document.getElementById('temp').remove()
+              selectedNode.remove()
+              e.preventDefault()
+            }
+          }
+
+          if (
+            e.key == ' ' ||
+            e.key == 'Enter' ||
+            e.key == 'Tab' ||
+            e.key.startsWith('Arrow') ||
+            e.key == 'Delete'
+          ) {
+            if (typingLink) {
+              e.preventDefault()
+            }
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('mousedown', function (e) {
+          if (typingLink) {
+            e.preventDefault()
+          }
+        })
+
+      const court = await (await fetch('/data/court')).json()
+      const incidentReportLinkPrefixes = ['$', '@', '#']
+      let typingLink = false
+      let typeOfLink
+      let currentLinkLength = 0
+
+      function resetLink() {
+        typingLink = false
+        typeOfLink = null
+        currentLinkLength = 0
+        document
+          .querySelector('.overlay .incidentReportLinkSuggestions')
+          .classList.add('hidden')
+
+        incidentReportEl
+          .querySelectorAll('.result #incidentDescription .link')
+          .forEach((el) => {
+            el.style.pointerEvents = 'all'
+          })
+      }
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('input', function (e) {
+          if (incidentReportLinkPrefixes.includes(e.data) && !typingLink) {
+            typingLink = true
+            typeOfLink = e.data
+          }
+          if (typingLink) {
+            document.querySelector(
+              '.shiftPage .incidentReport .result .submit'
+            ).disabled = true
+            this.querySelectorAll('.link').forEach((el) => {
+              el.style.pointerEvents = 'none'
+            })
+            for (let i = 0; i < this.children.length; i++) {
+              for (let j = 0; j < this.children[i].children.length; j++) {
+                const childEl = this.children[i].children[j]
+                if (childEl.innerHTML.includes('$')) {
+                  const words = childEl.innerHTML.split(' ')
+                  for (let k = 0; k < words.length; k++) {
+                    if (words[k].startsWith(typeOfLink)) {
+                      if (e.data) {
+                        currentLinkLength = words[k].length
+                      }
+                      const restOfWord = words[k].slice(1)
+                      divBounds = this.children[i].getBoundingClientRect()
+
+                      const suggestionEl = document.querySelector(
+                        '.overlay .incidentReportLinkSuggestions'
+                      )
+                      suggestionEl.style.width = `${
+                        this.children[i].clientWidth - 4 - 10
+                      }px`
+                      suggestionEl.style.top = `${divBounds.top + 20}px`
+                      suggestionEl.style.left = `${divBounds.left}px`
+                      suggestionEl.innerHTML = ''
+
+                      if (typeOfLink == '$') {
+                        const courtCases = shift.courtCases
+                        for (const courtCase of courtCases) {
+                          const btn = document.createElement('div')
+                          const pedName = court.find(
+                            (x) => x.number == courtCase
+                          ).ped
+                          if (
+                            !pedName
+                              .toLowerCase()
+                              .includes(restOfWord.toLowerCase()) &&
+                            !courtCase
+                              .toLowerCase()
+                              .includes(restOfWord.toLowerCase())
+                          ) {
+                            continue
+                          }
+                          btn.innerHTML = `${courtCase} - ${pedName}`
+                          btn.addEventListener('click', () => {
+                            const plainTextArr = this.children[i].children[
+                              j
+                            ].innerHTML.split(`${typeOfLink}${restOfWord}`)
+                            const link = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</span>`
+                            this.children[i].children[
+                              j
+                            ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
+                            resetLink()
+                            document.querySelector(
+                              '.shiftPage .incidentReport .result .submit'
+                            ).disabled = false
+                          })
+                          suggestionEl.appendChild(btn)
+                        }
+                      }
+                      suggestionEl.classList.remove('hidden')
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            document.querySelector(
+              '.shiftPage .incidentReport .result .submit'
+            ).disabled = false
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('keyup', function (e) {
+          if (e.key == 'Backspace') {
+            if (typingLink) {
+              currentLinkLength--
+              if (currentLinkLength <= 0) {
+                document
+                  .querySelector('.overlay .incidentReportLinkSuggestions')
+                  .classList.add('hidden')
+                resetLink()
+                document.querySelector(
+                  '.shiftPage .incidentReport .result .submit'
+                ).disabled = false
+              }
+            }
+          }
+        })
+
+      !disableAddIncidentButton
         ? incidentReportEl
             .querySelector('.result #incidentDescription')
-            .setAttribute('readonly', true)
+            .setAttribute('contenteditable', true)
         : incidentReportEl
             .querySelector('.result #incidentDescription')
-            .removeAttribute('readonly')
+            .removeAttribute('contenteditable')
       incidentReportEl.querySelector(
         '.result .headerButtonContainer .submit'
       ).disabled = disableAddIncidentButton
@@ -1283,6 +1488,113 @@ async function updateIncidentReportOptions(
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
+}
+
+// https://stackoverflow.com/a/4812022
+function getCaretCharacterOffsetWithin(element) {
+  var caretOffset = 0
+  var doc = element.ownerDocument || element.document
+  var win = doc.defaultView || doc.parentWindow
+  var sel
+  if (typeof win.getSelection != 'undefined') {
+    sel = win.getSelection()
+    if (sel.rangeCount > 0) {
+      var range = win.getSelection().getRangeAt(0)
+      var preCaretRange = range.cloneRange()
+      preCaretRange.selectNodeContents(element)
+      preCaretRange.setEnd(range.endContainer, range.endOffset)
+      caretOffset = preCaretRange.toString().length
+    }
+  } else if ((sel = doc.selection) && sel.type != 'Control') {
+    var textRange = sel.createRange()
+    var preCaretTextRange = doc.body.createTextRange()
+    preCaretTextRange.moveToElementText(element)
+    preCaretTextRange.setEndPoint('EndToEnd', textRange)
+    caretOffset = preCaretTextRange.text.length
+  }
+  return caretOffset
+}
+
+function convertCleanTextToRenderedText(text) {
+  const textArr = text.split('\n')
+  for (const i in textArr) {
+    const div = document.createElement('div')
+    const divArr = textArr[i].split(' ')
+    if (!textArr[i]) {
+      divArr[0] = `<br>`
+    }
+    if (!/^[$@#]/i.test(divArr[0])) {
+      divArr[0] = `<span>${divArr[0]}`
+    }
+    if (!/^[$@#]/i.test(divArr[divArr.length - 1])) {
+      divArr[divArr.length - 1] = `${divArr[divArr.length - 1]}</span>`
+    }
+    for (const j in divArr) {
+      if (divArr[j].startsWith('$')) {
+        if (divArr[j - 1]) {
+          divArr[j - 1] = `${divArr[j - 1]}</span>`
+        }
+
+        divArr[
+          j
+        ] = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${divArr[
+          j
+        ].slice(1)}')">${divArr[j].slice(1)}</span>`
+
+        if (divArr[parseInt(j) + 1]) {
+          divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
+        }
+      } else {
+        if (!divArr[j].endsWith('</span>')) {
+          divArr[j] += ' '
+        }
+      }
+    }
+    div.innerHTML = divArr.join('')
+    textArr[i] = div.outerHTML
+  }
+  return textArr.join('')
+}
+
+function convertRenderedTextToCleanText(el) {
+  const lines = []
+  for (const child of el.children) {
+    const line = []
+    for (const childChild of child.children) {
+      let word
+      if (childChild.dataset.type == 'courtCase') {
+        word = `$${childChild.innerHTML}`
+      } else {
+        word = childChild.innerHTML
+      }
+      line.push(word)
+    }
+    lines.push(line.join(''))
+  }
+  return lines.join('\n')
+}
+
+function moveCursorToElement(el, addSpace = false) {
+  const range = document.createRange()
+  range.setStartAfter(el)
+  range.collapse(true)
+
+  const selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
+
+  if (addSpace) {
+    range.setStart(range.startContainer, range.startOffset + 1)
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+}
+
+function removeAllEventListeners(element) {
+  const clonedElement = element.cloneNode(true)
+  element.replaceWith(clonedElement)
+  return clonedElement
 }
 
 async function submitIncident() {
@@ -1298,7 +1610,7 @@ async function submitIncident() {
     if (oldCurrentShift.incidents[i].number == numberInpEl.value) {
       oldCurrentShift.incidents[i] = {
         number: numberInpEl.value,
-        description: descriptionInpEl.value,
+        description: descriptionInpEl.innerHTML,
       }
       await fetch('/post/updateCurrentShift', {
         method: 'post',
