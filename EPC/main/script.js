@@ -1363,6 +1363,10 @@ async function updateIncidentReportOptions(
           .forEach((el) => {
             el.style.pointerEvents = 'all'
           })
+
+        document.querySelector(
+          '.shiftPage .incidentReport .result .submit'
+        ).disabled = false
       }
 
       incidentReportEl
@@ -1383,10 +1387,16 @@ async function updateIncidentReportOptions(
             for (let i = 0; i < this.children.length; i++) {
               for (let j = 0; j < this.children[i].children.length; j++) {
                 const childEl = this.children[i].children[j]
-                if (childEl.innerHTML.includes('$')) {
+                if (
+                  childEl.innerHTML.includes('$') ||
+                  childEl.innerHTML.includes('@') ||
+                  childEl.innerHTML.includes('#')
+                ) {
                   const words = childEl.innerHTML.split(' ')
+                  let linkIsValid = false
                   for (let k = 0; k < words.length; k++) {
                     if (words[k].startsWith(typeOfLink)) {
+                      linkIsValid = true
                       if (e.data) {
                         currentLinkLength = words[k].length
                       }
@@ -1458,23 +1468,45 @@ async function updateIncidentReportOptions(
                               j
                             ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
                             resetLink()
-                            document.querySelector(
-                              '.shiftPage .incidentReport .result .submit'
-                            ).disabled = false
                           })
                           suggestionEl.appendChild(btn)
                         }
                       }
                       suggestionEl.classList.remove('hidden')
+                      return
                     }
+                  }
+                  if (!linkIsValid) {
+                    const words = childEl.innerHTML.split(' ')
+                    let offset = 0
+                    for (let k = 0; k < words.length; k++) {
+                      if (words[k].includes(typeOfLink)) {
+                        offset += words[k].length - 1
+                        break
+                      }
+                      offset += words[k].length + 1
+                    }
+                    this.children[i].children[j].innerHTML = childEl.innerHTML
+                      .split(typeOfLink)
+                      .join('')
+                    const range = document.createRange()
+                    range.setStart(
+                      this.children[i].children[j].firstChild,
+                      offset
+                    )
+                    range.collapse(true)
+
+                    const selection = window.getSelection()
+                    selection.removeAllRanges()
+                    selection.addRange(range)
+                    resetLink()
+                    return
                   }
                 }
               }
             }
           } else {
-            document.querySelector(
-              '.shiftPage .incidentReport .result .submit'
-            ).disabled = false
+            resetLink()
           }
         })
 
@@ -1489,9 +1521,6 @@ async function updateIncidentReportOptions(
                   .querySelector('.overlay .incidentReportLinkSuggestions')
                   .classList.add('hidden')
                 resetLink()
-                document.querySelector(
-                  '.shiftPage .incidentReport .result .submit'
-                ).disabled = false
               }
             }
           }
