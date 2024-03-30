@@ -359,7 +359,11 @@
             <label for="incidentNumber">Incident Number</label>
             <input type="text" id="incidentNumber" readonly="true" />
             <label class="incidentDescriptionLabel">Description</label>
-            <div id="incidentDescription" data-ms-editor="false"></div>
+            <div
+              id="incidentDescription"
+              data-ms-editor="false"
+              onpaste="return false"
+            ></div>
           </div>
         </div>
       </div>

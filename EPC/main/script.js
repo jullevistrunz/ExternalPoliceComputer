@@ -1266,6 +1266,10 @@ async function updateIncidentReportOptions(
     const button = document.createElement('button')
     button.innerHTML = incident.number
     button.addEventListener('click', async function () {
+      document
+        .querySelector('.overlay .incidentReportLinkSuggestions')
+        .classList.add('hidden')
+
       incidentReportEl.querySelector('.result #incidentNumber').value =
         incident.number
 
@@ -1340,14 +1344,6 @@ async function updateIncidentReportOptions(
           }
         })
 
-      incidentReportEl
-        .querySelector('.result #incidentDescription')
-        .addEventListener('mousedown', function (e) {
-          if (typingLink) {
-            e.preventDefault()
-          }
-        })
-
       const court = await (await fetch('/data/court')).json()
       const incidentReportLinkPrefixes = ['$', '@', '#']
       let typingLink = false
@@ -1375,6 +1371,7 @@ async function updateIncidentReportOptions(
           if (incidentReportLinkPrefixes.includes(e.data) && !typingLink) {
             typingLink = true
             typeOfLink = e.data
+            moveCursorBehindCurrentIncidentReportLink()
           }
           if (typingLink) {
             document.querySelector(
@@ -1394,17 +1391,43 @@ async function updateIncidentReportOptions(
                         currentLinkLength = words[k].length
                       }
                       const restOfWord = words[k].slice(1)
-                      divBounds = this.children[i].getBoundingClientRect()
 
                       const suggestionEl = document.querySelector(
                         '.overlay .incidentReportLinkSuggestions'
                       )
-                      suggestionEl.style.width = `${
-                        this.children[i].clientWidth - 4 - 10
-                      }px`
-                      suggestionEl.style.top = `${divBounds.top + 20}px`
-                      suggestionEl.style.left = `${divBounds.left}px`
                       suggestionEl.innerHTML = ''
+
+                      const resizeSuggestionEl = () => {
+                        const divBounds =
+                          this.children[i].getBoundingClientRect()
+                        suggestionEl.style.width = `${
+                          this.children[i].clientWidth - 4 - 10
+                        }px`
+                        suggestionEl.style.top = `${
+                          divBounds.top + divBounds.height + 2
+                        }px`
+                        suggestionEl.style.left = `${divBounds.left}px`
+                      }
+
+                      window.addEventListener('resize', resizeSuggestionEl)
+                      resizeSuggestionEl()
+
+                      this.removeEventListener(
+                        'mousedown',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+                      this.removeEventListener(
+                        'touchstart',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+                      this.addEventListener(
+                        'mousedown',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+                      this.addEventListener(
+                        'touchstart',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
 
                       if (typeOfLink == '$') {
                         const courtCases = shift.courtCases
@@ -1416,7 +1439,9 @@ async function updateIncidentReportOptions(
                           if (
                             !pedName
                               .toLowerCase()
-                              .includes(restOfWord.toLowerCase()) &&
+                              .includes(
+                                restOfWord.toLowerCase().replace(/[_]/g, ' ')
+                              ) &&
                             !courtCase
                               .toLowerCase()
                               .includes(restOfWord.toLowerCase())
@@ -1588,6 +1613,43 @@ function moveCursorToElement(el, addSpace = false) {
     range.collapse(true)
     selection.removeAllRanges()
     selection.addRange(range)
+  }
+}
+
+async function moveCursorBehindCurrentIncidentReportLink() {
+  await sleep()
+  const el = document.querySelector(
+    '.shiftPage .incidentReport .result #incidentDescription'
+  )
+  for (let i = 0; i < el.children.length; i++) {
+    for (let j = 0; j < el.children[i].children.length; j++) {
+      if (
+        el.children[i].children[j].innerHTML.includes('$') ||
+        el.children[i].children[j].innerHTML.includes('@') ||
+        el.children[i].children[j].innerHTML.includes('#')
+      ) {
+        const words = el.children[i].children[j].innerHTML.split(' ')
+        let offset = 0
+        for (let k = 0; k < words.length; k++) {
+          if (
+            words[k].startsWith('$') ||
+            words[k].startsWith('@') ||
+            words[k].startsWith('#')
+          ) {
+            offset += words[k].length
+            const range = document.createRange()
+            range.setStart(el.children[i].children[j].firstChild, offset)
+            range.collapse(true)
+
+            const selection = window.getSelection()
+            selection.removeAllRanges()
+            selection.addRange(range)
+            return
+          }
+          offset += words[k].length + 1
+        }
+      }
+    }
   }
 }
 
