@@ -370,6 +370,8 @@ body input {
   background-color: var(--background-color);
   border: 2px solid var(--second-accent-color);
   padding: 5px;
+  max-height: 200px;
+  overflow: auto;
 }
 
 .overlay .incidentReportLinkSuggestions > div {

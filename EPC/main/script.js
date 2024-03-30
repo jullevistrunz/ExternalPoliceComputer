@@ -573,6 +573,12 @@ function openPedInSearchPedPage(name) {
   document.querySelector('.searchPedPage .pedBtn').click()
 }
 
+function openCarInSearchCarPage(licensePlate) {
+  goToPage('searchCar')
+  document.querySelector('.searchCarPage .carInp').value = licensePlate
+  document.querySelector('.searchCarPage .carBtn').click()
+}
+
 async function renderCitationArrestOptions(type, search = null) {
   const language = await getLanguage()
   const options = await (await fetch(`/data/${type}Options`)).json()
@@ -1371,7 +1377,7 @@ async function updateIncidentReportOptions(
 
       incidentReportEl
         .querySelector('.result #incidentDescription')
-        .addEventListener('input', function (e) {
+        .addEventListener('input', async function (e) {
           if (incidentReportLinkPrefixes.includes(e.data) && !typingLink) {
             typingLink = true
             typeOfLink = e.data
@@ -1463,11 +1469,80 @@ async function updateIncidentReportOptions(
                             const plainTextArr = this.children[i].children[
                               j
                             ].innerHTML.split(`${typeOfLink}${restOfWord}`)
-                            const link = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</span>`
+                            const id = `courtCaseLink_${Math.random()
+                              .toString(36)
+                              .substring(2, 7)}`
+                            const link = `<span id="${id}" class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</span>`
                             this.children[i].children[
                               j
                             ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
                             resetLink()
+                            moveCursorToElement(document.getElementById(id))
+                          })
+                          suggestionEl.appendChild(btn)
+                        }
+                      } else if (typeOfLink == '@') {
+                        const peds = await (await fetch('/data/peds')).json()
+
+                        for (const ped of peds) {
+                          const btn = document.createElement('div')
+                          if (
+                            !ped.name
+                              .toLowerCase()
+                              .includes(
+                                restOfWord.toLowerCase().replace(/[_]/g, ' ')
+                              )
+                          ) {
+                            continue
+                          }
+                          btn.innerHTML = `${ped.name}`
+                          btn.addEventListener('click', () => {
+                            const plainTextArr = this.children[i].children[
+                              j
+                            ].innerHTML.split(`${typeOfLink}${restOfWord}`)
+                            const id = `pedLink_${Math.random()
+                              .toString(36)
+                              .substring(2, 7)}`
+                            const link = `<span id="${id}" class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${ped.name}')">${ped.name}</span>`
+                            this.children[i].children[
+                              j
+                            ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
+                            resetLink()
+                            moveCursorToElement(document.getElementById(id))
+                          })
+                          suggestionEl.appendChild(btn)
+                        }
+                      } else if (typeOfLink == '#') {
+                        const cars = await (await fetch('/data/cars')).json()
+
+                        for (const car of cars) {
+                          const btn = document.createElement('div')
+                          if (
+                            !car.licensePlate
+                              .toLowerCase()
+                              .includes(restOfWord.toLowerCase()) &&
+                            !car.owner
+                              .toLowerCase()
+                              .includes(
+                                restOfWord.toLowerCase().replace(/[_]/g, ' ')
+                              )
+                          ) {
+                            continue
+                          }
+                          btn.innerHTML = `${car.licensePlate} - ${car.owner}`
+                          btn.addEventListener('click', () => {
+                            const plainTextArr = this.children[i].children[
+                              j
+                            ].innerHTML.split(`${typeOfLink}${restOfWord}`)
+                            const id = `carLink_${Math.random()
+                              .toString(36)
+                              .substring(2, 7)}`
+                            const link = `<span id="${id}" class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${car.licensePlate}')">${car.licensePlate}</span>`
+                            this.children[i].children[
+                              j
+                            ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
+                            resetLink()
+                            moveCursorToElement(document.getElementById(id))
                           })
                           suggestionEl.appendChild(btn)
                         }
