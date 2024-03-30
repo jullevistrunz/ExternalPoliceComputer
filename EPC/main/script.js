@@ -1238,6 +1238,7 @@ async function openIncidentReports(disableAddIncidentButton = false, shift) {
   updateIncidentReportOptions(disableAddIncidentButton, shift)
 }
 
+const incidentReportLinkPrefixes = ['$', '@', '#']
 async function updateIncidentReportOptions(
   disableAddIncidentButton = false,
   shift
@@ -1351,7 +1352,6 @@ async function updateIncidentReportOptions(
         })
 
       const court = await (await fetch('/data/court')).json()
-      const incidentReportLinkPrefixes = ['$', '@', '#']
       let typingLink = false
       let typeOfLink
       let currentLinkLength = 0
@@ -1619,31 +1619,6 @@ async function updateIncidentReportOptions(
   }
 }
 
-// https://stackoverflow.com/a/4812022
-function getCaretCharacterOffsetWithin(element) {
-  var caretOffset = 0
-  var doc = element.ownerDocument || element.document
-  var win = doc.defaultView || doc.parentWindow
-  var sel
-  if (typeof win.getSelection != 'undefined') {
-    sel = win.getSelection()
-    if (sel.rangeCount > 0) {
-      var range = win.getSelection().getRangeAt(0)
-      var preCaretRange = range.cloneRange()
-      preCaretRange.selectNodeContents(element)
-      preCaretRange.setEnd(range.endContainer, range.endOffset)
-      caretOffset = preCaretRange.toString().length
-    }
-  } else if ((sel = doc.selection) && sel.type != 'Control') {
-    var textRange = sel.createRange()
-    var preCaretTextRange = doc.body.createTextRange()
-    preCaretTextRange.moveToElementText(element)
-    preCaretTextRange.setEndPoint('EndToEnd', textRange)
-    caretOffset = preCaretTextRange.text.length
-  }
-  return caretOffset
-}
-
 function convertCleanTextToRenderedText(text) {
   const textArr = text.split('\n')
   for (const i in textArr) {
@@ -1671,7 +1646,81 @@ function convertCleanTextToRenderedText(text) {
         ].slice(1)}')">${divArr[j].slice(1)}</span>`
 
         if (divArr[parseInt(j) + 1]) {
-          divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
+          let nextIsPrefix = false
+          for (const prefix of incidentReportLinkPrefixes) {
+            if (divArr[parseInt(j) + 1].startsWith(prefix)) {
+              nextIsPrefix = true
+              break
+            }
+          }
+
+          if (nextIsPrefix) {
+            divArr[j] += `<span> </span>`
+          }
+
+          if (!nextIsPrefix) {
+            divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
+          }
+        }
+      } else if (divArr[j].startsWith('@')) {
+        if (divArr[j - 1]) {
+          divArr[j - 1] = `${divArr[j - 1]}</span>`
+        }
+
+        divArr[
+          j
+        ] = `<span class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${divArr[
+          j
+        ]
+          .slice(1)
+          .replace(/[_]/g, ' ')}')">${divArr[j]
+          .slice(1)
+          .replace(/[_]/g, ' ')}</span>`
+
+        if (divArr[parseInt(j) + 1]) {
+          let nextIsPrefix = false
+          for (const prefix of incidentReportLinkPrefixes) {
+            if (divArr[parseInt(j) + 1].startsWith(prefix)) {
+              nextIsPrefix = true
+              break
+            }
+          }
+
+          if (nextIsPrefix) {
+            divArr[j] += `<span> </span>`
+          }
+
+          if (!nextIsPrefix) {
+            divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
+          }
+        }
+      } else if (divArr[j].startsWith('#')) {
+        if (divArr[j - 1]) {
+          divArr[j - 1] = `${divArr[j - 1]}</span>`
+        }
+
+        divArr[
+          j
+        ] = `<span class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${divArr[
+          j
+        ].slice(1)}')">${divArr[j].slice(1)}</span>`
+
+        if (divArr[parseInt(j) + 1]) {
+          let nextIsPrefix = false
+          for (const prefix of incidentReportLinkPrefixes) {
+            if (divArr[parseInt(j) + 1].startsWith(prefix)) {
+              nextIsPrefix = true
+              break
+            }
+          }
+
+          if (nextIsPrefix) {
+            divArr[j] += `<span> </span>`
+          }
+
+          if (!nextIsPrefix) {
+            divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
+          }
         }
       } else {
         if (!divArr[j].endsWith('</span>')) {
@@ -1693,8 +1742,15 @@ function convertRenderedTextToCleanText(el) {
       let word
       if (childChild.dataset.type == 'courtCase') {
         word = `$${childChild.innerHTML}`
+      } else if (childChild.dataset.type == 'ped') {
+        word = `@${childChild.innerHTML.replace(' ', '_')}`
+      } else if (childChild.dataset.type == 'car') {
+        word = `#${childChild.innerHTML}`
       } else {
         word = childChild.innerHTML
+      }
+      if (word == '') {
+        word = ' '
       }
       line.push(word)
     }
@@ -1776,7 +1832,7 @@ async function submitIncident() {
     if (oldCurrentShift.incidents[i].number == numberInpEl.value) {
       oldCurrentShift.incidents[i] = {
         number: numberInpEl.value,
-        description: descriptionInpEl.innerHTML,
+        description: convertRenderedTextToCleanText(descriptionInpEl),
       }
       await fetch('/post/updateCurrentShift', {
         method: 'post',
