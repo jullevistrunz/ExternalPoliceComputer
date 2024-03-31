@@ -1391,6 +1391,10 @@ async function updateIncidentReportOptions(
         document.querySelector(
           '.shiftPage .incidentReport .result .submit'
         ).disabled = false
+
+        document.querySelectorAll('button').forEach((el) => {
+          el.removeEventListener('click', hideIncidentReportLinkSuggestions)
+        })
       }
 
       incidentReportEl
@@ -1424,6 +1428,9 @@ async function updateIncidentReportOptions(
             document.querySelector(
               '.shiftPage .incidentReport .result .submit'
             ).disabled = true
+            document.querySelectorAll('button').forEach((el) => {
+              el.addEventListener('click', hideIncidentReportLinkSuggestions)
+            })
             this.querySelectorAll('.link').forEach((el) => {
               el.style.pointerEvents = 'none'
             })
@@ -1655,6 +1662,12 @@ async function updateIncidentReportOptions(
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
+}
+
+function hideIncidentReportLinkSuggestions() {
+  document
+    .querySelector('.overlay .incidentReportLinkSuggestions')
+    .classList.add('hidden')
 }
 
 function convertCleanTextToRenderedText(text) {
