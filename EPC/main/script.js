@@ -1489,6 +1489,11 @@ async function updateIncidentReportOptions(
                           const pedName = court.find(
                             (x) => x.number == courtCase
                           ).ped
+                          const type = court
+                            .find((x) => x.number == courtCase)
+                            .outcome.includes(language.content.jail)
+                            ? language.content.report.arrest
+                            : language.content.report.citation
                           if (
                             !pedName
                               .toLowerCase()
@@ -1501,7 +1506,7 @@ async function updateIncidentReportOptions(
                           ) {
                             continue
                           }
-                          btn.innerHTML = `${courtCase} - ${pedName}`
+                          btn.innerHTML = `${courtCase} - ${pedName} - ${type}`
                           btn.addEventListener('click', () => {
                             const plainTextArr = this.children[i].children[
                               j
