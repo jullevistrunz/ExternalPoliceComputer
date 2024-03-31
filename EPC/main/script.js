@@ -1326,7 +1326,6 @@ async function updateIncidentReportOptions(
         .querySelector('.result #incidentDescription')
         .addEventListener('keydown', function (e) {
           if (e.key == 'Backspace') {
-            console.log(convertRenderedTextToCleanText(this))
             if (convertRenderedTextToCleanText(this) == '') {
               e.preventDefault()
               return
@@ -1657,109 +1656,41 @@ function convertCleanTextToRenderedText(text) {
   const textArr = text.split('\n')
   for (const i in textArr) {
     const div = document.createElement('div')
-    const divArr = textArr[i].split(' ')
+    const divArr = textArr[i].split(/([<][$@#][a-zA-Z0-9_]+[>])/g)
     if (!textArr[i]) {
       divArr[0] = `<br>`
     }
-    if (!/^[$@#]/i.test(divArr[0])) {
-      divArr[0] = `<span>${divArr[0]}`
-    }
-    if (!/^[$@#]/i.test(divArr[divArr.length - 1])) {
-      divArr[divArr.length - 1] = `${divArr[divArr.length - 1]}</span>`
-    }
     for (const j in divArr) {
-      if (divArr[j].startsWith('$')) {
-        if (divArr[j - 1]) {
-          divArr[j - 1] = `${divArr[j - 1]}</span>`
-        }
-
+      if (/[<][$][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
         divArr[
           j
         ] = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${divArr[
           j
-        ].slice(1)}')">${divArr[j].slice(1)}</span>`
-
-        if (divArr[parseInt(j) + 1]) {
-          let nextIsPrefix = false
-          for (const prefix of incidentReportLinkPrefixes) {
-            if (divArr[parseInt(j) + 1].startsWith(prefix)) {
-              nextIsPrefix = true
-              break
-            }
-          }
-
-          if (nextIsPrefix) {
-            divArr[j] += `<span> </span>`
-          }
-
-          if (!nextIsPrefix) {
-            divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
-          }
-        }
-      } else if (divArr[j].startsWith('@')) {
-        if (divArr[j - 1]) {
-          divArr[j - 1] = `${divArr[j - 1]}</span>`
-        }
-
+        ]
+          .slice(2)
+          .slice(0, -1)}')">${divArr[j].slice(2).slice(0, -1)}</span>`
+      } else if (/[<][@][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
         divArr[
           j
         ] = `<span class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${divArr[
           j
         ]
-          .slice(1)
+          .slice(2)
+          .slice(0, -1)
           .replace(/[_]/g, ' ')}')">${divArr[j]
-          .slice(1)
+          .slice(2)
+          .slice(0, -1)
           .replace(/[_]/g, ' ')}</span>`
-
-        if (divArr[parseInt(j) + 1]) {
-          let nextIsPrefix = false
-          for (const prefix of incidentReportLinkPrefixes) {
-            if (divArr[parseInt(j) + 1].startsWith(prefix)) {
-              nextIsPrefix = true
-              break
-            }
-          }
-
-          if (nextIsPrefix) {
-            divArr[j] += `<span> </span>`
-          }
-
-          if (!nextIsPrefix) {
-            divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
-          }
-        }
-      } else if (divArr[j].startsWith('#')) {
-        if (divArr[j - 1]) {
-          divArr[j - 1] = `${divArr[j - 1]}</span>`
-        }
-
+      } else if (/[<][#][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
         divArr[
           j
         ] = `<span class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${divArr[
           j
-        ].slice(1)}')">${divArr[j].slice(1)}</span>`
-
-        if (divArr[parseInt(j) + 1]) {
-          let nextIsPrefix = false
-          for (const prefix of incidentReportLinkPrefixes) {
-            if (divArr[parseInt(j) + 1].startsWith(prefix)) {
-              nextIsPrefix = true
-              break
-            }
-          }
-
-          if (nextIsPrefix) {
-            divArr[j] += `<span> </span>`
-          }
-
-          if (!nextIsPrefix) {
-            divArr[parseInt(j) + 1] = `<span> ${divArr[parseInt(j) + 1]}`
-          }
-        }
+        ]
+          .slice(2)
+          .slice(0, -1)}')">${divArr[j].slice(2).slice(0, -1)}</span>`
       } else {
-        if (!divArr[j].endsWith('</span>')) {
-          divArr[j] += ' '
-        }
+        divArr[j] = `<span>${divArr[j]}</span>`
       }
     }
     div.innerHTML = divArr.join('')
@@ -1775,16 +1706,13 @@ function convertRenderedTextToCleanText(el) {
     for (const childChild of child.children) {
       let word
       if (childChild.dataset.type == 'courtCase') {
-        word = `$${childChild.innerHTML}`
+        word = `<$${childChild.innerHTML}>`
       } else if (childChild.dataset.type == 'ped') {
-        word = `@${childChild.innerHTML.replace(' ', '_')}`
+        word = `<@${childChild.innerHTML.replace(' ', '_')}>`
       } else if (childChild.dataset.type == 'car') {
-        word = `#${childChild.innerHTML}`
+        word = `<#${childChild.innerHTML}>`
       } else {
         word = childChild.innerHTML
-      }
-      if (word == '') {
-        word = ' '
       }
       if (word == '<br>') {
         word = ''
