@@ -21,6 +21,7 @@
       "submit": "Submit",
       "close": "Close",
       "description": "Description",
+      "descriptionPlaceholder": "Use @, # or $ to link to peds, vehicles or court cases. You can search vehicles and court cases by owner / defendant too. Spaces in ped's names can be written as \"_\".",
       "incidentNumber": "Incident Number",
       "newIncident": "New Incident",
       "delete": "Delete",

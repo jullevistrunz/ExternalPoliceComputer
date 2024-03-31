@@ -338,7 +338,6 @@ body input {
 .shiftPage .incidentReport .result #incidentDescription {
   position: relative;
   font-family: monospace;
-  resize: none;
   height: calc(100% - 172px);
   min-height: 250px;
   width: calc(100% - 10px - 4px - 10px);
@@ -352,6 +351,18 @@ body input {
   outline: none;
   transition: 50ms linear;
   white-space: pre-wrap;
+}
+
+.shiftPage .incidentReport .result .incidentDescriptionPlaceholder {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 400;
+  opacity: 0.5;
+  margin: 0 12px;
+  position: absolute;
+  z-index: 2;
+  transform: translateY(10px);
+  pointer-events: none;
 }
 
 .shiftPage .incidentReport .result #incidentDescription span.link {

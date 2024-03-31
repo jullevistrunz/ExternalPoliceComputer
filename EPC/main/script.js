@@ -219,6 +219,9 @@ setInterval(() => {
       '.content .shiftPage .result .incidentDescriptionLabel'
     ).innerHTML = language.content.report.description
     document.querySelector(
+      '.content .shiftPage .result .incidentDescriptionPlaceholder'
+    ).innerHTML = language.content.report.descriptionPlaceholder
+    document.querySelector(
       '.content .shiftPage .result label[for=incidentNumber]'
     ).innerHTML = language.content.report.incidentNumber
 
@@ -1283,6 +1286,14 @@ async function updateIncidentReportOptions(
       incidentReportEl.querySelector('.result #incidentDescription').innerHTML =
         convertCleanTextToRenderedText(incident.description)
 
+      disableAddIncidentButton || incident.description
+        ? incidentReportEl
+            .querySelector('.result .incidentDescriptionPlaceholder')
+            .classList.add('hidden')
+        : incidentReportEl
+            .querySelector('.result .incidentDescriptionPlaceholder')
+            .classList.remove('hidden')
+
       removeAllEventListeners(
         incidentReportEl.querySelector('.result #incidentDescription')
       )
@@ -1315,6 +1326,11 @@ async function updateIncidentReportOptions(
         .querySelector('.result #incidentDescription')
         .addEventListener('keydown', function (e) {
           if (e.key == 'Backspace') {
+            console.log(convertRenderedTextToCleanText(this))
+            if (convertRenderedTextToCleanText(this) == '') {
+              e.preventDefault()
+              return
+            }
             const selection = window.getSelection()
             const range = selection.getRangeAt(0)
             const selectedNode =
@@ -1352,6 +1368,9 @@ async function updateIncidentReportOptions(
         })
 
       const court = await (await fetch('/data/court')).json()
+      const peds = await (await fetch('/data/peds')).json()
+      const cars = await (await fetch('/data/cars')).json()
+
       let typingLink = false
       let typeOfLink
       let currentLinkLength = 0
@@ -1377,7 +1396,26 @@ async function updateIncidentReportOptions(
 
       incidentReportEl
         .querySelector('.result #incidentDescription')
-        .addEventListener('input', async function (e) {
+        .addEventListener('input', function (e) {
+          if (convertRenderedTextToCleanText(this) == '') {
+            incidentReportEl
+              .querySelector('.result .incidentDescriptionPlaceholder')
+              .classList.remove('hidden')
+
+            const newDiv = document.createElement('div')
+            const newSpan = document.createElement('span')
+            const newBr = document.createElement('br')
+            newSpan.appendChild(newBr)
+            newDiv.appendChild(newSpan)
+            this.innerHTML = ''
+            this.appendChild(newDiv)
+            moveCursorToElement(newBr)
+          } else {
+            incidentReportEl
+              .querySelector('.result .incidentDescriptionPlaceholder')
+              .classList.add('hidden')
+          }
+
           if (incidentReportLinkPrefixes.includes(e.data) && !typingLink) {
             typingLink = true
             typeOfLink = e.data
@@ -1482,8 +1520,6 @@ async function updateIncidentReportOptions(
                           suggestionEl.appendChild(btn)
                         }
                       } else if (typeOfLink == '@') {
-                        const peds = await (await fetch('/data/peds')).json()
-
                         for (const ped of peds) {
                           const btn = document.createElement('div')
                           if (
@@ -1513,8 +1549,6 @@ async function updateIncidentReportOptions(
                           suggestionEl.appendChild(btn)
                         }
                       } else if (typeOfLink == '#') {
-                        const cars = await (await fetch('/data/cars')).json()
-
                         for (const car of cars) {
                           const btn = document.createElement('div')
                           if (
@@ -1751,6 +1785,9 @@ function convertRenderedTextToCleanText(el) {
       }
       if (word == '') {
         word = ' '
+      }
+      if (word == '<br>') {
+        word = ''
       }
       line.push(word)
     }
