@@ -466,24 +466,9 @@ input {
 }
 
 .currentID .properties :before {
+  content: attr(data-before);
   color: var(--accent-color);
   margin-right: 5px;
-}
-
-.currentID .properties .fname:before {
-  content: 'FN';
-}
-
-.currentID .properties .lname:before {
-  content: 'LN';
-}
-
-.currentID .properties .dob:before {
-  content: 'DOB';
-}
-
-.currentID .properties .gender:before {
-  content: 'SEX';
 }
 
 .currentID .closeCurrentID,

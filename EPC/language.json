@@ -220,6 +220,12 @@
         "rlPassenger": "R-L Passenger",
         "rrPassenger": "R-R Passenger",
         "passenger": "Passenger"
+      },
+      "properties": {
+        "lname": "LN",
+        "fname": "FN",
+        "dob": "DOB",
+        "gender": "SEX"
       }
     }
   }

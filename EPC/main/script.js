@@ -237,6 +237,12 @@ setInterval(() => {
       language.overlay.currentID.sa
     document.querySelector('.overlay .currentID .title .dl').innerHTML =
       language.overlay.currentID.dl
+
+    for (const property of Object.keys(language.overlay.currentID.properties)) {
+      document.querySelector(
+        `.overlay .currentID .properties .${property}`
+      ).dataset.before = language.overlay.currentID.properties[property]
+    }
   }
 })()
 
