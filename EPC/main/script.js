@@ -830,7 +830,9 @@ async function addCitationToCourt(charges, pedName, description) {
     )
     fullFine += fine
   }
-  const caseNumber = `SA${Math.random().toString().slice(2, 10)}`
+  const caseNumber = `${
+    language.content.courtPage.resultContainer.caseNumberPrefix
+  }${Math.random().toString().slice(2, 10)}`
 
   await fetch('/post/addToCourt', {
     method: 'post',
@@ -894,7 +896,9 @@ async function addArrestToCourt(charges, pedName, description) {
     fullJailTime += jailTimeEl
   }
 
-  const caseNumber = `SA${Math.random().toString().slice(2, 10)}`
+  const caseNumber = `${
+    language.content.courtPage.resultContainer.caseNumberPrefix
+  }${Math.random().toString().slice(2, 10)}`
 
   await fetch('/post/addToCourt', {
     method: 'post',

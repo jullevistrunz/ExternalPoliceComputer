@@ -53,7 +53,7 @@ Reasons for suspended/revoked license
 - File: `EPC/language.json`
 
 Set `replaceStaticWithCustomLanguage` to `true` in `EPC/config.json`.
-You can edit all words used by EPC to your liking
+You can edit all words used by EPC to your liking. `content.courtPage.resultContainer.caseNumberPrefix` has to match this [regex](https://regex101.com/r/OrD6dR/1) exactly once (lower and upper cased letters from a to z and numbers from 0 to 9 are allowed).
 
 ## Map
 

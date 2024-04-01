@@ -150,6 +150,7 @@
       },
       "resultContainer": {
         "caseNumber": "Case Number",
+        "caseNumberPrefix": "SA",
         "defendant": "Defendant",
         "offense": "Offense(s)",
         "outcome": "Outcome",
