@@ -1258,10 +1258,11 @@ async function updateIncidentReportOptions(
 ) {
   const language = await getLanguage()
   const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
-  incidentReportEl.querySelector('.options').innerHTML = ''
+  incidentReportEl.querySelector('.result').classList.add('disabled')
   incidentReportEl
-    .querySelector('.result #incidentDescription')
-    .setAttribute('contenteditable', true)
+    .querySelector('.result .incidentDescriptionPlaceholder')
+    .classList.add('hidden')
+  incidentReportEl.querySelector('.options').innerHTML = ''
   incidentReportEl.querySelector('.result #incidentDescription').innerHTML = ''
   incidentReportEl.querySelector('.result #incidentNumber').value = ''
   incidentReportEl.querySelector(
@@ -1286,6 +1287,8 @@ async function updateIncidentReportOptions(
     const button = document.createElement('button')
     button.innerHTML = incident.number
     button.addEventListener('click', async function () {
+      incidentReportEl.querySelector('.result').classList.remove('disabled')
+
       document
         .querySelector('.overlay .incidentReportLinkSuggestions')
         .classList.add('hidden')

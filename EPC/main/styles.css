@@ -376,6 +376,18 @@ body input {
   border-color: var(--second-accent-color);
 }
 
+.shiftPage
+  .incidentReport
+  .result.disabled
+  > :not(.headerButtonContainer):not(.incidentDescriptionPlaceholder) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shiftPage .incidentReport .result.disabled {
+  cursor: not-allowed;
+}
+
 .overlay .incidentReportLinkSuggestions {
   position: absolute;
   background-color: var(--background-color);
