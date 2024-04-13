@@ -1366,16 +1366,38 @@ async function updateIncidentReportOptions(
             }
           }
 
-          if (
-            e.key == ' ' ||
-            e.key == 'Enter' ||
-            e.key == 'Tab' ||
-            e.key.startsWith('Arrow') ||
-            e.key == 'Delete'
-          ) {
-            if (typingLink) {
-              e.preventDefault()
+          if ((e.key.startsWith('Arrow') || e.key == 'Delete') && typingLink) {
+            if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+              const up = e.key == 'ArrowUp'
+              const suggestionEl = document.querySelector(
+                '.overlay .incidentReportLinkSuggestions'
+              )
+              if (
+                (up &&
+                  suggestionEl.querySelector('.focused') !=
+                    suggestionEl.firstChild) ||
+                (!up &&
+                  suggestionEl.querySelector('.focused') !=
+                    suggestionEl.lastChild)
+              ) {
+                const oldFocusedEl = suggestionEl.querySelector('.focused')
+                oldFocusedEl.classList.remove('focused')
+                up
+                  ? oldFocusedEl.previousElementSibling.classList.add('focused')
+                  : oldFocusedEl.nextElementSibling.classList.add('focused')
+              }
             }
+            e.preventDefault()
+          }
+
+          if (
+            (e.key == ' ' || e.key == 'Enter' || e.key == 'Tab') &&
+            typingLink
+          ) {
+            document
+              .querySelector('.overlay .incidentReportLinkSuggestions .focused')
+              .click()
+            e.preventDefault()
           }
         })
 
@@ -1606,6 +1628,7 @@ async function updateIncidentReportOptions(
                         }
                       }
                       suggestionEl.classList.remove('hidden')
+                      suggestionEl.firstChild.classList.add('focused')
                       return
                     }
                   }

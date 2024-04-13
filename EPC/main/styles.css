@@ -403,6 +403,10 @@ body input {
   transition: 50ms linear;
 }
 
+.overlay .incidentReportLinkSuggestions > div.focused {
+  color: var(--second-accent-color);
+}
+
 .overlay .incidentReportLinkSuggestions > div:hover {
   color: var(--second-accent-color);
 }
