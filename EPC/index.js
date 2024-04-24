@@ -98,7 +98,13 @@ if (!config.disableExternalCautions) {
   fs.watchFile('data/pedsCautions.data', function () {
     const peds = JSON.parse(fs.readFileSync('data/peds.json'))
     const pedsCautionsData = fs.readFileSync('data/pedsCautions.data', 'utf-8')
-    if (!pedsCautionsData) return
+    if (!pedsCautionsData) {
+      for (const i in peds) {
+        peds[i].cautions = []
+      }
+      fs.writeFileSync('data/peds.json', JSON.stringify(peds))
+      return
+    }
     const pedsCautionsDataArray = pedsCautionsData.split(',')
     for (const cautionPed of pedsCautionsDataArray) {
       const pedAndCautions = [
@@ -112,12 +118,27 @@ if (!config.disableExternalCautions) {
         }
       }
     }
+    for (const i in peds) {
+      if (
+        peds[i].cautions &&
+        peds[i].cautions.length > 0 &&
+        !pedsCautionsDataArray.some((el) => el.startsWith(peds[i].name + '='))
+      ) {
+        peds[i].cautions = []
+      }
+    }
     fs.writeFileSync('data/peds.json', JSON.stringify(peds))
   })
   fs.watchFile('data/carsCautions.data', function () {
     const cars = JSON.parse(fs.readFileSync('data/cars.json'))
     const carsCautionsData = fs.readFileSync('data/carsCautions.data', 'utf-8')
-    if (!carsCautionsData) return
+    if (!carsCautionsData) {
+      for (const i in cars) {
+        cars[i].cautions = []
+      }
+      fs.writeFileSync('data/cars.json', JSON.stringify(cars))
+      return
+    }
     const carsCautionsDataArray = carsCautionsData.split(',')
     for (const cautionCar of carsCautionsDataArray) {
       const carAndCautions = [
@@ -129,6 +150,15 @@ if (!config.disableExternalCautions) {
           cars[i].cautions = carAndCautions[1]
           break
         }
+      }
+    }
+    for (const i in cars) {
+      if (
+        cars[i].cautions &&
+        cars[i].cautions.length > 0 &&
+        !carsCautionsDataArray.some((el) => el.startsWith(cars[i].licensePlate + '='))
+      ) {
+        cars[i].cautions = []
       }
     }
     fs.writeFileSync('data/cars.json', JSON.stringify(cars))

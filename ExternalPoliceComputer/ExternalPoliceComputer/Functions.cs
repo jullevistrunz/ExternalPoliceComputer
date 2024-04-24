@@ -73,5 +73,55 @@ namespace ExternalPoliceComputer {
 
             File.WriteAllText($"{Main.DataPath}/carsCautions.data", string.Join(",", carsCautionsDataList));
         }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void RemoveCautionFromPed(string name, string message) {
+            string pedsCautionsData = File.ReadAllText($"{Main.DataPath}/pedsCautions.data");
+            List<string> pedsCautionsDataList = !string.IsNullOrEmpty(pedsCautionsData) ? pedsCautionsData.Split(',').ToList() : new List<string>();
+            
+            message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
+
+            for (int i = 0; i < pedsCautionsDataList.Count; i++) {
+                if (pedsCautionsDataList[i].StartsWith(name)) {
+                    List<string> pedsCautions = pedsCautionsDataList[i].Split('=')[1].Split(';').ToList();
+                    if (pedsCautions.Contains(message)) {
+                        pedsCautions.Remove(message);
+                        if (pedsCautions.Count > 0) {
+                            pedsCautionsDataList[i] = $"{name}={string.Join(";", pedsCautions)}";
+                        } else {
+                            pedsCautionsDataList.RemoveAt(i);
+                        }
+                    }
+                    break;
+                }
+            }
+
+            File.WriteAllText($"{Main.DataPath}/pedsCautions.data", string.Join(",", pedsCautionsDataList));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void RemoveCautionFromCar(string licensePlate, string message) {
+            string carsCautionsData = File.ReadAllText($"{Main.DataPath}/carsCautions.data");
+            List<string> carsCautionsDataList = !string.IsNullOrEmpty(carsCautionsData) ? carsCautionsData.Split(',').ToList() : new List<string>();
+
+            message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
+
+            for (int i = 0; i < carsCautionsDataList.Count; i++) {
+                if (carsCautionsDataList[i].StartsWith(licensePlate)) {
+                    List<string> carsCautions = carsCautionsDataList[i].Split('=')[1].Split(';').ToList();
+                    if (carsCautions.Contains(message)) {
+                        carsCautions.Remove(message);
+                        if (carsCautions.Count > 0) {
+                            carsCautionsDataList[i] = $"{licensePlate}={string.Join(";", carsCautions)}";
+                        } else {
+                            carsCautionsDataList.RemoveAt(i);
+                        }
+                    }
+                    break;
+                }
+            }
+
+            File.WriteAllText($"{Main.DataPath}/carsCautions.data", string.Join(",", carsCautionsDataList));
+        }
     }
 }
