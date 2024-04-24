@@ -180,6 +180,22 @@ ExternalPoliceComputer.Functions.AddCautionToCar("License plate", "Caution messa
 
 You can send multiple messages to the same ped or vehicle, by calling the method multiple times.
 
+---
+
+Removing caution messages from a ped:
+
+```c#
+ExternalPoliceComputer.Functions.RemoveCautionFromPed("Full name", "Caution message");
+```
+
+Removing caution messages from a vehicle:
+
+```c#
+ExternalPoliceComputer.Functions.RemoveCautionFromCar("License plate", "Caution message");
+```
+
+You can remove multiple messages to the same ped or vehicle, by calling the method multiple times. Both the name/license plate and message must **exactly** match those that were added.
+
 ## Discord Server
 
 If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download custom files made by me (or others), you can join https://discord.gg/RW9uy3spVb
