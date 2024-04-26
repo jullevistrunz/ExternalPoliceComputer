@@ -42,6 +42,7 @@ if (!mapScroll) {
 goToPage(lastPage)
 document.querySelectorAll('.header button').forEach((btn) => {
   btn.addEventListener('click', function () {
+    this.classList.remove('notification')
     goToPage(this.classList[0])
   })
 })
@@ -2113,8 +2114,20 @@ async function updateCalloutPage() {
     return
   }
 
-  if (config.autoShowCalloutPage && calloutData.acceptanceState == 'Pending') {
+  if (
+    config.autoShowCalloutPage &&
+    calloutData.acceptanceState == 'Pending' &&
+    document
+      .querySelector('.content .shiftPage .incidentReport')
+      .classList.contains('hidden')
+  ) {
     goToPage('callout')
+  } else if (
+    !document
+      .querySelector('.content .shiftPage .incidentReport')
+      .classList.contains('hidden')
+  ) {
+    document.querySelector('.header .callout').classList.add('notification')
   }
 
   for (const calloutDataItem of Object.keys(calloutData)) {

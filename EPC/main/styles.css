@@ -64,6 +64,28 @@ body input {
   border-bottom: 4px solid var(--accent-color);
 }
 
+.header button.notification::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--warning-color);
+  position: absolute;
+  animation: infinite headerButtonNotification 0.8s linear(0 0%, 0 100%);
+}
+
+@keyframes headerButtonNotification {
+  from {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .content {
   position: fixed;
   left: 0;
