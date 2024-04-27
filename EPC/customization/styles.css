@@ -318,6 +318,12 @@ body input {
   position: relative;
 }
 
+.pluginsPage .title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 20px;
+}
+
 /* overwrite */
 .hidden {
   display: none;

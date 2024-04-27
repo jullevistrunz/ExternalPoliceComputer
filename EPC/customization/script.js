@@ -585,7 +585,7 @@ async function addLicenseOption(name) {
 async function loadPluginsPage() {
   const plugins = await (await fetch('/data/plugins')).json()
   const activePlugins = await (await fetch('/data/activePlugins')).json()
-
+  if (!Object.keys(plugins).length) return
   const pluginElements = []
   for (const plugin of Object.keys(plugins)) {
     if (!Object.keys(plugins[plugin].files).length) continue
