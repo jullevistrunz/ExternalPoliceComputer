@@ -2,12 +2,14 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.4.1'
+const version = '1.4.2'
 
 // clear data on start up
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
+  ['pedsCautions.data', ''],
   ['worldCars.data', ''],
+  ['carsCautions.data', ''],
   ['currentID.data', ''],
   ['callout.data', ''],
   ['peds.json', '[]'],
@@ -29,16 +31,33 @@ createLog(`Version: ${version}`)
 createLog(`Timezone offset: ${new Date().getTimezoneOffset()}`)
 createLog(`Log path: ${fs.realpathSync('EPC.log')}`)
 createLog(`Config:\n${multiLineLog(config)}`)
-createLog(
-  `Custom files:\n${multiLineLog({
-    js: `Default ${fs.statSync('defaults/custom.js').size} Custom ${
-      fs.statSync('custom.js').size
-    }`,
-    css: `Default ${fs.statSync('defaults/custom.css').size} Custom ${
-      fs.statSync('custom.css').size
-    }`,
-  })}`
-)
+
+// plugins log (is this good? probably not)
+;(function () {
+  const plugins = fs.readdirSync('plugins')
+  const pluginsObj = {}
+  for (const plugin of plugins) {
+    if (!fs.statSync(`plugins/${plugin}`).isDirectory()) continue
+
+    let size = 0
+    const files = fs.readdirSync(`plugins/${plugin}`)
+    let filesString = ''
+
+    for (const file of files) {
+      if (!fs.statSync(`plugins/${plugin}/${file}`).isFile()) continue
+      const fileSize = fs.statSync(`plugins/${plugin}/${file}`).size
+      filesString += `\n\t\t\t${file}: ${fileSize}`
+      size += fileSize
+    }
+
+    pluginsObj[
+      plugin
+    ] = `\n\t\tFiles: ${filesString}\n\t\tSize: ${size}\n\t\tEnabled on load: ${JSON.parse(
+      fs.readFileSync('customization/plugins.json')
+    ).includes(plugin)}`
+  }
+  createLog(`Plugins:\n${multiLineLog(pluginsObj)}`)
+})()
 
 const dataDir = fs.readdirSync('data')
 const dataFiles = {}
@@ -75,6 +94,93 @@ process.on('uncaughtException', function (err) {
   process.exit()
 })
 
+if (!config.disableExternalCautions) {
+  fs.watchFile('data/pedsCautions.data', function () {
+    const peds = JSON.parse(fs.readFileSync('data/peds.json'))
+    const pedsCautionsData = fs.readFileSync('data/pedsCautions.data', 'utf-8')
+    if (!pedsCautionsData) {
+      for (const i in peds) {
+        peds[i].cautions = []
+      }
+      fs.writeFileSync('data/peds.json', JSON.stringify(peds))
+      return
+    }
+    const pedsCautionsDataArray = pedsCautionsData.split(',')
+    for (const cautionPed of pedsCautionsDataArray) {
+      const pedAndCautions = [
+        cautionPed.split('=')[0],
+        cautionPed.split('=')[1].split(';'),
+      ]
+      for (const i in peds) {
+        if (peds[i].name == pedAndCautions[0]) {
+          peds[i].cautions = pedAndCautions[1]
+          break
+        }
+      }
+    }
+    for (const i in peds) {
+      if (
+        peds[i].cautions &&
+        peds[i].cautions.length > 0 &&
+        !pedsCautionsDataArray.some((el) => el.startsWith(peds[i].name + '='))
+      ) {
+        peds[i].cautions = []
+      }
+    }
+    fs.writeFileSync('data/peds.json', JSON.stringify(peds))
+  })
+  fs.watchFile('data/carsCautions.data', function () {
+    const cars = JSON.parse(fs.readFileSync('data/cars.json'))
+    const carsCautionsData = fs.readFileSync('data/carsCautions.data', 'utf-8')
+    if (!carsCautionsData) {
+      for (const i in cars) {
+        cars[i].cautions = []
+      }
+      fs.writeFileSync('data/cars.json', JSON.stringify(cars))
+      return
+    }
+    const carsCautionsDataArray = carsCautionsData.split(',')
+    for (const cautionCar of carsCautionsDataArray) {
+      const carAndCautions = [
+        cautionCar.split('=')[0],
+        cautionCar.split('=')[1].split(';'),
+      ]
+      for (const i in cars) {
+        if (cars[i].licensePlate == carAndCautions[0]) {
+          cars[i].cautions = carAndCautions[1]
+          break
+        }
+      }
+    }
+    for (const i in cars) {
+      if (
+        cars[i].cautions &&
+        cars[i].cautions.length > 0 &&
+        !carsCautionsDataArray.some((el) =>
+          el.startsWith(cars[i].licensePlate + '=')
+        )
+      ) {
+        cars[i].cautions = []
+      }
+    }
+    fs.writeFileSync('data/cars.json', JSON.stringify(cars))
+  })
+}
+
+// check if active plugins exist
+;(function () {
+  const activePlugins = JSON.parse(
+    fs.readFileSync('customization/plugins.json')
+  )
+  const installedPlugins = fs.readdirSync('plugins')
+  for (const i in activePlugins) {
+    if (!installedPlugins.includes(activePlugins[i])) {
+      activePlugins.splice(i, 1)
+    }
+  }
+  fs.writeFileSync('customization/plugins.json', JSON.stringify(activePlugins))
+})()
+
 let clearedCalloutData
 
 const server = http.createServer(function (req, res) {
@@ -101,13 +207,23 @@ const server = http.createServer(function (req, res) {
       res.end()
     }
   } else if (path == '/customStyles') {
+    if (!fs.existsSync('custom.css')) {
+      res.writeHead(200, { 'Content-Type': 'text/css' })
+      return res.end('')
+    }
     res.writeHead(200, { 'Content-Type': 'text/css' })
     res.write(fs.readFileSync('custom.css'))
-    res.end()
+    res.end('\n.warnCustomFilesPopUp { visibility: visible; display: block; }')
   } else if (path == '/customScript') {
+    if (!fs.existsSync('custom.js')) {
+      res.writeHead(200, { 'Content-Type': 'text/js' })
+      return res.end('')
+    }
     res.writeHead(200, { 'Content-Type': 'text/js' })
     res.write(fs.readFileSync('custom.js'))
-    res.end()
+    res.end(
+      ";document.querySelector('.warnCustomFilesPopUp').classList.remove('hidden')"
+    )
   } else if (path == '/map') {
     res.writeHead(200, { 'Content-Type': 'image/jpeg' })
     res.write(fs.readFileSync('img/map.jpeg'))
@@ -135,6 +251,26 @@ const server = http.createServer(function (req, res) {
   } else if (path == '/createLog') {
     createLog('[Client Log] ' + query.message)
     res.writeHead(200)
+    res.end()
+  } else if (path.startsWith('/plugins/')) {
+    const pluginFileName = path.substring('/plugins/'.length)
+    if (
+      !fs.existsSync(`plugins/${pluginFileName}`) ||
+      !JSON.parse(fs.readFileSync('customization/plugins.json')).includes(
+        pluginFileName.split('/')[0]
+      )
+    ) {
+      res.writeHead(404)
+      return res.end()
+    }
+    if (pluginFileName.endsWith('.css')) {
+      res.writeHead(200, { 'Content-Type': 'text/css' })
+    } else if (pluginFileName.endsWith('.js')) {
+      res.writeHead(200, { 'Content-Type': 'text/js' })
+    } else {
+      res.writeHead(200)
+    }
+    res.write(fs.readFileSync(`plugins/${pluginFileName}`))
     res.end()
   } else if (path.startsWith('/data/')) {
     const dataPath = path.slice('/data/'.length)
@@ -201,6 +337,43 @@ const server = http.createServer(function (req, res) {
       }
       res.writeHead(200, { 'Content-Type': 'text/json' })
       res.write(JSON.stringify(calloutData))
+      res.end()
+    } else if (dataPath == 'plugins') {
+      const plugins = fs.readdirSync('plugins')
+      const pluginsObj = {}
+      for (const plugin of plugins) {
+        if (!fs.statSync(`plugins/${plugin}`).isDirectory()) continue
+
+        let size = 0
+        const files = fs.readdirSync(`plugins/${plugin}`)
+        const filesObj = {}
+
+        for (const file of files) {
+          if (!fs.statSync(`plugins/${plugin}/${file}`).isFile()) continue
+          const fileSize = fs.statSync(`plugins/${plugin}/${file}`).size
+          filesObj[file] = {
+            size: fileSize,
+          }
+          size += fileSize
+        }
+
+        pluginsObj[plugin] = {
+          files: filesObj,
+          size: size,
+        }
+      }
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(JSON.stringify(pluginsObj))
+      res.end()
+    } else if (dataPath == 'activePlugins') {
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(fs.readFileSync('customization/plugins.json'))
+      res.end()
+    } else if (dataPath == 'filesInPluginDir') {
+      const pluginName = query.name
+      const files = fs.readdirSync(`plugins/${pluginName}`)
+      res.writeHead(200, { 'Content-Type': 'text/json' })
+      res.write(JSON.stringify(files))
       res.end()
     } else {
       res.writeHead(404)
@@ -315,6 +488,29 @@ const server = http.createServer(function (req, res) {
         fs.writeFileSync('licenseOptions.json', JSON.stringify(body, null, 2))
         res.writeHead(200)
         res.end()
+      } else if (dataPath == 'addActivePlugin') {
+        const activePlugins = JSON.parse(
+          fs.readFileSync('customization/plugins.json')
+        )
+        activePlugins.push(body)
+        activePlugins.sort()
+        fs.writeFileSync(
+          'customization/plugins.json',
+          JSON.stringify(activePlugins)
+        )
+        res.writeHead(200)
+        res.end()
+      } else if (dataPath == 'removeActivePlugin') {
+        const activePlugins = JSON.parse(
+          fs.readFileSync('customization/plugins.json')
+        )
+        activePlugins.splice(activePlugins.indexOf(body), 1)
+        fs.writeFileSync(
+          'customization/plugins.json',
+          JSON.stringify(activePlugins)
+        )
+        res.writeHead(200)
+        res.end()
       } else {
         res.writeHead(404)
         res.end()
@@ -368,7 +564,7 @@ function generatePeds() {
   }
 
   let pedNameArr = new Array()
-  for (ped of pedData) {
+  for (const ped of pedData) {
     pedNameArr.push(ped.name)
   }
 
@@ -411,6 +607,7 @@ function generatePeds() {
       probation: probation,
       parole: parole,
       licenseData: licenseData[0],
+      cautions: [],
     }
     pedData.push(ped)
   }
@@ -494,6 +691,7 @@ function generateCars() {
       stolen: worldCar.isStolen == 'True' ? 'Yes' : 'No',
       plateStatus: plateStatus,
       color: worldCar.color,
+      cautions: [],
     }
     carData.push(car)
   }
@@ -561,6 +759,8 @@ function clearGeneratedData() {
   fs.writeFileSync('data/cars.json', '[]')
   fs.writeFileSync('data/currentID.data', '')
   fs.writeFileSync('data/callout.data', '')
+  fs.writeFileSync('data/pedsCautions.data', '')
+  fs.writeFileSync('data/carsCautions.data', '')
   const peds = JSON.parse(fs.readFileSync('data/peds.json'))
   const court = JSON.parse(fs.readFileSync('data/court.json'))
   const newPeds = []
@@ -581,11 +781,12 @@ function getRandomPed() {
 }
 
 function generateDirectory() {
+  if (fs.existsSync('defaults/custom.css')) fs.rmSync('defaults/custom.css')
+  if (fs.existsSync('defaults/custom.js')) fs.rmSync('defaults/custom.js')
+
   const defaultsDir = fs.readdirSync('defaults')
   for (const item of defaultsDir) {
-    try {
-      fs.readFileSync(item)
-    } catch {
+    if (!fs.existsSync(item)) {
       fs.writeFileSync(item, fs.readFileSync(`defaults/${item}`))
     }
   }
@@ -618,33 +819,21 @@ function generateDirectory() {
 
   fs.writeFileSync('language.json', JSON.stringify(newLanguage, null, 2))
 
-  try {
-    fs.readdirSync('data')
-  } catch {
-    fs.mkdirSync('data')
-  }
+  if (!fs.existsSync('data')) fs.mkdirSync('data')
 
   dataDefaults.forEach(function (value, key) {
-    try {
-      fs.readFileSync(`data/${key}`)
-    } catch {
-      fs.writeFileSync(`data/${key}`, value)
-    }
+    if (!fs.existsSync(`data/${key}`)) fs.writeFileSync(`data/${key}`, value)
   })
 
   const imgDefaultsDir = fs.readdirSync('imgDefaults')
-  try {
-    fs.readdirSync('img')
-  } catch {
-    fs.mkdirSync('img')
-  }
+  if (!fs.existsSync('img')) fs.mkdirSync('img')
   for (const img of imgDefaultsDir) {
-    try {
-      fs.readFileSync(`img/${img}`)
-    } catch {
+    if (!fs.existsSync(`img/${img}`)) {
       fs.writeFileSync(`img/${img}`, fs.readFileSync(`imgDefaults/${img}`))
     }
   }
+
+  if (!fs.existsSync('plugins')) fs.mkdirSync('plugins')
 }
 
 function getCleanRandomArrest(allCharges) {

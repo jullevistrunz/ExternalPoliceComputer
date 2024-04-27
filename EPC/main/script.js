@@ -42,6 +42,7 @@ if (!mapScroll) {
 goToPage(lastPage)
 document.querySelectorAll('.header button').forEach((btn) => {
   btn.addEventListener('click', function () {
+    this.classList.remove('notification')
     goToPage(this.classList[0])
   })
 })
@@ -216,8 +217,11 @@ setInterval(() => {
       '.content .shiftPage .result .headerButtonContainer button.delete'
     ).innerHTML = language.content.report.delete
     document.querySelector(
-      '.content .shiftPage .result label[for=incidentDescription]'
+      '.content .shiftPage .result .incidentDescriptionLabel'
     ).innerHTML = language.content.report.description
+    document.querySelector(
+      '.content .shiftPage .result .incidentDescriptionPlaceholder'
+    ).innerHTML = language.content.report.descriptionPlaceholder
     document.querySelector(
       '.content .shiftPage .result label[for=incidentNumber]'
     ).innerHTML = language.content.report.incidentNumber
@@ -234,6 +238,12 @@ setInterval(() => {
       language.overlay.currentID.sa
     document.querySelector('.overlay .currentID .title .dl').innerHTML =
       language.overlay.currentID.dl
+
+    for (const property of Object.keys(language.overlay.currentID.properties)) {
+      document.querySelector(
+        `.overlay .currentID .properties .${property}`
+      ).dataset.before = language.overlay.currentID.properties[property]
+    }
   }
 })()
 
@@ -254,6 +264,29 @@ document
   })
 
 let calloutPageInterval
+
+  // load active plugins
+;(async function () {
+  const plugins = await (await fetch('/data/activePlugins')).json()
+  for (const plugin of plugins) {
+    const files = await (
+      await fetch(`data/filesInPluginDir?name=${plugin}`)
+    ).json()
+
+    for (const file of files) {
+      if (file.endsWith('.css')) {
+        const el = document.createElement('link')
+        el.rel = 'stylesheet'
+        el.href = `/plugins/${plugin}/${file}`
+        document.head.appendChild(el)
+      } else if (file.endsWith('.js')) {
+        const el = document.createElement('script')
+        el.src = `/plugins/${plugin}/${file}`
+        document.body.appendChild(el)
+      }
+    }
+  }
+})()
 
 //funcs
 async function goToPage(name) {
@@ -416,11 +449,17 @@ async function renderPedSearch() {
         : 'Gang Affiliation'
     )
   }
+  if (ped.cautions) {
+    for (const caution of ped.cautions) {
+      cautions.push(caution)
+    }
+  }
+
   if (cautions.length) {
     for (const i in cautions) {
-      cautions[
-        i
-      ] = `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
+      cautions[i] = config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
+        : `• ${cautions[i]}`
     }
     informationLabels.push(
       elements.informationLabel(
@@ -518,6 +557,21 @@ async function renderCarSearch() {
       openPedInSearchPedPage(car.owner)
     }),
   ]
+
+  if (car.cautions.length) {
+    for (const i in car.cautions) {
+      car.cautions[i] = config.warningColorsForPedCarSearch
+        ? `<a style="color: var(--warning-color); pointer-events: none;">• ${car.cautions[i]}</a>`
+        : `• ${car.cautions[i]}`
+    }
+    informationLabels.push(
+      elements.informationLabel(
+        langCar.resultContainer.caution,
+        car.cautions.join('<br>')
+      )
+    )
+  }
+
   informationLabelContainer.replaceWith(
     elements.informationLabelContainer(informationLabels)
   )
@@ -527,6 +581,12 @@ function openPedInSearchPedPage(name) {
   goToPage('searchPed')
   document.querySelector('.searchPedPage .pedInp').value = name
   document.querySelector('.searchPedPage .pedBtn').click()
+}
+
+function openCarInSearchCarPage(licensePlate) {
+  goToPage('searchCar')
+  document.querySelector('.searchCarPage .carInp').value = licensePlate
+  document.querySelector('.searchCarPage .carBtn').click()
 }
 
 async function renderCitationArrestOptions(type, search = null) {
@@ -777,7 +837,9 @@ async function addCitationToCourt(charges, pedName, description) {
     )
     fullFine += fine
   }
-  const caseNumber = `SA${Math.random().toString().slice(2, 10)}`
+  const caseNumber = `${
+    language.content.courtPage.resultContainer.caseNumberPrefix
+  }${Math.random().toString().slice(2, 10)}`
 
   await fetch('/post/addToCourt', {
     method: 'post',
@@ -841,7 +903,9 @@ async function addArrestToCourt(charges, pedName, description) {
     fullJailTime += jailTimeEl
   }
 
-  const caseNumber = `SA${Math.random().toString().slice(2, 10)}`
+  const caseNumber = `${
+    language.content.courtPage.resultContainer.caseNumberPrefix
+  }${Math.random().toString().slice(2, 10)}`
 
   await fetch('/post/addToCourt', {
     method: 'post',
@@ -1188,17 +1252,19 @@ async function openIncidentReports(disableAddIncidentButton = false, shift) {
   updateIncidentReportOptions(disableAddIncidentButton, shift)
 }
 
+const incidentReportLinkPrefixes = ['$', '@', '#']
 async function updateIncidentReportOptions(
   disableAddIncidentButton = false,
   shift
 ) {
   const language = await getLanguage()
   const incidentReportEl = document.querySelector('.shiftPage .incidentReport')
-  incidentReportEl.querySelector('.options').innerHTML = ''
+  incidentReportEl.querySelector('.result').classList.add('disabled')
   incidentReportEl
-    .querySelector('.result #incidentDescription')
-    .setAttribute('readonly', true)
-  incidentReportEl.querySelector('.result #incidentDescription').value = ''
+    .querySelector('.result .incidentDescriptionPlaceholder')
+    .classList.add('hidden')
+  incidentReportEl.querySelector('.options').innerHTML = ''
+  incidentReportEl.querySelector('.result #incidentDescription').innerHTML = ''
   incidentReportEl.querySelector('.result #incidentNumber').value = ''
   incidentReportEl.querySelector(
     '.result .headerButtonContainer .submit'
@@ -1221,18 +1287,409 @@ async function updateIncidentReportOptions(
   for (const incident of shift.incidents) {
     const button = document.createElement('button')
     button.innerHTML = incident.number
-    button.addEventListener('click', function () {
+    button.addEventListener('click', async function () {
+      incidentReportEl.querySelector('.result').classList.remove('disabled')
+
+      document
+        .querySelector('.overlay .incidentReportLinkSuggestions')
+        .classList.add('hidden')
+
       incidentReportEl.querySelector('.result #incidentNumber').value =
         incident.number
-      incidentReportEl.querySelector('.result #incidentDescription').value =
-        incident.description
-      disableAddIncidentButton
+
+      incidentReportEl.querySelector('.result #incidentDescription').innerHTML =
+        convertCleanTextToRenderedText(incident.description)
+
+      disableAddIncidentButton || incident.description
+        ? incidentReportEl
+            .querySelector('.result .incidentDescriptionPlaceholder')
+            .classList.add('hidden')
+        : incidentReportEl
+            .querySelector('.result .incidentDescriptionPlaceholder')
+            .classList.remove('hidden')
+
+      removeAllEventListeners(
+        incidentReportEl.querySelector('.result #incidentDescription')
+      )
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('keypress', function (e) {
+          if (e.key == 'Enter' && e.shiftKey) {
+            e.preventDefault()
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('input', function () {
+          for (let i = 0; i < this.children.length; i++) {
+            for (let j = 0; j < this.children[i].childNodes.length; j++) {
+              if (this.children[i].childNodes[j].nodeType == 3) {
+                // convert textNodes to spans
+                const newSpan = document.createElement('span')
+                newSpan.innerHTML = this.children[i].childNodes[j].nodeValue
+                this.children[i].childNodes[j].replaceWith(newSpan)
+                moveCursorToElement(newSpan)
+              }
+            }
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('keydown', function (e) {
+          if (e.key == 'Backspace') {
+            if (convertRenderedTextToCleanText(this) == '') {
+              e.preventDefault()
+              return
+            }
+            const selection = window.getSelection()
+            const range = selection.getRangeAt(0)
+            const selectedNode =
+              selection.anchorNode.nodeType == 3
+                ? selection.anchorNode.parentNode.parentNode
+                : selection.anchorNode
+            const previousNode = selectedNode.previousSibling
+            if (
+              selectedNode.tagName == 'DIV' &&
+              previousNode &&
+              range.startOffset == 0
+            ) {
+              const tempEl = document.createElement('span')
+              tempEl.id = 'temp'
+              previousNode.appendChild(tempEl)
+              previousNode.innerHTML += selectedNode.innerHTML
+              moveCursorToElement(document.getElementById('temp'))
+              document.getElementById('temp').remove()
+              selectedNode.remove()
+              e.preventDefault()
+            }
+          }
+
+          if ((e.key.startsWith('Arrow') || e.key == 'Delete') && typingLink) {
+            if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+              const up = e.key == 'ArrowUp'
+              const suggestionEl = document.querySelector(
+                '.overlay .incidentReportLinkSuggestions'
+              )
+              if (
+                (up &&
+                  suggestionEl.querySelector('.focused') !=
+                    suggestionEl.firstChild) ||
+                (!up &&
+                  suggestionEl.querySelector('.focused') !=
+                    suggestionEl.lastChild)
+              ) {
+                const oldFocusedEl = suggestionEl.querySelector('.focused')
+                oldFocusedEl.classList.remove('focused')
+                up
+                  ? oldFocusedEl.previousElementSibling.classList.add('focused')
+                  : oldFocusedEl.nextElementSibling.classList.add('focused')
+              }
+            }
+            e.preventDefault()
+          }
+
+          if (
+            (e.key == ' ' || e.key == 'Enter' || e.key == 'Tab') &&
+            typingLink
+          ) {
+            document
+              .querySelector('.overlay .incidentReportLinkSuggestions .focused')
+              .click()
+            e.preventDefault()
+          }
+        })
+
+      const court = await (await fetch('/data/court')).json()
+      const peds = await (await fetch('/data/peds')).json()
+      const cars = await (await fetch('/data/cars')).json()
+
+      let typingLink = false
+      let typeOfLink
+      let currentLinkLength = 0
+
+      function resetLink() {
+        typingLink = false
+        typeOfLink = null
+        currentLinkLength = 0
+        document
+          .querySelector('.overlay .incidentReportLinkSuggestions')
+          .classList.add('hidden')
+
+        incidentReportEl
+          .querySelectorAll('.result #incidentDescription .link')
+          .forEach((el) => {
+            el.style.pointerEvents = 'all'
+          })
+
+        document.querySelector(
+          '.shiftPage .incidentReport .result .submit'
+        ).disabled = false
+
+        document.querySelectorAll('button').forEach((el) => {
+          el.removeEventListener('click', hideIncidentReportLinkSuggestions)
+        })
+      }
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('input', function (e) {
+          if (convertRenderedTextToCleanText(this) == '') {
+            incidentReportEl
+              .querySelector('.result .incidentDescriptionPlaceholder')
+              .classList.remove('hidden')
+
+            const newDiv = document.createElement('div')
+            const newSpan = document.createElement('span')
+            const newBr = document.createElement('br')
+            newSpan.appendChild(newBr)
+            newDiv.appendChild(newSpan)
+            this.innerHTML = ''
+            this.appendChild(newDiv)
+            moveCursorToElement(newBr)
+          } else {
+            incidentReportEl
+              .querySelector('.result .incidentDescriptionPlaceholder')
+              .classList.add('hidden')
+          }
+
+          if (incidentReportLinkPrefixes.includes(e.data) && !typingLink) {
+            typingLink = true
+            typeOfLink = e.data
+            moveCursorBehindCurrentIncidentReportLink()
+          }
+          if (typingLink) {
+            document.querySelector(
+              '.shiftPage .incidentReport .result .submit'
+            ).disabled = true
+            document.querySelectorAll('button').forEach((el) => {
+              el.addEventListener('click', hideIncidentReportLinkSuggestions)
+            })
+            this.querySelectorAll('.link').forEach((el) => {
+              el.style.pointerEvents = 'none'
+            })
+            for (let i = 0; i < this.children.length; i++) {
+              for (let j = 0; j < this.children[i].children.length; j++) {
+                const childEl = this.children[i].children[j]
+                if (
+                  childEl.innerHTML.includes('$') ||
+                  childEl.innerHTML.includes('@') ||
+                  childEl.innerHTML.includes('#')
+                ) {
+                  const words = childEl.innerHTML.split(' ')
+                  let linkIsValid = false
+                  for (let k = 0; k < words.length; k++) {
+                    if (words[k].startsWith(typeOfLink)) {
+                      linkIsValid = true
+                      if (e.data) {
+                        currentLinkLength = words[k].length
+                      }
+                      const restOfWord = words[k].slice(1)
+
+                      const suggestionEl = document.querySelector(
+                        '.overlay .incidentReportLinkSuggestions'
+                      )
+                      suggestionEl.innerHTML = ''
+
+                      const resizeSuggestionEl = () => {
+                        const divBounds =
+                          this.children[i].getBoundingClientRect()
+                        suggestionEl.style.width = `${
+                          this.children[i].clientWidth - 4 - 10
+                        }px`
+                        suggestionEl.style.top = `${
+                          divBounds.top + divBounds.height + 2
+                        }px`
+                        suggestionEl.style.left = `${divBounds.left}px`
+                      }
+
+                      window.addEventListener('resize', resizeSuggestionEl)
+                      resizeSuggestionEl()
+
+                      this.removeEventListener(
+                        'mousedown',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+                      this.removeEventListener(
+                        'touchstart',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+                      this.addEventListener(
+                        'mousedown',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+                      this.addEventListener(
+                        'touchstart',
+                        moveCursorBehindCurrentIncidentReportLink
+                      )
+
+                      if (typeOfLink == '$') {
+                        const courtCases = shift.courtCases
+                        for (const courtCase of courtCases) {
+                          const btn = document.createElement('div')
+                          const pedName = court.find(
+                            (x) => x.number == courtCase
+                          ).ped
+                          const type = court
+                            .find((x) => x.number == courtCase)
+                            .outcome.includes(language.content.jail)
+                            ? language.content.report.arrest
+                            : language.content.report.citation
+                          if (
+                            !pedName
+                              .toLowerCase()
+                              .includes(
+                                restOfWord.toLowerCase().replace(/[_]/g, ' ')
+                              ) &&
+                            !courtCase
+                              .toLowerCase()
+                              .includes(restOfWord.toLowerCase())
+                          ) {
+                            continue
+                          }
+                          btn.innerHTML = `${courtCase} - ${pedName} - ${type}`
+                          btn.addEventListener('click', () => {
+                            const plainTextArr = this.children[i].children[
+                              j
+                            ].innerHTML.split(`${typeOfLink}${restOfWord}`)
+                            const id = `courtCaseLink_${Math.random()
+                              .toString(36)
+                              .substring(2, 7)}`
+                            const link = `<span id="${id}" class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</span>`
+                            this.children[i].children[
+                              j
+                            ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
+                            resetLink()
+                            moveCursorToElement(document.getElementById(id))
+                          })
+                          suggestionEl.appendChild(btn)
+                        }
+                      } else if (typeOfLink == '@') {
+                        for (const ped of peds) {
+                          const btn = document.createElement('div')
+                          if (
+                            !ped.name
+                              .toLowerCase()
+                              .includes(
+                                restOfWord.toLowerCase().replace(/[_]/g, ' ')
+                              )
+                          ) {
+                            continue
+                          }
+                          btn.innerHTML = `${ped.name}`
+                          btn.addEventListener('click', () => {
+                            const plainTextArr = this.children[i].children[
+                              j
+                            ].innerHTML.split(`${typeOfLink}${restOfWord}`)
+                            const id = `pedLink_${Math.random()
+                              .toString(36)
+                              .substring(2, 7)}`
+                            const link = `<span id="${id}" class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${ped.name}')">${ped.name}</span>`
+                            this.children[i].children[
+                              j
+                            ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
+                            resetLink()
+                            moveCursorToElement(document.getElementById(id))
+                          })
+                          suggestionEl.appendChild(btn)
+                        }
+                      } else if (typeOfLink == '#') {
+                        for (const car of cars) {
+                          const btn = document.createElement('div')
+                          if (
+                            !car.licensePlate
+                              .toLowerCase()
+                              .includes(restOfWord.toLowerCase()) &&
+                            !car.owner
+                              .toLowerCase()
+                              .includes(
+                                restOfWord.toLowerCase().replace(/[_]/g, ' ')
+                              )
+                          ) {
+                            continue
+                          }
+                          btn.innerHTML = `${car.licensePlate} - ${car.owner}`
+                          btn.addEventListener('click', () => {
+                            const plainTextArr = this.children[i].children[
+                              j
+                            ].innerHTML.split(`${typeOfLink}${restOfWord}`)
+                            const id = `carLink_${Math.random()
+                              .toString(36)
+                              .substring(2, 7)}`
+                            const link = `<span id="${id}" class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${car.licensePlate}')">${car.licensePlate}</span>`
+                            this.children[i].children[
+                              j
+                            ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
+                            resetLink()
+                            moveCursorToElement(document.getElementById(id))
+                          })
+                          suggestionEl.appendChild(btn)
+                        }
+                      }
+                      suggestionEl.classList.remove('hidden')
+                      suggestionEl.firstChild.classList.add('focused')
+                      return
+                    }
+                  }
+                  if (!linkIsValid) {
+                    const words = childEl.innerHTML.split(' ')
+                    let offset = 0
+                    for (let k = 0; k < words.length; k++) {
+                      if (words[k].includes(typeOfLink)) {
+                        offset += words[k].length - 1
+                        break
+                      }
+                      offset += words[k].length + 1
+                    }
+                    this.children[i].children[j].innerHTML = childEl.innerHTML
+                      .split(typeOfLink)
+                      .join('')
+                    const range = document.createRange()
+                    range.setStart(
+                      this.children[i].children[j].firstChild,
+                      offset
+                    )
+                    range.collapse(true)
+
+                    const selection = window.getSelection()
+                    selection.removeAllRanges()
+                    selection.addRange(range)
+                    resetLink()
+                    return
+                  }
+                }
+              }
+            }
+          } else {
+            resetLink()
+          }
+        })
+
+      incidentReportEl
+        .querySelector('.result #incidentDescription')
+        .addEventListener('keyup', function (e) {
+          if (e.key == 'Backspace') {
+            if (typingLink) {
+              currentLinkLength--
+              if (currentLinkLength <= 0) {
+                document
+                  .querySelector('.overlay .incidentReportLinkSuggestions')
+                  .classList.add('hidden')
+                resetLink()
+              }
+            }
+          }
+        })
+
+      !disableAddIncidentButton
         ? incidentReportEl
             .querySelector('.result #incidentDescription')
-            .setAttribute('readonly', true)
+            .setAttribute('contenteditable', true)
         : incidentReportEl
             .querySelector('.result #incidentDescription')
-            .removeAttribute('readonly')
+            .removeAttribute('contenteditable')
       incidentReportEl.querySelector(
         '.result .headerButtonContainer .submit'
       ).disabled = disableAddIncidentButton
@@ -1242,6 +1699,144 @@ async function updateIncidentReportOptions(
     })
     incidentReportEl.querySelector('.options').appendChild(button)
   }
+}
+
+function hideIncidentReportLinkSuggestions() {
+  document
+    .querySelector('.overlay .incidentReportLinkSuggestions')
+    .classList.add('hidden')
+}
+
+function convertCleanTextToRenderedText(text) {
+  const textArr = text.split('\n')
+  for (const i in textArr) {
+    const div = document.createElement('div')
+    const divArr = textArr[i].split(/([<][$@#][a-zA-Z0-9_]+[>])/g)
+    if (!textArr[i]) {
+      divArr[0] = `<br>`
+    }
+    for (const j in divArr) {
+      if (/[<][$][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
+        divArr[
+          j
+        ] = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${divArr[
+          j
+        ]
+          .slice(2)
+          .slice(0, -1)}')">${divArr[j].slice(2).slice(0, -1)}</span>`
+      } else if (/[<][@][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
+        divArr[
+          j
+        ] = `<span class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${divArr[
+          j
+        ]
+          .slice(2)
+          .slice(0, -1)
+          .replace(/[_]/g, ' ')}')">${divArr[j]
+          .slice(2)
+          .slice(0, -1)
+          .replace(/[_]/g, ' ')}</span>`
+      } else if (/[<][#][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
+        divArr[
+          j
+        ] = `<span class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${divArr[
+          j
+        ]
+          .slice(2)
+          .slice(0, -1)}')">${divArr[j].slice(2).slice(0, -1)}</span>`
+      } else {
+        divArr[j] = `<span>${divArr[j]}</span>`
+      }
+    }
+    div.innerHTML = divArr.join('')
+    textArr[i] = div.outerHTML
+  }
+  return textArr.join('')
+}
+
+function convertRenderedTextToCleanText(el) {
+  const lines = []
+  for (const child of el.children) {
+    const line = []
+    for (const childChild of child.children) {
+      let word
+      if (childChild.dataset.type == 'courtCase') {
+        word = `<$${childChild.innerHTML}>`
+      } else if (childChild.dataset.type == 'ped') {
+        word = `<@${childChild.innerHTML.replace(' ', '_')}>`
+      } else if (childChild.dataset.type == 'car') {
+        word = `<#${childChild.innerHTML}>`
+      } else {
+        word = childChild.innerHTML
+      }
+      if (word == '<br>') {
+        word = ''
+      }
+      line.push(word)
+    }
+    lines.push(line.join(''))
+  }
+  return lines.join('\n')
+}
+
+function moveCursorToElement(el, addSpace = false) {
+  const range = document.createRange()
+  range.setStartAfter(el)
+  range.collapse(true)
+
+  const selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
+
+  if (addSpace) {
+    range.setStart(range.startContainer, range.startOffset + 1)
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+}
+
+async function moveCursorBehindCurrentIncidentReportLink() {
+  await sleep()
+  const el = document.querySelector(
+    '.shiftPage .incidentReport .result #incidentDescription'
+  )
+  for (let i = 0; i < el.children.length; i++) {
+    for (let j = 0; j < el.children[i].children.length; j++) {
+      if (
+        el.children[i].children[j].innerHTML.includes('$') ||
+        el.children[i].children[j].innerHTML.includes('@') ||
+        el.children[i].children[j].innerHTML.includes('#')
+      ) {
+        const words = el.children[i].children[j].innerHTML.split(' ')
+        let offset = 0
+        for (let k = 0; k < words.length; k++) {
+          if (
+            words[k].startsWith('$') ||
+            words[k].startsWith('@') ||
+            words[k].startsWith('#')
+          ) {
+            offset += words[k].length
+            const range = document.createRange()
+            range.setStart(el.children[i].children[j].firstChild, offset)
+            range.collapse(true)
+
+            const selection = window.getSelection()
+            selection.removeAllRanges()
+            selection.addRange(range)
+            return
+          }
+          offset += words[k].length + 1
+        }
+      }
+    }
+  }
+}
+
+function removeAllEventListeners(element) {
+  const clonedElement = element.cloneNode(true)
+  element.replaceWith(clonedElement)
+  return clonedElement
 }
 
 async function submitIncident() {
@@ -1257,7 +1852,7 @@ async function submitIncident() {
     if (oldCurrentShift.incidents[i].number == numberInpEl.value) {
       oldCurrentShift.incidents[i] = {
         number: numberInpEl.value,
-        description: descriptionInpEl.value,
+        description: convertRenderedTextToCleanText(descriptionInpEl),
       }
       await fetch('/post/updateCurrentShift', {
         method: 'post',
@@ -1519,8 +2114,20 @@ async function updateCalloutPage() {
     return
   }
 
-  if (config.autoShowCalloutPage && calloutData.acceptanceState == 'Pending') {
+  if (
+    config.autoShowCalloutPage &&
+    calloutData.acceptanceState == 'Pending' &&
+    document
+      .querySelector('.content .shiftPage .incidentReport')
+      .classList.contains('hidden')
+  ) {
     goToPage('callout')
+  } else if (
+    !document
+      .querySelector('.content .shiftPage .incidentReport')
+      .classList.contains('hidden')
+  ) {
+    document.querySelector('.header .callout').classList.add('notification')
   }
 
   for (const calloutDataItem of Object.keys(calloutData)) {
@@ -1607,7 +2214,11 @@ async function updateCalloutPage() {
       language.content.calloutPage.values.counties[calloutData.county]
         ? language.content.calloutPage.values.counties[calloutData.county]
         : calloutData.county
-    }, ${calloutData.priority}\n${calloutData.message}${
+    }, ${
+      calloutData.priority == 'default'
+        ? language.content.calloutPage.defaultPriority
+        : calloutData.priority
+    }\n${calloutData.message}${
       calloutData.advisory ? `\n${calloutData.advisory}` : ''
     }\n${language.content.calloutPage.unit} ${
       calloutData.callsign

@@ -21,11 +21,14 @@
       "submit": "Submit",
       "close": "Close",
       "description": "Description",
+      "descriptionPlaceholder": "Use @, # or $ to link to peds, vehicles or court cases. You can search vehicles and court cases by owner / defendant too. Spaces in ped's names can be written as \"_\".",
       "incidentNumber": "Incident Number",
       "newIncident": "New Incident",
       "delete": "Delete",
       "searchCitation": "Search Citation",
-      "searchArrest": "Search Charge"
+      "searchArrest": "Search Charge",
+      "citation": "Citation",
+      "arrest": "Arrest"
     },
     "values": {
       "male": "Male",
@@ -136,7 +139,8 @@
         "insurance": "Insurance",
         "stolen": "Stolen",
         "owner": "Owner",
-        "vehicleNotFound": "Vehicle Not Found"
+        "vehicleNotFound": "Vehicle Not Found",
+        "caution": "Caution"
       }
     },
     "courtPage": {
@@ -146,6 +150,7 @@
       },
       "resultContainer": {
         "caseNumber": "Case Number",
+        "caseNumberPrefix": "SA",
         "defendant": "Defendant",
         "offense": "Offense(s)",
         "outcome": "Outcome",
@@ -215,6 +220,12 @@
         "rlPassenger": "R-L Passenger",
         "rrPassenger": "R-R Passenger",
         "passenger": "Passenger"
+      },
+      "properties": {
+        "lname": "LN",
+        "fname": "FN",
+        "dob": "DOB",
+        "gender": "SEX"
       }
     }
   }

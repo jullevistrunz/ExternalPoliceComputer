@@ -30,6 +30,8 @@ async function goToPage(name) {
     await loadConfigPage()
   } else if (name == 'licenseOptions') {
     await loadLicenseOptionsPage()
+  } else if (name == 'plugins') {
+    await loadPluginsPage()
   }
 }
 
@@ -578,4 +580,70 @@ async function addLicenseOption(name) {
     body: JSON.stringify(licenseOptions),
   })
   location.reload()
+}
+
+async function loadPluginsPage() {
+  const plugins = await (await fetch('/data/plugins')).json()
+  const activePlugins = await (await fetch('/data/activePlugins')).json()
+  if (!Object.keys(plugins).length) return
+  const pluginElements = []
+  for (const plugin of Object.keys(plugins)) {
+    if (!Object.keys(plugins[plugin].files).length) continue
+    let filesString = ''
+    for (const file of Object.keys(plugins[plugin].files)) {
+      filesString += `&nbsp;- ${file} <div style="display: inline; opacity: 0.5;">${formatBytes(
+        plugins[plugin].files[file].size
+      )}</div><br>`
+    }
+    const el = elements.informationLabel(
+      plugin,
+      `${
+        activePlugins.includes(plugin)
+          ? '<div style="display: inline; color: rgb(0, 255, 0);">Enabled</div>'
+          : '<div style="display: inline; color: var(--warning-color);">Disabled</div>'
+      }<br>Size: ${formatBytes(
+        plugins[plugin].size
+      )}<br>Files:<br>${filesString}`,
+      async function () {
+        activePlugins.includes(plugin)
+          ? await fetch('/post/removeActivePlugin', {
+              method: 'POST',
+              body: plugin,
+            })
+          : await fetch('/post/addActivePlugin', {
+              method: 'POST',
+              body: plugin,
+            })
+        loadPluginsPage()
+      }
+    )
+    pluginElements.push(el)
+  }
+
+  const container = elements.informationLabelContainer(pluginElements)
+  document.querySelector('.content .pluginsPage').innerHTML = ''
+  document.querySelector('.content .pluginsPage').appendChild(container)
+}
+
+// https://stackoverflow.com/a/18650828
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes'
+
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = [
+    'Bytes',
+    'KiB',
+    'MiB',
+    'GiB',
+    'TiB',
+    'PiB',
+    'EiB',
+    'ZiB',
+    'YiB',
+  ]
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }

@@ -1,4 +1,4 @@
-# [ExternalPoliceComputer 1.4.1](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
+# [ExternalPoliceComputer 1.4.2](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
 
 A Police Computer Plugin and Node.js Server for LSPDFR.
 
@@ -29,6 +29,7 @@ A Police Computer Plugin and Node.js Server for LSPDFR.
 - `updateCalloutPageInterval`: Interval in ms to update the callout page from the game's data
 - `clearCalloutPageTime`: Time in ms to clear the callout page after the callout ended; `null` to never clear
 - `automaticIncidentReports`: If set to `true`, EPC will create an incident report when a callout ends
+- `disableExternalCautions`: If set to `true`, EPC will not check for ped or vehicle cautions from third party plugins
 
 ## Citation and Arrest Options
 
@@ -52,7 +53,7 @@ Reasons for suspended/revoked license
 - File: `EPC/language.json`
 
 Set `replaceStaticWithCustomLanguage` to `true` in `EPC/config.json`.
-You can edit all words used by EPC to your liking
+You can edit all words used by EPC to your liking. `content.courtPage.resultContainer.caseNumberPrefix` has to match this [regex](https://regex101.com/r/OrD6dR/1) exactly once (lower and upper cased letters from a to z and numbers from 0 to 9 are allowed).
 
 ## Map
 
@@ -65,17 +66,73 @@ You can edit all words used by EPC to your liking
 - File: `EPC/img/logo.png`
 - Source: https://forum.gta.world/en/topic/52002-san-andreas-state-government/ | https://i.ibb.co/6bwcmKr/icon-2000px.png
 
+## Plugins
+
+Plugins can be added by creating a new folder in `EPC/plugins`. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order. Check out the [Discord](#discord-server) for plugins made by the community.
+
+### Examples
+
+Creating a plugin that will log to the console twice using different js files and change the styling using two different css files (this is just to demonstrate that you can use multiple files in one plugin).
+
+- File: [`testPlugin/test1.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test1.js)
+
+```js
+console.log('test1')
+```
+
+- File: [`testPlugin/test2.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test2.js)
+
+```js
+console.log('test2')
+```
+
+- File: [`testPlugin/test1.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test1.css)
+
+```css
+/* Changing the main color to lavender */
+:root {
+  --main-color: lavender;
+}
+```
+
+- File: [`testPlugin/test2.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test2.css)
+
+```css
+/* Making all informationLabel titles underlined */
+.informationLabel .key {
+  text-decoration: underline;
+}
+```
+
+---
+
+Creating a plugin that will add a background image
+
+- File: [`imageTest/image.jpg`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/imageTest/image.jpg)
+
+- File: [`imageTest/imageTest.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/imageTest/imageTest.css)
+
+```css
+.content {
+  background-image: url('/plugins/imageTest/image.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  image-rendering: optimizeQuality;
+}
+```
+
 ## Custom Styles
 
 - File: `EPC/custom.css`
 
-For simple customization you may change colors, size, etc. in the `:root` selector. You can also add more css. `EPC/custom.css` will overwrite `EPC/main/styles.css`
+> deprecated; use [plugins](#plugins) instead
 
 ## Custom JavaScript
 
 - File: `EPC/custom.js`
 
-You can add your own JS code if you know what you're doing. Versions made by me (or others) can be found on Discord
+> deprecated; use [plugins](#plugins) instead
 
 ## Steam overlay
 
@@ -85,6 +142,8 @@ You can add your own JS code if you know what you're doing. Versions made by me 
 - Set _Web browser home page_ to `http://127.0.0.1`
 
 ## API
+
+### Callout messages
 
 If you're a callout dev, you can send messages to EPC's callout page once the callout has been accepted
 
@@ -105,6 +164,38 @@ ExternalPoliceComputer.Functions.SendMessage("2nd Line");
 
 Add the ExternalPoliceComputer.dll as a reference in your project. To prevent crashes, you have to check if EPC is available ([Example by opus49](https://github.com/Immersive-Plugins-Team/CalloutInterfaceAPI/blob/master/CalloutInterfaceAPI/Functions.cs#L26)).
 
+### Caution messages
+
+Sending caution messages, that will be displayed when looking up a ped:
+
+```c#
+ExternalPoliceComputer.Functions.AddCautionToPed("Full name", "Caution message");
+```
+
+Sending caution messages, that will be displayed when looking up a vehicle:
+
+```c#
+ExternalPoliceComputer.Functions.AddCautionToCar("License plate", "Caution message");
+```
+
+You can send multiple messages to the same ped or vehicle, by calling the method multiple times.
+
+---
+
+Removing caution messages from a ped:
+
+```c#
+ExternalPoliceComputer.Functions.RemoveCautionFromPed("Full name", "Caution message");
+```
+
+Removing caution messages from a vehicle:
+
+```c#
+ExternalPoliceComputer.Functions.RemoveCautionFromCar("License plate", "Caution message");
+```
+
+You can remove multiple messages to the same ped or vehicle, by calling the method multiple times. Both the name/license plate and message must **exactly** match those that were added.
+
 ## Discord Server
 
 If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download custom files made by me (or others), you can join https://discord.gg/RW9uy3spVb
@@ -113,7 +204,7 @@ If you need support, have a suggestion or bug report, want to see what's coming 
 
 ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
 
-The following files are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
+The following files / folders are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):
 
 - [`EPC/arrestOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/arrestOptions.json)
 - [`EPC/citationOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/citationOptions.json)
@@ -122,3 +213,4 @@ The following files are excluded and licensed under the [MIT License](https://gi
 - [`EPC/custom.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/custom.js)
 - [`EPC/language.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/language.json)
 - [`EPC/licenseOptions.json`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/licenseOptions.json)
+- [`EPC/plugins`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/EPC/plugins)

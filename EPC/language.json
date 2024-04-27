@@ -21,11 +21,14 @@
       "submit": "Submit",
       "close": "Close",
       "description": "Description",
+      "descriptionPlaceholder": "Use @, # or $ to link to peds, vehicles or court cases. You can search vehicles and court cases by owner / defendant too. Spaces in ped's names can be written as \"_\".",
       "incidentNumber": "Incident Number",
       "newIncident": "New Incident",
       "delete": "Delete",
       "searchCitation": "Search Citation",
-      "searchArrest": "Search Charge"
+      "searchArrest": "Search Charge",
+      "citation": "Citation",
+      "arrest": "Arrest"
     },
     "values": {
       "male": "Male",
@@ -42,64 +45,64 @@
     "alphabetPage": {
       "lawEnforcement": {
         "name": "Law Enforcement",
-        "list": [
-          "Adam",
-          "Boy",
-          "Charles",
-          "David",
-          "Edward",
-          "Frank",
-          "George",
-          "Henry",
-          "Ida",
-          "John",
-          "King",
-          "Lincoln",
-          "Mary",
-          "Nora",
-          "Ocean",
-          "Paul",
-          "Queen",
-          "Robert",
-          "Sam",
-          "Tom",
-          "Union",
-          "Victor",
-          "William",
-          "Xray",
-          "Young",
-          "Zebra"
-        ]
+        "list": {
+          "0": "Adam",
+          "1": "Boy",
+          "2": "Charles",
+          "3": "David",
+          "4": "Edward",
+          "5": "Frank",
+          "6": "George",
+          "7": "Henry",
+          "8": "Ida",
+          "9": "John",
+          "10": "King",
+          "11": "Lincoln",
+          "12": "Mary",
+          "13": "Nora",
+          "14": "Ocean",
+          "15": "Paul",
+          "16": "Queen",
+          "17": "Robert",
+          "18": "Sam",
+          "19": "Tom",
+          "20": "Union",
+          "21": "Victor",
+          "22": "William",
+          "23": "Xray",
+          "24": "Young",
+          "25": "Zebra"
+        }
       },
       "military": {
         "name": "Military",
-        "list": [
-          "Alpha",
-          "Bravo",
-          "Charlie",
-          "Delta",
-          "Echo",
-          "Foxtrot",
-          "Golf",
-          "Hotel",
-          "India",
-          "Juliette",
-          "Kilo",
-          "Lima",
-          "Mike",
-          "November",
-          "Oscar",
-          "Papa",
-          "Quebec",
-          "Romeo",
-          "Sierra",
-          "Tango",
-          "Uniform",
-          "Victor",
-          "Whisky",
-          "Xray",
-          "Zulu"
-        ]
+        "list": {
+          "0": "Alpha",
+          "1": "Bravo",
+          "2": "Charlie",
+          "3": "Delta",
+          "4": "Echo",
+          "5": "Foxtrot",
+          "6": "Golf",
+          "7": "Hotel",
+          "8": "India",
+          "9": "Juliette",
+          "10": "Kilo",
+          "11": "Lima",
+          "12": "Mike",
+          "13": "November",
+          "14": "Oscar",
+          "15": "Papa",
+          "16": "Quebec",
+          "17": "Romeo",
+          "18": "Sierra",
+          "19": "Tango",
+          "20": "Uniform",
+          "21": "Victor",
+          "22": "Whisky",
+          "23": "Xray",
+          "24": "Zulu"
+        }
       }
     },
     "searchPedPage": {
@@ -136,7 +139,8 @@
         "insurance": "Insurance",
         "stolen": "Stolen",
         "owner": "Owner",
-        "vehicleNotFound": "Vehicle Not Found"
+        "vehicleNotFound": "Vehicle Not Found",
+        "caution": "Caution"
       }
     },
     "courtPage": {
@@ -146,6 +150,7 @@
       },
       "resultContainer": {
         "caseNumber": "Case Number",
+        "caseNumberPrefix": "SA",
         "defendant": "Defendant",
         "offense": "Offense(s)",
         "outcome": "Outcome",
@@ -215,6 +220,12 @@
         "rlPassenger": "R-L Passenger",
         "rrPassenger": "R-R Passenger",
         "passenger": "Passenger"
+      },
+      "properties": {
+        "lname": "LN",
+        "fname": "FN",
+        "dob": "DOB",
+        "gender": "SEX"
       }
     }
   }
