@@ -156,7 +156,9 @@ if (!config.disableExternalCautions) {
       if (
         cars[i].cautions &&
         cars[i].cautions.length > 0 &&
-        !carsCautionsDataArray.some((el) => el.startsWith(cars[i].licensePlate + '='))
+        !carsCautionsDataArray.some((el) =>
+          el.startsWith(cars[i].licensePlate + '=')
+        )
       ) {
         cars[i].cautions = []
       }
@@ -779,6 +781,9 @@ function getRandomPed() {
 }
 
 function generateDirectory() {
+  if (fs.existsSync('defaults/custom.css')) fs.rmSync('defaults/custom.css')
+  if (fs.existsSync('defaults/custom.js')) fs.rmSync('defaults/custom.js')
+
   const defaultsDir = fs.readdirSync('defaults')
   for (const item of defaultsDir) {
     if (!fs.existsSync(item)) {
