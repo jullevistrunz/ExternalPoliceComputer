@@ -1,0 +1,5 @@
+.shiftPage .incidentReport .result #incidentDescription {
+	height: auto;
+	min-height: calc(100% - 172px);
+	margin: 5px;
+}
