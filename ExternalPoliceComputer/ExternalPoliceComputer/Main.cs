@@ -1,7 +1,6 @@
 ﻿using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
 using Rage;
-using StopThePed.API;
 using System;
 using System.IO;
 using System.Collections.Specialized;
@@ -9,6 +8,10 @@ using System.Web;
 using System.Linq;
 using LSPD_First_Response.Engine.Scripting;
 using LSPD_First_Response.Mod.Callouts;
+using CommonDataFramework.Modules.VehicleDatabase;
+using CommonDataFramework.Modules.PedDatabase;
+using CommonDataFramework.Modules;
+using System.Drawing;
 
 namespace ExternalPoliceComputer {
     internal class Main : Plugin {
@@ -17,7 +20,7 @@ namespace ExternalPoliceComputer {
         internal static readonly int MaxNumberOfNearbyPedsOrVehicles = 15;
         internal static Ped Player => Game.LocalPlayer.Character;
         internal static readonly string DataPath = "EPC/data";
-        internal static bool UseSTP = true;
+        internal static bool usePR = false;
         internal static bool useCI = false;
 
         public override void Initialize() {
@@ -45,6 +48,12 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
+                if (!DependencyCheck.IsCDFAvailable()) {
+                    Game.DisplayNotification("ExternalPoliceComputer failed to load. Couldn't find CommonDataFramework.");
+                    Game.LogTrivial("ExternalPoliceComputer: Loading aborted. Couldn't find CommonDataFramework.");
+                    return;
+                }
+
                 useCI = DependencyCheck.IsCIAvailable();
 
                 Game.LogTrivial($"ExternalPoliceComputer: CI: {useCI}");
@@ -54,34 +63,38 @@ namespace ExternalPoliceComputer {
                 LSPD_First_Response.Mod.API.Events.OnPulloverStarted += Events_OnPulloverStarted;
                 LSPD_First_Response.Mod.API.Events.OnPursuitEnded += Events_OnPursuitEnded;
 
-                GameFiber IntervalFiber = GameFiber.StartNew(Interval);
+                usePR = DependencyCheck.IsPRAvailable();
 
-                try {
-                    AddEventsWithSTP();
-                } catch {
-                    UseSTP = false;
-                    
+                Game.LogTrivial($"ExternalPoliceComputer: PR: {usePR}");
+
+                if (usePR) { 
+                    AddEventsWithPR(); 
+                }
+                else {
                     LSPD_First_Response.Mod.API.Events.OnPedPresentedId += Events_OnPedPresentedId;
                     LSPD_First_Response.Mod.API.Events.OnPedArrested += Events_OnPedArrested;
                     LSPD_First_Response.Mod.API.Events.OnPedFrisked += Events_OnPedFrisked;
                     LSPD_First_Response.Mod.API.Events.OnPedStopped += Events_OnPedStopped;
                 }
-                Game.LogTrivial($"ExternalPoliceComputer: STP: {UseSTP}");
 
                 UpdateWorldPeds();
                 UpdateWorldCars();
+
+                GameFiber IntervalFiber = GameFiber.StartNew(Interval);
+
+                GameFiber AnimationFiber = GameFiber.StartNew(ListenForAnimationFileChange);
 
                 Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }
         }
 
-        private static void AddEventsWithSTP() {
-            StopThePed.API.Events.askIdEvent += Events_askIdEvent;
-            StopThePed.API.Events.pedArrestedEvent += Events_pedArrestedEvent;
-            StopThePed.API.Events.patDownPedEvent += Events_patDownPedEvent;
-            StopThePed.API.Events.askDriverLicenseEvent += Events_askDriverLicenseEvent;
-            StopThePed.API.Events.askPassengerIdEvent += Events_askPassengerIdEvent;
-            StopThePed.API.Events.stopPedEvent += Events_stopPedEvent;
+        private static void AddEventsWithPR() {
+            PolicingRedefined.API.EventsAPI.OnPedPatDown += Events_patDownPedEvent;
+            PolicingRedefined.API.EventsAPI.OnPedStopped += Events_stopPedEvent;
+            PolicingRedefined.API.EventsAPI.OnPedArrested += Events_pedArrestedEvent;
+            // StopThePed.API.Events.askIdEvent += Events_askIdEvent;
+            // StopThePed.API.Events.askDriverLicenseEvent += Events_askDriverLicenseEvent;
+            // StopThePed.API.Events.askPassengerIdEvent += Events_askPassengerIdEvent;
         }
 
         private static void AddCalloutEventWithCI() {
@@ -158,13 +171,34 @@ namespace ExternalPoliceComputer {
             }
         }
 
+        private static void ListenForAnimationFileChange() {
+            /*
+            FileSystemWatcher watcher = new FileSystemWatcher($"{DataPath}/animation.data");
+            watcher.Changed += (object sender, FileSystemEventArgs e) => {
+                if (e.ChangeType != WatcherChangeTypes.Changed) {
+                    return;
+                }
+                string text = File.ReadAllText($"{DataPath}/animation.data").Split(';').FirstOrDefault(x => x.StartsWith("giveCitation"));
+                string[] citationInformation = text.Split(':').Last().Split(',');
+                if (!string.IsNullOrEmpty(text)) {
+                    Ped ped = Player.GetNearbyPeds(MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(x).FullName == citationInformation[0]);
+                    if (ped == null) {
+                        return;
+                    }
+                    PolicingRedefined.Interaction.Assets.PedAttributes.Citation citation = new PolicingRedefined.Interaction.Assets.PedAttributes.Citation(ped, citationInformation[1], int.Parse(citationInformation[2]), bool.Parse(citationInformation[3]));
+                    PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, citation);
+                }
+            };
+            */
+        }
+
         // STP
         private static void Events_askIdEvent(Ped ped) {
             AddWorldPed(ped);
             UpdateCurrentID(ped);
         }
 
-        private static void Events_pedArrestedEvent(Ped ped) {
+        private static void Events_pedArrestedEvent(Ped ped, Ped officer, bool frontCuffs) {
             AddWorldPed(ped);
         }
 
@@ -221,24 +255,26 @@ namespace ExternalPoliceComputer {
         // world data
         // STP
         private static string GetRegistration(Vehicle car) {
-            switch (StopThePed.API.Functions.getVehicleRegistrationStatus(car)) {
-                case STPVehicleStatus.Expired:
+            switch (VehicleDataController.GetVehicleData(car).Registration.Status) {
+                case EDocumentStatus.Revoked:
+                case EDocumentStatus.Expired:
                     return "Expired";
-                case STPVehicleStatus.None:
+                case EDocumentStatus.None:
                     return "None";
-                case STPVehicleStatus.Valid:
+                case EDocumentStatus.Valid:
                     return "Valid";
             }
             return "";
         }
 
         private static string GetInsurance(Vehicle car) {
-            switch (StopThePed.API.Functions.getVehicleInsuranceStatus(car)) {
-                case STPVehicleStatus.Expired:
+            switch (VehicleDataController.GetVehicleData(car).Insurance.Status) {
+                case EDocumentStatus.Revoked:
+                case EDocumentStatus.Expired:
                     return "Expired";
-                case STPVehicleStatus.None:
+                case EDocumentStatus.None:
                     return "None";
-                case STPVehicleStatus.Valid:
+                case EDocumentStatus.Valid:
                     return "Valid";
             }
             return "";
@@ -246,18 +282,37 @@ namespace ExternalPoliceComputer {
 
         // get world data
         private static string GetWorldPedData(Ped ped) {
-            Persona persona = LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(ped);
-            string birthday = $"{persona.Birthday.Month}/{persona.Birthday.Day}/{persona.Birthday.Year}";
-            return $"name={persona.FullName}&birthday={birthday}&gender={persona.Gender}&isWanted={persona.Wanted}&licenseStatus={persona.ELicenseState}&relationshipGroup={ped.RelationshipGroup.Name}";
+            PedData pedData = PedDataController.GetPedData(ped);
+            string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
+            return PrintObjects(
+                ("name", pedData.FullName),
+                ("birthday", birthday),
+                ("gender", pedData.Gender.ToString()),
+                ("isWanted", pedData.Wanted.ToString()),
+                ("licenseStatus", pedData.DriversLicenseState.ToString()),
+                ("licenseExpiration", pedData.DriversLicenseExpiration.ToString()),
+                ("relationshipGroup", ped.RelationshipGroup.Name),
+                ("isOnProbation", pedData.IsOnProbation.ToString()),
+                ("isOnParole", pedData.IsOnParole.ToString()),
+                ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
+                ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
+                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToShortDateString()),
+                ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
+                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToShortDateString()),
+                ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
+                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToShortDateString())
+                );
         }
 
         private static string GetWorldCarData(Vehicle car) {
             string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
             string color = Rage.Native.NativeFunction.Natives.GET_VEHICLE_LIVERY<int>(car) != -1 ? "" : $"{car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
-            if (UseSTP) {
-                return $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&registration={GetRegistration(car)}&insurance={GetInsurance(car)}&color={color}";
+            Game.LogTrivial(VehicleDataController.GetVehicleData(car).Vin.Number);
+            Game.LogTrivial(VehicleDataController.GetVehicleData(car).Vin.Status.ToString());
+            if (usePR) {
+                return $"licensePlate={VehicleDataController.GetVehicleData(car).LicensePlate}&model={car.Model.Name}&isStolen={VehicleDataController.GetVehicleData(car).IsStolen}&isPolice={car.IsPoliceVehicle}&owner={VehicleDataController.GetVehicleData(car).Owner.FullName}&driver={driver}&registration={GetRegistration(car)}&insurance={GetInsurance(car)}&color={color}";
             } else {
-                return $"licensePlate={car.LicensePlate}&model={car.Model.Name}&isStolen={car.IsStolen}&isPolice={car.IsPoliceVehicle}&owner={LSPD_First_Response.Mod.API.Functions.GetVehicleOwnerName(car)}&driver={driver}&color={color}";
+                return $"licensePlate={VehicleDataController.GetVehicleData(car).LicensePlate}&model={car.Model.Name}&isStolen={VehicleDataController.GetVehicleData(car).IsStolen}&isPolice={car.IsPoliceVehicle}&owner={VehicleDataController.GetVehicleData(car).Owner.FullName}&driver={driver}&color={color}";
             }
         }
 
@@ -328,6 +383,36 @@ namespace ExternalPoliceComputer {
             } 
         }
 
+        private static void AddWorldPedWithPedData(PedData pedData) {
+            if (pedData.Holder.Exists()) {
+                string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
+                string data = PrintObjects(
+                    ("name", pedData.FullName),
+                    ("birthday", birthday),
+                    ("gender", pedData.Gender.ToString()),
+                    ("isWanted", pedData.Wanted.ToString()),
+                    ("licenseStatus", pedData.DriversLicenseState.ToString()),
+                    ("licenseExpiration", pedData.DriversLicenseExpiration.ToString()),
+                    ("relationshipGroup", pedData.Holder.RelationshipGroup.Name),
+                    ("isOnProbation", pedData.IsOnProbation.ToString()),
+                    ("isOnParole", pedData.IsOnParole.ToString()),
+                    ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
+                    ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
+                    ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToShortDateString()),
+                    ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
+                    ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToShortDateString()),
+                    ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
+                    ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToShortDateString())
+                    );
+                string oldFile = File.ReadAllText($"{DataPath}/worldPeds.data");
+                if (oldFile.Contains(pedData.FullName)) return;
+
+                string addComma = oldFile.Length > 0 ? "," : "";
+
+                File.WriteAllText($"{DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
+            }
+        }
+
         private static void AddWorldCar(Vehicle car) {
             if (car.Exists()) {
                 string data = GetWorldCarData(car);
@@ -338,6 +423,18 @@ namespace ExternalPoliceComputer {
 
                 File.WriteAllText($"{DataPath}/worldCars.data", $"{oldFile}{addComma}{data}");
             }
+        }
+
+        // Thank you RoShit
+        static string PrintObjects(params (string, string)[] items) {
+            string s = "";
+            for (var index = 0; index < items.Length; index++) {
+                var item = items[index];
+                s += $"{item.Item1}={item.Item2}";
+                if (index < items.Length - 1)
+                    s += "&";
+            }
+            return s;
         }
     }
 }

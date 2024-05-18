@@ -38,17 +38,21 @@
     <Reference Include="CalloutInterfaceAPI">
       <HintPath>..\..\References\CalloutInterfaceAPI.dll</HintPath>
     </Reference>
+    <Reference Include="CommonDataFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\CommonDataFramework.dll</HintPath>
+    </Reference>
     <Reference Include="IPT.Common">
       <HintPath>..\..\References\IPT.Common.dll</HintPath>
     </Reference>
     <Reference Include="LSPD First Response">
       <HintPath>..\..\References\LSPD First Response.dll</HintPath>
     </Reference>
+    <Reference Include="PolicingRedefined">
+      <HintPath>..\..\References\PolicingRedefined.dll</HintPath>
+    </Reference>
     <Reference Include="RagePluginHook">
       <HintPath>..\..\References\RagePluginHook.dll</HintPath>
-    </Reference>
-    <Reference Include="StopThePed">
-      <HintPath>..\..\References\StopThePed.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
