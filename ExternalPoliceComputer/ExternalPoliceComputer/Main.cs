@@ -11,7 +11,6 @@ using LSPD_First_Response.Mod.Callouts;
 using CommonDataFramework.Modules.VehicleDatabase;
 using CommonDataFramework.Modules.PedDatabase;
 using CommonDataFramework.Modules;
-using System.Drawing;
 
 namespace ExternalPoliceComputer {
     internal class Main : Plugin {
@@ -172,27 +171,42 @@ namespace ExternalPoliceComputer {
         }
 
         private static void ListenForAnimationFileChange() {
-            /*
-            FileSystemWatcher watcher = new FileSystemWatcher($"{DataPath}/animation.data");
+            FileSystemWatcher watcher = new FileSystemWatcher(DataPath);
+            watcher.Filter = "animation.data";
+            watcher.EnableRaisingEvents = true;
+            watcher.NotifyFilter = NotifyFilters.LastWrite;
             watcher.Changed += (object sender, FileSystemEventArgs e) => {
                 if (e.ChangeType != WatcherChangeTypes.Changed) {
                     return;
                 }
-                string text = File.ReadAllText($"{DataPath}/animation.data").Split(';').FirstOrDefault(x => x.StartsWith("giveCitation"));
-                string[] citationInformation = text.Split(':').Last().Split(',');
-                if (!string.IsNullOrEmpty(text)) {
-                    Ped ped = Player.GetNearbyPeds(MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(x).FullName == citationInformation[0]);
-                    if (ped == null) {
-                        return;
-                    }
-                    PolicingRedefined.Interaction.Assets.PedAttributes.Citation citation = new PolicingRedefined.Interaction.Assets.PedAttributes.Citation(ped, citationInformation[1], int.Parse(citationInformation[2]), bool.Parse(citationInformation[3]));
-                    PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, citation);
+
+                NameValueCollection file = new NameValueCollection();
+
+                try {
+                    file = HttpUtility.ParseQueryString(File.ReadAllText($"{DataPath}/animation.data"));
+                } catch (Exception ex) {
+                    Game.LogTrivial(ex.ToString());
+                }
+                
+
+                switch (file["type"]) {
+                    case "giveCitation":
+                        Game.LogTrivial(file["name"]);
+
+                        Ped ped = Player.GetNearbyPeds(MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == file["name"]);
+                        
+                        if (ped == null) break;
+
+                        Game.LogTrivial(ped.GetPedData().FullName);
+
+                        PolicingRedefined.Interaction.Assets.PedAttributes.Citation citation = new PolicingRedefined.Interaction.Assets.PedAttributes.Citation(ped, file["text"], int.Parse(file["fine"]), bool.Parse(file["isArrestable"]));
+                        PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, citation);
+                        break;
                 }
             };
-            */
         }
 
-        // STP
+        // PR
         private static void Events_askIdEvent(Ped ped) {
             AddWorldPed(ped);
             UpdateCurrentID(ped);
@@ -253,7 +267,7 @@ namespace ExternalPoliceComputer {
         }
 
         // world data
-        // STP
+        // PR
         private static string GetRegistration(Vehicle car) {
             switch (VehicleDataController.GetVehicleData(car).Registration.Status) {
                 case EDocumentStatus.Revoked:
@@ -282,7 +296,8 @@ namespace ExternalPoliceComputer {
 
         // get world data
         private static string GetWorldPedData(Ped ped) {
-            PedData pedData = PedDataController.GetPedData(ped);
+            PedData pedData = ped.GetPedData();
+            if (pedData == null) return null;
             string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
             return PrintObjects(
                 ("name", pedData.FullName),
@@ -296,24 +311,31 @@ namespace ExternalPoliceComputer {
                 ("isOnParole", pedData.IsOnParole.ToString()),
                 ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
                 ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
-                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToShortDateString()),
+                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToLocalTime().ToString("s")),
                 ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
-                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToShortDateString()),
+                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToLocalTime().ToString("s")),
                 ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
-                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToShortDateString())
+                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToLocalTime().ToString("s"))
                 );
         }
 
         private static string GetWorldCarData(Vehicle car) {
             string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
             string color = Rage.Native.NativeFunction.Natives.GET_VEHICLE_LIVERY<int>(car) != -1 ? "" : $"{car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
-            Game.LogTrivial(VehicleDataController.GetVehicleData(car).Vin.Number);
-            Game.LogTrivial(VehicleDataController.GetVehicleData(car).Vin.Status.ToString());
-            if (usePR) {
-                return $"licensePlate={VehicleDataController.GetVehicleData(car).LicensePlate}&model={car.Model.Name}&isStolen={VehicleDataController.GetVehicleData(car).IsStolen}&isPolice={car.IsPoliceVehicle}&owner={VehicleDataController.GetVehicleData(car).Owner.FullName}&driver={driver}&registration={GetRegistration(car)}&insurance={GetInsurance(car)}&color={color}";
-            } else {
-                return $"licensePlate={VehicleDataController.GetVehicleData(car).LicensePlate}&model={car.Model.Name}&isStolen={VehicleDataController.GetVehicleData(car).IsStolen}&isPolice={car.IsPoliceVehicle}&owner={VehicleDataController.GetVehicleData(car).Owner.FullName}&driver={driver}&color={color}";
-            }
+
+            AddWorldPedWithPedData(VehicleDataController.GetVehicleData(car).Owner);
+
+            return PrintObjects(
+                ("licensePlate", VehicleDataController.GetVehicleData(car).LicensePlate),
+                ("model", car.Model.Name),
+                ("isStolen", VehicleDataController.GetVehicleData(car).IsStolen.ToString()),
+                ("isPolice", car.IsPoliceVehicle.ToString()),
+                ("owner", VehicleDataController.GetVehicleData(car).Owner.FullName),
+                ("driver", driver),
+                ("registration", GetRegistration(car)),
+                ("insurance", GetInsurance(car)),
+                ("color", color)
+                );
         }
 
         // update world data
@@ -327,10 +349,12 @@ namespace ExternalPoliceComputer {
 
             for (int i = 0; i < allPeds.Length; i++) {
                 Ped ped = allPeds[i];
-                if (ped.Exists()) {
-                    persList[Array.IndexOf(allPeds, ped)] = GetWorldPedData(ped);
+                if (ped.Exists() && ped.IsHuman) {
+                    persList[i] = GetWorldPedData(ped);
                 }
             }
+
+            persList = persList.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
             File.WriteAllText($"{DataPath}/worldPeds.data", string.Join(",", persList));
         }
@@ -346,9 +370,12 @@ namespace ExternalPoliceComputer {
             for (int i = 0; i < allCars.Length; i++) {
                 Vehicle car = allCars[i];
                 if (car.Exists()) {
-                    carsList[Array.IndexOf(allCars, car)] = GetWorldCarData(car);
+                    carsList[i] = GetWorldCarData(car);
                 }
             }
+
+            carsList = carsList.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
             File.WriteAllText($"{DataPath}/worldCars.data", string.Join(",", carsList));
         }
 
@@ -384,33 +411,32 @@ namespace ExternalPoliceComputer {
         }
 
         private static void AddWorldPedWithPedData(PedData pedData) {
-            if (pedData.Holder.Exists()) {
-                string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
-                string data = PrintObjects(
-                    ("name", pedData.FullName),
-                    ("birthday", birthday),
-                    ("gender", pedData.Gender.ToString()),
-                    ("isWanted", pedData.Wanted.ToString()),
-                    ("licenseStatus", pedData.DriversLicenseState.ToString()),
-                    ("licenseExpiration", pedData.DriversLicenseExpiration.ToString()),
-                    ("relationshipGroup", pedData.Holder.RelationshipGroup.Name),
-                    ("isOnProbation", pedData.IsOnProbation.ToString()),
-                    ("isOnParole", pedData.IsOnParole.ToString()),
-                    ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
-                    ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
-                    ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToShortDateString()),
-                    ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
-                    ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToShortDateString()),
-                    ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
-                    ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToShortDateString())
-                    );
-                string oldFile = File.ReadAllText($"{DataPath}/worldPeds.data");
-                if (oldFile.Contains(pedData.FullName)) return;
+            string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
+            string data = PrintObjects(
+                ("name", pedData.FullName),
+                ("birthday", birthday),
+                ("gender", pedData.Gender.ToString()),
+                ("isWanted", pedData.Wanted.ToString()),
+                ("licenseStatus", pedData.DriversLicenseState.ToString()),
+                ("licenseExpiration", pedData.DriversLicenseExpiration.ToString()),
+                ("relationshipGroup", pedData.HasRealPed && pedData.Holder.Exists() ? pedData.Holder.RelationshipGroup.Name : ""),
+                ("isOnProbation", pedData.IsOnProbation.ToString()),
+                ("isOnParole", pedData.IsOnParole.ToString()),
+                ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
+                ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
+                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToLocalTime().ToString("s")),
+                ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
+                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToLocalTime().ToString("s")),
+                ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
+                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToLocalTime().ToString("s"))
+                );
+            string oldFile = File.ReadAllText($"{DataPath}/worldPeds.data");
+            if (oldFile.Contains(pedData.FullName)) return;
 
-                string addComma = oldFile.Length > 0 ? "," : "";
+            string addComma = oldFile.Length > 0 ? "," : "";
 
-                File.WriteAllText($"{DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
-            }
+            File.WriteAllText($"{DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
+            
         }
 
         private static void AddWorldCar(Vehicle car) {
