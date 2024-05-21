@@ -18,7 +18,7 @@ namespace ExternalPoliceComputer
                     return "Valid";
             }
             return "";
-        }
+         }
 
         private static string GetInsurance(Vehicle car) {
             switch (VehicleDataController.GetVehicleData(car).Insurance.Status) {

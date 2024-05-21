@@ -97,7 +97,6 @@ namespace ExternalPoliceComputer
             File.WriteAllText($"{DataPath}/worldCars.data", string.Join(",", carsList));
         }
 
-
         internal static void AddWorldPedWithPedData(PedData pedData) {
             string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
             string data = PrintObjects(
@@ -126,8 +125,6 @@ namespace ExternalPoliceComputer
             File.WriteAllText($"{DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
             
         }
-
-       
 
         // Thank you RoShit
         internal static string PrintObjects(params (string, string)[] items) {

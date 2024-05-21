@@ -46,7 +46,6 @@ namespace ExternalPoliceComputer {
             File.WriteAllText($"{Main.DataPath}/pedsCautions.data", string.Join(",", pedsCautionsDataList));
         }
 
-
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToCar(string licensePlate, string message) {
             string carsCautionsData = File.ReadAllText($"{Main.DataPath}/carsCautions.data");

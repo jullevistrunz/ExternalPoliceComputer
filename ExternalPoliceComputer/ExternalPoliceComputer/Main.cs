@@ -66,8 +66,8 @@ namespace ExternalPoliceComputer {
 
                 Game.LogTrivial($"ExternalPoliceComputer: PR: {usePR}");
 
-                if (usePR) { 
-                    AddEventsWithPR(); 
+                if (usePR) {
+                    PREvents.SubscribeToPREvents();
                 }
                 else {
                     LSPDFREvents.SubscribeToFREvents();
@@ -76,19 +76,12 @@ namespace ExternalPoliceComputer {
                 DataToClient.UpdateWorldPeds();
                 DataToClient.UpdateWorldCars();
 
-                GameFiber IntervalFiber = GameFiber.StartNew(Interval);
+                GameFiber IntervalFiber = GameFiber.StartNew(UpdateWorldDataInterval);
 
                 GameFiber AnimationFiber = GameFiber.StartNew(ListenForAnimationFileChange);
 
                 Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }
-        }
-
-        private static void AddEventsWithPR() {
-            PREvents.SubscribeToPREvents();
-            // StopThePed.API.Events.askIdEvent += Events_askIdEvent;
-            // StopThePed.API.Events.askDriverLicenseEvent += Events_askDriverLicenseEvent;
-            // StopThePed.API.Events.askPassengerIdEvent += Events_askPassengerIdEvent;
         }
 
         private static void AddCalloutEventWithCI() {
@@ -118,7 +111,25 @@ namespace ExternalPoliceComputer {
                 string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
                 WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
 
-                string calloutData = $"id={new Random().Next(10000, 100000)}&name={name}&description={description}&message={MakeStringWorkWithMyStupidQueryStrings(callout.CalloutMessage)}&advisory={MakeStringWorkWithMyStupidQueryStrings(callout.CalloutAdvisory)}&callsign={callsign}&agency={agency}&priority={priority}&postal={CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)}&street={street}&area={zone.RealAreaName}&county={zone.County}&position={callout.CalloutPosition}&acceptanceState={callout.AcceptanceState}&displayedTime={DateTime.Now.ToLocalTime():s}&additionalMessage=";
+                string calloutData = DataToClient.PrintObjects(
+                    ("id", new Random().Next(10000, 100000).ToString()),
+                    ("name", name),
+                    ("description", description),
+                    ("message", MakeStringWorkWithMyStupidQueryStrings(callout.CalloutMessage)),
+                    ("advisory", MakeStringWorkWithMyStupidQueryStrings(callout.CalloutAdvisory)),
+                    ("callsign", callsign),
+                    ("agency", agency),
+                    ("priority", priority),
+                    ("postal", CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)),
+                    ("street", street),
+                    ("area", zone.RealAreaName),
+                    ("county", zone.County.ToString()),
+                    ("position", callout.CalloutPosition.ToString()),
+                    ("acceptanceState", callout.AcceptanceState.ToString()),
+                    ("displayedTime", DateTime.Now.ToLocalTime().ToString("s")),
+                    ("additionalMessage", "")
+                    );
+
                 File.WriteAllText($"{DataPath}/callout.data", calloutData);
             }
 
@@ -135,8 +146,6 @@ namespace ExternalPoliceComputer {
             }
         }
 
-        
-
         internal static string MakeStringWorkWithMyStupidQueryStrings(string message) {
             if (string.IsNullOrEmpty(message)) return message;
             message = message.Replace("&", "%26");
@@ -146,7 +155,7 @@ namespace ExternalPoliceComputer {
             return message;
         }
 
-        private static void Interval() {
+        private static void UpdateWorldDataInterval() {
             while (CurrentlyOnDuty) {
                 DataToClient.UpdateWorldPeds();
                 DataToClient.UpdateWorldCars();
@@ -189,24 +198,5 @@ namespace ExternalPoliceComputer {
                 }
             };
         }
-
-        // STP
-        // private static void Events_askIdEvent(Ped ped) {
-        //     AddWorldPed(ped);
-        //     UpdateCurrentID(ped);
-        // }
-        
-        // private static void Events_askDriverLicenseEvent(Ped ped) {
-        //     AddWorldPed(ped);
-        //     UpdateCurrentID(ped);
-        // }
-        //
-        // private static void Events_askPassengerIdEvent(Vehicle vehicle) {
-        //     Ped[] passengers = vehicle.Passengers;
-        //     for (int i = 0; i < passengers.Length; i++) {
-        //         UpdateCurrentID(passengers[i]);
-        //     }
-        // }
-        
     }
 }
