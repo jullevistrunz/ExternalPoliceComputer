@@ -16,7 +16,7 @@ namespace ExternalPoliceComputer {
 
                 NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
 
-                Main.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");
+                DataToClient.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");
             }
         }
 
