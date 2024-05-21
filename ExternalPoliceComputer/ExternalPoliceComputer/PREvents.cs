@@ -18,6 +18,9 @@ namespace ExternalPoliceComputer
 
         internal static void SubscribeToPREvents()
         {
+            PolicingRedefined.API.EventsAPI.OnPedPatDown += Events_patDownPedEvent;
+            PolicingRedefined.API.EventsAPI.OnPedStopped += Events_stopPedEvent;
+            PolicingRedefined.API.EventsAPI.OnPedArrested += Events_pedArrestedEvent;
         }
         
 
