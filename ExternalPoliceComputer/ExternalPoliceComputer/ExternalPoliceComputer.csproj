@@ -63,10 +63,16 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimationListener.cs" />
+    <Compile Include="CalloutEvents.cs" />
+    <Compile Include="DataToClient.cs" />
     <Compile Include="DependencyCheck.cs" />
     <Compile Include="Functions.cs" />
+    <Compile Include="LSPDFREvents.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="PREvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorldDataHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
