@@ -70,6 +70,7 @@
     <Compile Include="Functions.cs" />
     <Compile Include="LSPDFREvents.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="PedCitations.cs" />
     <Compile Include="PREvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WorldDataHelper.cs" />
