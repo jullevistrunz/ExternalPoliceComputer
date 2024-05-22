@@ -1,11 +1,6 @@
 ﻿using LSPD_First_Response.Mod.API;
 using Rage;
-using System;
 using System.IO;
-using System.Collections.Specialized;
-using System.Web;
-using System.Linq;
-using CommonDataFramework.Modules.PedDatabase;
 
 namespace ExternalPoliceComputer {
     internal class Main : Plugin {
@@ -73,7 +68,7 @@ namespace ExternalPoliceComputer {
 
                 GameFiber IntervalFiber = GameFiber.StartNew(UpdateWorldDataInterval);
 
-                GameFiber AnimationFiber = GameFiber.StartNew(ListenForAnimationFileChange);
+                GameFiber AnimationFiber = GameFiber.StartNew(AnimationListener.ListenForAnimationFileChange);
 
                 Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }
@@ -94,42 +89,6 @@ namespace ExternalPoliceComputer {
                 DataToClient.UpdateWorldCars();
                 GameFiber.Wait(15000);
             }
-        }
-
-        private static void ListenForAnimationFileChange() {
-            FileSystemWatcher watcher = new FileSystemWatcher(DataPath);
-            watcher.Filter = "animation.data";
-            watcher.EnableRaisingEvents = true;
-            watcher.NotifyFilter = NotifyFilters.LastWrite;
-            watcher.Changed += (object sender, FileSystemEventArgs e) => {
-                if (e.ChangeType != WatcherChangeTypes.Changed) {
-                    return;
-                }
-
-                NameValueCollection file = new NameValueCollection();
-
-                try {
-                    file = HttpUtility.ParseQueryString(File.ReadAllText($"{DataPath}/animation.data"));
-                } catch (Exception ex) {
-                    Game.LogTrivial(ex.ToString());
-                }
-                
-
-                switch (file["type"]) {
-                    case "giveCitation":
-                        Game.LogTrivial(file["name"]);
-
-                        Ped ped = Player.GetNearbyPeds(MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == file["name"]);
-                        
-                        if (ped == null) break;
-
-                        Game.LogTrivial(ped.GetPedData().FullName);
-
-                        PolicingRedefined.Interaction.Assets.PedAttributes.Citation citation = new PolicingRedefined.Interaction.Assets.PedAttributes.Citation(ped, file["text"], int.Parse(file["fine"]), bool.Parse(file["isArrestable"]));
-                        PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, citation);
-                        break;
-                }
-            };
         }
     }
 }
