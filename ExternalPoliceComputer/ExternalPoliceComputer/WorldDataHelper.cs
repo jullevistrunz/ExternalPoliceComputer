@@ -33,7 +33,6 @@ namespace ExternalPoliceComputer
             return "";
         }
 
-        // get world data
         internal static string GetWorldPedData(Ped ped) {
             PedData pedData = ped.GetPedData();
             if (pedData == null) return null;

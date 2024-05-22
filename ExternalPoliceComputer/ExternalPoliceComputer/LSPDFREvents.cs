@@ -13,10 +13,12 @@ namespace ExternalPoliceComputer
         private static void Events_OnPedArrested(Ped suspect, Ped arrestingOfficer) {
             DataToClient.AddWorldPed(suspect);
         }
+
         private static void Events_OnPedFrisked(Ped suspect, Ped friskingOfficer) {
             DataToClient.AddWorldPed(suspect);
             DataToClient.UpdateCurrentID(suspect);
         }
+
         private static void Events_OnPedStopped(Ped ped) {
             DataToClient.AddWorldPed(ped);
         }
