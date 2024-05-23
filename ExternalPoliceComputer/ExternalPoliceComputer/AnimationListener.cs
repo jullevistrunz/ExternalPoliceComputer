@@ -48,6 +48,10 @@ namespace ExternalPoliceComputer {
                             if (data.ContainsKey(ped)) data[ped].TransferCitations(ped);
 
                             break;
+                        case "clearCitations":
+                            Ped clearPed = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
+                            data[clearPed].Clear();
+                            break;
                     }
                 }
 
