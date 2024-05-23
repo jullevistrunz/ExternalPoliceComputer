@@ -53,7 +53,9 @@ namespace ExternalPoliceComputer
                 ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
                 ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToLocalTime().ToString("s")),
                 ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
-                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToLocalTime().ToString("s"))
+                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToLocalTime().ToString("s")),
+                ("addressPostal", pedData.Address.AddressPostal.Number),
+                ("addressStreet", pedData.Address.StreetName)
                 );
         }
 
