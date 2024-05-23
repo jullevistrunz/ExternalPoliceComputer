@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Web;
-using PolicingRedefined.Interaction.Assets.PedAttributes;
 
 namespace ExternalPoliceComputer {
     internal class AnimationListener {
@@ -48,12 +47,10 @@ namespace ExternalPoliceComputer {
         }
         
         internal static void AddCitationToPed(Ped ped, string text, int fine, bool isArrestable) {
-            if (data.ContainsKey(ped))
-            {
+            if (data.ContainsKey(ped)) {
                 data[ped].AddCitation(text, fine, isArrestable);
             }
-            else
-            {
+            else {
                 data.Add(ped, new Citations());
                 data[ped].AddCitation(text, fine, isArrestable);
             }
