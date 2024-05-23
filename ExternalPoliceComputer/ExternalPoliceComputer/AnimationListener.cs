@@ -9,7 +9,7 @@ using System.Web;
 
 namespace ExternalPoliceComputer {
     internal class AnimationListener {
-        internal static Dictionary<Ped, Citations> data = new Dictionary<Ped, Citations>();
+        internal static Dictionary<Ped, PedCitations> data = new Dictionary<Ped, PedCitations>();
         
         internal static void ListenForAnimationFileChange() {
             FileSystemWatcher watcher = new FileSystemWatcher(Main.DataPath);
@@ -21,28 +21,37 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
-                NameValueCollection file = new NameValueCollection();
+                string[] file;
                 
                 try {
-                    file = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/animation.data"));
+                    file = File.ReadAllText($"{Main.DataPath}/animation.data").Split(';');
                 } catch (Exception ex) {
                     Game.LogTrivial(ex.ToString());
+                    return;
                 }
 
-                switch (file["type"]) {
-                    case "giveCitation":
-                        Game.LogTrivial(file["name"]);
+                for (int i = 0; i < file.Length; i++) {
+                    NameValueCollection fileData = HttpUtility.ParseQueryString(file[i]);
 
-                        Ped ped = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == file["name"]);
+                    switch (fileData["type"]) {
+                        case "giveCitation":
+                            Game.LogTrivial(fileData["name"]);
 
-                        if (ped == null) break;
+                            Ped ped = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
 
-                        Game.LogTrivial(ped.GetPedData().FullName);
-                        
-                        AddCitationToPed(ped, file["text"], int.Parse(file["fine"]), bool.Parse(file["isArrestable"]));
-                        if(data.ContainsKey(ped)) data[ped].TransferCitations(ped);
-                        break;
+                            if (ped == null) break;
+
+                            Game.LogTrivial(ped.GetPedData().FullName);
+
+                            AddCitationToPed(ped, fileData["text"], int.Parse(fileData["fine"]), bool.Parse(fileData["isArrestable"]));
+
+                            if (data.ContainsKey(ped)) data[ped].TransferCitations(ped);
+
+                            break;
+                    }
                 }
+
+                File.WriteAllText($"{Main.DataPath}/animation.data", "");
             };
         }
         
@@ -51,7 +60,7 @@ namespace ExternalPoliceComputer {
                 data[ped].AddCitation(text, fine, isArrestable);
             }
             else {
-                data.Add(ped, new Citations());
+                data.Add(ped, new PedCitations());
                 data[ped].AddCitation(text, fine, isArrestable);
             }
         }
