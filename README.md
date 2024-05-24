@@ -68,7 +68,7 @@ You can edit all words used by EPC to your liking. `content.courtPage.resultCont
 
 ## Plugins
 
-Plugins can be added by creating a new folder in `EPC/plugins`. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order. Check out the [Discord](#discord-server) for plugins made by the community.
+Plugins can be added by creating a new folder in `EPC/plugins`. The folder's name may not include spaces. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order. Check out the [Discord](#discord-server) for plugins made by the community.
 
 ### Examples
 
