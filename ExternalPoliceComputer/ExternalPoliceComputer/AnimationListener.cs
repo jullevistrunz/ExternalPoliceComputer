@@ -28,6 +28,8 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
+                if (file.Length == 0) return;
+
                 for (int i = 0; i < file.Length; i++) {
                     NameValueCollection fileData = HttpUtility.ParseQueryString(file[i]);
 
