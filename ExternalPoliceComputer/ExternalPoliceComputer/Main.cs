@@ -18,6 +18,8 @@ namespace ExternalPoliceComputer {
         }
 
         public override void Finally() {
+            GiveCitationsListener.watcher.EnableRaisingEvents = false;
+            GiveCitationsListener.watcher.Dispose();
             Game.LogTrivial("ExternalPoliceComputer has been unloaded.");
         }
 
@@ -68,7 +70,7 @@ namespace ExternalPoliceComputer {
 
                 GameFiber IntervalFiber = GameFiber.StartNew(UpdateWorldDataInterval);
 
-                GameFiber AnimationFiber = GameFiber.StartNew(AnimationListener.ListenForAnimationFileChange);
+                GameFiber GiveCitationsFiber = GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange);
 
                 Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }

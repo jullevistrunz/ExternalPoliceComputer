@@ -757,16 +757,30 @@ function addArrest(charge) {
 }
 
 async function submitCitations() {
+  const config = await getConfig()
   const currentPed = document.querySelector(
     '.searchPedPage .resultContainer .name'
   ).innerHTML
   const citations = []
   const citationsData = []
-  for (el of document.querySelectorAll(
-    '.searchPedPage .citationReport .result .btn'
-  )) {
+  for (
+    let i = 0;
+    i <
+    document.querySelectorAll('.searchPedPage .citationReport .result .btn')
+      .length;
+    i++
+  ) {
+    const el = document.querySelectorAll(
+      '.searchPedPage .citationReport .result .btn'
+    )[i]
     citations.push(el.innerHTML)
-    citationsData.push(el.dataset.charge)
+    citationsData.push(JSON.parse(el.dataset.charge))
+
+    citationsData[i].fine =
+      citationsData[i].minFine +
+      Math.floor(
+        Math.random() * (citationsData[i].maxFine - citationsData[i].minFine)
+      )
   }
   await fetch('/post/addCitations', {
     method: 'post',
@@ -775,12 +789,55 @@ async function submitCitations() {
       citations: citations,
     }),
   })
+  if (config.printCitationsOnSubmit) {
+    await sendCitationsData(currentPed, citationsData)
+  }
   const description = document.querySelector(
     '.searchPedPage .citationReport .result .description'
   ).value
   addCitationToCourt(citationsData, currentPed, description)
   closeCitations()
   openPedInSearchPedPage(currentPed)
+}
+
+async function sendCitationsData(name, citationsData) {
+  let citations = []
+  for (let citation of citationsData) {
+    if (citations.find((x) => x.name == citation.name)) {
+      const index = citations.findIndex((x) => x.name == citation.name)
+      citations[index].count++
+      citations[
+        index
+      ].name = `${citations[index].name} - x${citations[index].count}`
+      citations[index].fine += citation.fine
+    } else {
+      citations.push({ ...citation, count: 1 })
+    }
+  }
+
+  let texts = []
+  for (const citation of citations) {
+    const obj = {
+      name: name,
+      text: citation.name,
+      fine: citation.fine,
+      isArrestable: false,
+    }
+    texts.push(objToQueryString(obj))
+  }
+
+  await fetch('/post/giveCitations', {
+    method: 'post',
+    body: texts.join(';'),
+  })
+}
+
+function objToQueryString(obj) {
+  let arr = []
+  for (const [key, value] of Object.entries(obj)) {
+    arr.push(`${key}=${value}`)
+  }
+  return arr.join('&')
 }
 
 function closeCitations() {
@@ -825,10 +882,10 @@ async function addCitationToCourt(charges, pedName, description) {
   const nameList = []
   let fullFine = 0
   for (let charge of charges) {
-    charge = JSON.parse(charge)
-    const fine =
-      charge.minFine +
-      Math.floor(Math.random() * (charge.maxFine - charge.minFine))
+    const fine = charge.fine
+      ? charge.fine
+      : charge.minFine +
+        Math.floor(Math.random() * (charge.maxFine - charge.minFine))
     const outcome = `${language.content.fine}: ${
       language.content.currency
     }${bigNumberToNiceString(fine)}`

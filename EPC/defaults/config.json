@@ -20,5 +20,6 @@
   "updateCalloutPageInterval": 2000,
   "clearCalloutPageTime": null,
   "automaticIncidentReports": true,
-  "disableExternalCautions": false
+  "disableExternalCautions": false,
+  "printCitationsOnSubmit": true
 }
