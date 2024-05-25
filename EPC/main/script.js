@@ -790,7 +790,7 @@ async function submitCitations() {
     }),
   })
   if (config.printCitationsOnSubmit) {
-    await giveCitationsAnimation(currentPed, citationsData)
+    await sendCitationsData(currentPed, citationsData)
   }
   const description = document.querySelector(
     '.searchPedPage .citationReport .result .description'
@@ -800,7 +800,7 @@ async function submitCitations() {
   openPedInSearchPedPage(currentPed)
 }
 
-async function giveCitationsAnimation(name, citationsData) {
+async function sendCitationsData(name, citationsData) {
   let citations = []
   for (let citation of citationsData) {
     if (citations.find((x) => x.name == citation.name)) {
@@ -818,7 +818,6 @@ async function giveCitationsAnimation(name, citationsData) {
   let texts = []
   for (const citation of citations) {
     const obj = {
-      type: 'giveCitation',
       name: name,
       text: citation.name,
       fine: citation.fine,
@@ -827,7 +826,7 @@ async function giveCitationsAnimation(name, citationsData) {
     texts.push(objToQueryString(obj))
   }
 
-  await fetch('/post/playAnimation', {
+  await fetch('/post/giveCitations', {
     method: 'post',
     body: texts.join(';'),
   })

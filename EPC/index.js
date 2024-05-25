@@ -16,7 +16,7 @@ const dataDefaults = new Map([
   ['cars.json', '[]'],
   ['court.json', '[]'],
   ['shift.json', '{"currentShift":null,"shifts":[]}'],
-  ['animation.data', ''],
+  ['giveCitations.data', ''],
 ])
 let fallbackToDefaultLanguage = false
 generateDirectory()
@@ -512,8 +512,8 @@ const server = http.createServer(function (req, res) {
         )
         res.writeHead(200)
         res.end()
-      } else if (dataPath == 'playAnimation') {
-        fs.writeFileSync('data/animation.data', body)
+      } else if (dataPath == 'giveCitations') {
+        fs.writeFileSync('data/giveCitations.data', body)
         res.writeHead(200)
         res.end()
       } else {

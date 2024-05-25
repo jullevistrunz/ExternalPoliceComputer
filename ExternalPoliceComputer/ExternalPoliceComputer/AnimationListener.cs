@@ -11,7 +11,7 @@ namespace ExternalPoliceComputer {
     internal class AnimationListener {        
         internal static void ListenForAnimationFileChange() {
             FileSystemWatcher watcher = new FileSystemWatcher(Main.DataPath);
-            watcher.Filter = "animation.data";
+            watcher.Filter = "giveCitations.data";
             watcher.EnableRaisingEvents = true;
             watcher.NotifyFilter = NotifyFilters.LastWrite;
             watcher.Changed += (object sender, FileSystemEventArgs e) => {
@@ -22,7 +22,7 @@ namespace ExternalPoliceComputer {
                 string[] file;
                 
                 try {
-                    file = File.ReadAllText($"{Main.DataPath}/animation.data").Split(';');
+                    file = File.ReadAllText($"{Main.DataPath}/giveCitations.data").Split(';');
                 } catch (Exception ex) {
                     Game.LogTrivial(ex.ToString());
                     return;
@@ -33,19 +33,15 @@ namespace ExternalPoliceComputer {
                 for (int i = 0; i < file.Length; i++) {
                     NameValueCollection fileData = HttpUtility.ParseQueryString(file[i]);
 
-                    switch (fileData["type"]) {
-                        case "giveCitation":
-                            Ped ped = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
+                    Ped ped = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
 
-                            if (ped == null) break;
+                    if (ped == null) break;
 
-                            Citation c = new Citation(ped, $"{fileData["text"]}", int.Parse(fileData["fine"]), bool.Parse(fileData["isArrestable"]));
-                            PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, c);
-                            break;
-                    }
+                    Citation c = new Citation(ped, $"{fileData["text"]}", int.Parse(fileData["fine"]), bool.Parse(fileData["isArrestable"]));
+                    PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, c);
                 }
 
-                File.WriteAllText($"{Main.DataPath}/animation.data", "");
+                File.WriteAllText($"{Main.DataPath}/giveCitations.data", "");
             };
         }
     }
