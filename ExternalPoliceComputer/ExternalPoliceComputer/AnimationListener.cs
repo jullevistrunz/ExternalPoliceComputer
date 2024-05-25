@@ -1,16 +1,14 @@
 ﻿using CommonDataFramework.Modules.PedDatabase;
+using PolicingRedefined.Interaction.Assets.PedAttributes;
 using Rage;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Web;
 
 namespace ExternalPoliceComputer {
-    internal class AnimationListener {
-        internal static Dictionary<Ped, PedCitations> data = new Dictionary<Ped, PedCitations>();
-        
+    internal class AnimationListener {        
         internal static void ListenForAnimationFileChange() {
             FileSystemWatcher watcher = new FileSystemWatcher(Main.DataPath);
             watcher.Filter = "animation.data";
@@ -35,38 +33,18 @@ namespace ExternalPoliceComputer {
 
                     switch (fileData["type"]) {
                         case "giveCitation":
-                            Game.LogTrivial(fileData["name"]);
-
                             Ped ped = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
 
                             if (ped == null) break;
 
-                            Game.LogTrivial(ped.GetPedData().FullName);
-
-                            AddCitationToPed(ped, fileData["text"], int.Parse(fileData["fine"]), bool.Parse(fileData["isArrestable"]));
-
-                            if (data.ContainsKey(ped)) data[ped].TransferCitations(ped);
-
-                            break;
-                        case "clearCitations":
-                            Ped clearPed = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
-                            data[clearPed].Clear();
+                            Citation c = new Citation(ped, $"{fileData["text"]}", int.Parse(fileData["fine"]), bool.Parse(fileData["isArrestable"]));
+                            PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, c);
                             break;
                     }
                 }
 
                 File.WriteAllText($"{Main.DataPath}/animation.data", "");
             };
-        }
-        
-        internal static void AddCitationToPed(Ped ped, string text, int fine, bool isArrestable) {
-            if (data.ContainsKey(ped)) {
-                data[ped].AddCitation(text, fine, isArrestable);
-            }
-            else {
-                data.Add(ped, new PedCitations());
-                data[ped].AddCitation(text, fine, isArrestable);
-            }
         }
     }
 }
