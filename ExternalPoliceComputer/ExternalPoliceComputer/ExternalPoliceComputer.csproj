@@ -63,7 +63,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationListener.cs" />
+    <Compile Include="GiveCitationsListener.cs" />
     <Compile Include="CalloutEvents.cs" />
     <Compile Include="DataToClient.cs" />
     <Compile Include="DependencyCheck.cs" />

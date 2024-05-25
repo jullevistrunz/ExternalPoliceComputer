@@ -8,9 +8,10 @@ using System.Linq;
 using System.Web;
 
 namespace ExternalPoliceComputer {
-    internal class AnimationListener {        
+    internal class GiveCitationsListener {
+        internal static FileSystemWatcher watcher;
         internal static void ListenForAnimationFileChange() {
-            FileSystemWatcher watcher = new FileSystemWatcher(Main.DataPath);
+            watcher = new FileSystemWatcher(Main.DataPath);
             watcher.Filter = "giveCitations.data";
             watcher.EnableRaisingEvents = true;
             watcher.NotifyFilter = NotifyFilters.LastWrite;
