@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.4.2'
+const version = '1.5.0.pr'
 
 // clear data on start up
 const dataDefaults = new Map([
@@ -16,6 +16,7 @@ const dataDefaults = new Map([
   ['cars.json', '[]'],
   ['court.json', '[]'],
   ['shift.json', '{"currentShift":null,"shifts":[]}'],
+  ['animation.data', ''],
 ])
 let fallbackToDefaultLanguage = false
 generateDirectory()
@@ -509,6 +510,10 @@ const server = http.createServer(function (req, res) {
           'customization/plugins.json',
           JSON.stringify(activePlugins)
         )
+        res.writeHead(200)
+        res.end()
+      } else if (dataPath == 'playAnimation') {
+        fs.writeFileSync('data/animation.data', body)
         res.writeHead(200)
         res.end()
       } else {
