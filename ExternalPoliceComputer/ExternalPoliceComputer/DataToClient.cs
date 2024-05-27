@@ -20,13 +20,13 @@ namespace ExternalPoliceComputer
 
                 File.WriteAllText($"{Main.DataPath}/worldCars.data", $"{oldFile}{addComma}{data}");
             }
-        }
+         }
          
         internal static void AddWorldPed(Ped ped) {
-            if (ped.Exists()) {
+            if (ped.Exists() && ped.IsHuman) {
                 string data = WorldDataHelper.GetWorldPedData(ped);
                 string oldFile = File.ReadAllText($"{Main.DataPath}/worldPeds.data");
-                if (oldFile.Contains(LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(ped).FullName)) return;
+                if (oldFile.Contains(ped.GetPedData().FullName)) return;
 
                 string addComma = oldFile.Length > 0 ? "," : "";
 
@@ -72,37 +72,6 @@ namespace ExternalPoliceComputer
             carsList = carsList.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
             File.WriteAllText($"{Main.DataPath}/worldCars.data", string.Join(",", carsList));
-        }
-
-        internal static void AddWorldPedWithPedData(PedData pedData) {
-            string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
-            string data = PrintObjects(
-                ("name", pedData.FullName),
-                ("birthday", birthday),
-                ("gender", pedData.Gender.ToString()),
-                ("isWanted", pedData.Wanted.ToString()),
-                ("licenseStatus", pedData.DriversLicenseState.ToString()),
-                ("licenseExpiration", pedData.DriversLicenseExpiration.ToString()),
-                ("relationshipGroup", pedData.HasRealPed && pedData.Holder.Exists() ? pedData.Holder.RelationshipGroup.Name : ""),
-                ("isOnProbation", pedData.IsOnProbation.ToString()),
-                ("isOnParole", pedData.IsOnParole.ToString()),
-                ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
-                ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
-                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToLocalTime().ToString("s")),
-                ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
-                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToLocalTime().ToString("s")),
-                ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
-                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToLocalTime().ToString("s")),
-                ("addressPostal", pedData.Address.AddressPostal.Number),
-                ("addressStreet", pedData.Address.StreetName)
-                );
-            string oldFile = File.ReadAllText($"{Main.DataPath}/worldPeds.data");
-            if (oldFile.Contains(pedData.FullName)) return;
-
-            string addComma = oldFile.Length > 0 ? "," : "";
-
-            File.WriteAllText($"{Main.DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
-            
         }
 
         internal static void UpdateCurrentID(Ped ped) {

@@ -8,7 +8,7 @@ namespace ExternalPoliceComputer
     internal static class WorldDataHelper
     {
          private static string GetRegistration(Vehicle car) {
-            switch (VehicleDataController.GetVehicleData(car).Registration.Status) {
+            switch (car.GetVehicleData().Registration.Status) {
                 case EDocumentStatus.Revoked:
                 case EDocumentStatus.Expired:
                     return "Expired";
@@ -21,7 +21,7 @@ namespace ExternalPoliceComputer
          }
 
         private static string GetInsurance(Vehicle car) {
-            switch (VehicleDataController.GetVehicleData(car).Insurance.Status) {
+            switch (car.GetVehicleData().Insurance.Status) {
                 case EDocumentStatus.Revoked:
                 case EDocumentStatus.Expired:
                     return "Expired";
@@ -43,7 +43,7 @@ namespace ExternalPoliceComputer
                 ("gender", pedData.Gender.ToString()),
                 ("isWanted", pedData.Wanted.ToString()),
                 ("licenseStatus", pedData.DriversLicenseState.ToString()),
-                ("licenseExpiration", pedData.DriversLicenseExpiration.ToString()),
+                ("licenseExpiration", pedData.DriversLicenseExpiration?.ToLocalTime().ToString("s") ?? ""),
                 ("relationshipGroup", ped.RelationshipGroup.Name),
                 ("isOnProbation", pedData.IsOnProbation.ToString()),
                 ("isOnParole", pedData.IsOnParole.ToString()),
@@ -60,17 +60,17 @@ namespace ExternalPoliceComputer
         }
 
         internal static string GetWorldCarData(Vehicle car) {
-            string driver = car.Driver.Exists() ? LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(car.Driver).FullName : "";
+            string driver = car.Driver.Exists() && car.Driver.IsHuman ? car.Driver.GetPedData().FullName : "";
             string color = Rage.Native.NativeFunction.Natives.GET_VEHICLE_LIVERY<int>(car) != -1 ? "" : $"{car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
 
-            DataToClient.AddWorldPedWithPedData(VehicleDataController.GetVehicleData(car).Owner);
+            DataToClient.AddWorldPed(car.GetVehicleData().Owner.Holder);
 
             return DataToClient.PrintObjects(
-                ("licensePlate", VehicleDataController.GetVehicleData(car).LicensePlate),
+                ("licensePlate", car.LicensePlate),
                 ("model", car.Model.Name),
-                ("isStolen", VehicleDataController.GetVehicleData(car).IsStolen.ToString()),
+                ("isStolen", car.GetVehicleData().IsStolen.ToString()),
                 ("isPolice", car.IsPoliceVehicle.ToString()),
-                ("owner", VehicleDataController.GetVehicleData(car).Owner.FullName),
+                ("owner", car.GetVehicleData().Owner.FullName),
                 ("driver", driver),
                 ("registration", GetRegistration(car)),
                 ("insurance", GetInsurance(car)),
