@@ -397,6 +397,10 @@ async function renderPedSearch() {
       tryLanguageValue(ped.gender, langValues)
     ),
     elements.informationLabel(
+      langPed.resultContainer.address,
+      `${ped.addressPostal} ${ped.addressStreet}`
+    ),
+    elements.informationLabel(
       langPed.resultContainer.licenseStatus,
       ped.licenseStatus != 'Valid' && config.warningColorsForPedCarSearch
         ? ped.licenseData
@@ -437,6 +441,35 @@ async function renderPedSearch() {
         : tryLanguageValue(ped.parole, langValues)
     ),
   ]
+
+  if (config.showWeaponPermit) {
+    informationLabels.push(
+      elements.informationLabel(
+        langPed.resultContainer.weaponPermit,
+        `${tryLanguageValue(ped.weaponPermitStatus, langValues)}${
+          ped.weaponPermitStatus == 'Valid' ? ` (${ped.weaponPermitType})` : ''
+        }`
+      )
+    )
+  }
+
+  if (config.showFishingPermit) {
+    informationLabels.push(
+      elements.informationLabel(
+        langPed.resultContainer.fishingPermit,
+        tryLanguageValue(ped.fishingPermitStatus, langValues)
+      )
+    )
+  }
+
+  if (config.showHuntingPermit) {
+    informationLabels.push(
+      elements.informationLabel(
+        langPed.resultContainer.fishingPermit,
+        tryLanguageValue(ped.huntingPermitStatus, langValues)
+      )
+    )
+  }
 
   const cautions = []
   if (

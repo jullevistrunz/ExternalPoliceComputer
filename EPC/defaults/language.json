@@ -115,6 +115,7 @@
       "resultContainer": {
         "dateOfBirth": "Date Of Birth",
         "gender": "Sex",
+        "address": "Address",
         "licenseStatus": "License Status",
         "for": "For",
         "warrant": "Outstanding Warrant",
@@ -124,7 +125,10 @@
         "cautions": {
           "gangAffiliation": "Gang Affiliation"
         },
-        "pedNotFound": "Ped Not Found"
+        "pedNotFound": "Ped Not Found",
+        "weaponPermit": "Weapon Permit",
+        "fishingPermit": "Fishing Permit",
+        "huntingPermit": "Hunting Permit"
       }
     },
     "searchCarPage": {

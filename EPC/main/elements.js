@@ -1,7 +1,6 @@
 const elements = {
   /**
    * @param {HTMLDivElement[]} informationLabels
-   * @returns informationLabelContainer
    */
   informationLabelContainer: function (informationLabels) {
     const element = document.createElement('div')
@@ -12,12 +11,10 @@ const elements = {
     return element
   },
   /**
-   *
-   * @param {String} key
-   * @param {String} value
-   * @param {function} onClick
-   * @param {String[]} classList
-   * @returns informationLabel
+   * @param {string} key
+   * @param {string} value
+   * @param {() => void} onClick
+   * @param {string[]} classList
    */
   informationLabel: function (key, value, onClick = null, classList = null) {
     const element = document.createElement('div')

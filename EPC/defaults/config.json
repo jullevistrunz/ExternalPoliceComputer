@@ -21,5 +21,8 @@
   "clearCalloutPageTime": null,
   "automaticIncidentReports": true,
   "disableExternalCautions": false,
-  "printCitationsOnSubmit": true
+  "printCitationsOnSubmit": true,
+  "showWeaponPermit": true,
+  "showFishingPermit": true,
+  "showHuntingPermit": true
 }

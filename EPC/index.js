@@ -580,7 +580,17 @@ function generatePeds() {
     const allCharges = getAllArrestOptions()
     const allCitations = getAllCitationOptions()
     const citations = getRandomCitations(allCitations)
-    const arrests = getRandomArrests(allCharges, worldPed.isWanted == 'True')
+    const arrests = getRandomArrests(
+      allCharges,
+      worldPed.isWanted.toLowerCase() == 'true'
+    )
+    if (
+      (worldPed.isOnProbation.toLowerCase() == 'true' ||
+        worldPed.isOnParole.toLowerCase() == 'true') &&
+      arrests.length < 1
+    ) {
+      arrests.push(getCleanRandomArrest(allCharges))
+    }
     const licenseOptions = JSON.parse(fs.readFileSync('licenseOptions.json'))
     const licenseData =
       worldPed.licenseStatus == 'Suspended' ||
@@ -593,20 +603,14 @@ function generatePeds() {
         : arrests.push(licenseData[0])
     }
     const probation =
-      !arrests.length ||
-      Math.floor(Math.random() * (1 / config.probationChance)) != 0
-        ? 'No'
-        : 'Yes'
-    const parole =
-      probation == 'Yes' ||
-      !arrests.length ||
-      Math.floor(Math.random() * (1 / config.paroleChance)) != 0
-        ? 'No'
-        : 'Yes'
+      worldPed.isOnProbation.toLowerCase() == 'true' ? 'Yes' : 'No'
+    const parole = worldPed.isOnParole.toLowerCase() == 'true' ? 'Yes' : 'No'
     const ped = {
       ...worldPed,
       warrantText:
-        worldPed.isWanted == 'True' ? getCleanRandomArrest(allCharges) : '',
+        worldPed.isWanted.toLowerCase() == 'true'
+          ? getCleanRandomArrest(allCharges)
+          : '',
       arrests: arrests,
       citations: citations,
       probation: probation,
