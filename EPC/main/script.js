@@ -476,8 +476,8 @@ async function renderPedSearch() {
     informationLabels.push(
       elements.informationLabel(
         langPed.resultContainer.huntingPermit,
-        (ped.fishingPermitStatus == 'Revoked' ||
-          ped.fishingPermitStatus == 'Expired') &&
+        (ped.huntingPermitStatus == 'Revoked' ||
+          ped.huntingPermitStatus == 'Expired') &&
           config.warningColorsForPedCarSearch
           ? wrapInWarningColor(
               tryLanguageValue(ped.huntingPermitStatus, langValues)
@@ -867,21 +867,13 @@ async function sendCitationsData(name, citationsData) {
       fine: citation.fine,
       isArrestable: false,
     }
-    texts.push(objToQueryString(obj))
+    texts.push(new URLSearchParams(obj).toString())
   }
 
   await fetch('/post/giveCitations', {
     method: 'post',
-    body: texts.join(';'),
+    body: texts.join(','),
   })
-}
-
-function objToQueryString(obj) {
-  let arr = []
-  for (const [key, value] of Object.entries(obj)) {
-    arr.push(`${key}=${value}`)
-  }
-  return arr.join('&')
 }
 
 function closeCitations() {

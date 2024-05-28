@@ -3,6 +3,7 @@ using PolicingRedefined.Interaction.Assets.PedAttributes;
 using Rage;
 using System;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -23,7 +24,7 @@ namespace ExternalPoliceComputer {
                 string[] file;
                 
                 try {
-                    file = File.ReadAllText($"{Main.DataPath}/giveCitations.data").Split(';');
+                    file = File.ReadAllText($"{Main.DataPath}/giveCitations.data").Split(',');
                 } catch (Exception ex) {
                     Game.LogTrivial(ex.ToString());
                     return;
@@ -34,7 +35,15 @@ namespace ExternalPoliceComputer {
                 for (int i = 0; i < file.Length; i++) {
                     NameValueCollection fileData = HttpUtility.ParseQueryString(file[i]);
 
-                    Ped ped = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles).FirstOrDefault(x => x.GetPedData().FullName == fileData["name"]);
+                    Ped[] nearbyPeds = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles);
+
+                    Ped ped = null;
+                    for (int j = 0; j <  nearbyPeds.Length; j++) {
+                        if (nearbyPeds[j].Exists() && nearbyPeds[j].IsHuman && nearbyPeds[j].GetPedData().FullName == fileData["name"]) {
+                            ped = nearbyPeds[j];
+                            break;
+                        }
+                    }
 
                     if (ped == null) break;
 

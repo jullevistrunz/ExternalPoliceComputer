@@ -1,4 +1,3 @@
-using CommonDataFramework.Modules;
 using CommonDataFramework.Modules.PedDatabase;
 using CommonDataFramework.Modules.VehicleDatabase;
 using Rage;
