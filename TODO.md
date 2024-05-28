@@ -1,5 +1,0 @@
-- Bolo ambient event implementation (await his API update) [Echooo]
-- YourShift implementation [TheGreenCraft]
-- give ticket animation
-- policing redefined integration (await release) [Echooo]
-- improve map [AgentDZN]
