@@ -404,40 +404,32 @@ async function renderPedSearch() {
       langPed.resultContainer.licenseStatus,
       ped.licenseStatus != 'Valid' && config.warningColorsForPedCarSearch
         ? ped.licenseData
-          ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-              ped.licenseStatus,
-              langValues
-            )} ${langPed.resultContainer.for} ${ped.licenseData}</a>`
-          : `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-              ped.licenseStatus,
-              langValues
-            )}</a>`
+          ? wrapInWarningColor(
+              `${tryLanguageValue(ped.licenseStatus, langValues)} ${
+                langPed.resultContainer.for
+              } ${ped.licenseData}`
+            )
+          : wrapInWarningColor(tryLanguageValue(ped.licenseStatus, langValues))
         : tryLanguageValue(ped.licenseStatus, langValues)
     ),
     elements.informationLabel(
       langPed.resultContainer.warrant,
       ped.isWanted == 'True'
         ? config.warningColorsForPedCarSearch
-          ? `<a style="color: var(--warning-color); pointer-events: none;">${ped.warrantText}</a>`
+          ? wrapInWarningColor(ped.warrantText)
           : ped.warrantText
         : langValues.none
     ),
     elements.informationLabel(
       langPed.resultContainer.probation,
       ped.probation != 'No' && config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-            ped.probation,
-            langValues
-          )}</a>`
+        ? wrapInWarningColor(tryLanguageValue(ped.probation, langValues))
         : tryLanguageValue(ped.probation, langValues)
     ),
     elements.informationLabel(
       langPed.resultContainer.parole,
       ped.parole != 'No' && config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-            ped.parole,
-            langValues
-          )}</a>`
+        ? wrapInWarningColor(tryLanguageValue(ped.parole, langValues))
         : tryLanguageValue(ped.parole, langValues)
     ),
   ]
@@ -446,9 +438,21 @@ async function renderPedSearch() {
     informationLabels.push(
       elements.informationLabel(
         langPed.resultContainer.weaponPermit,
-        `${tryLanguageValue(ped.weaponPermitStatus, langValues)}${
-          ped.weaponPermitStatus == 'Valid' ? ` (${ped.weaponPermitType})` : ''
-        }`
+        (ped.weaponPermitStatus == 'Revoked' ||
+          ped.weaponPermitStatus == 'Expired') &&
+          config.warningColorsForPedCarSearch
+          ? wrapInWarningColor(
+              `${tryLanguageValue(ped.weaponPermitStatus, langValues)}${
+                ped.weaponPermitStatus == 'Valid'
+                  ? ` (${ped.weaponPermitType})`
+                  : ''
+              }`
+            )
+          : `${tryLanguageValue(ped.weaponPermitStatus, langValues)}${
+              ped.weaponPermitStatus == 'Valid'
+                ? ` (${ped.weaponPermitType})`
+                : ''
+            }`
       )
     )
   }
@@ -457,7 +461,13 @@ async function renderPedSearch() {
     informationLabels.push(
       elements.informationLabel(
         langPed.resultContainer.fishingPermit,
-        tryLanguageValue(ped.fishingPermitStatus, langValues)
+        (ped.fishingPermitStatus == 'Revoked' ||
+          ped.fishingPermitStatus == 'Expired') &&
+          config.warningColorsForPedCarSearch
+          ? wrapInWarningColor(
+              tryLanguageValue(ped.fishingPermitStatus, langValues)
+            )
+          : tryLanguageValue(ped.fishingPermitStatus, langValues)
       )
     )
   }
@@ -465,8 +475,14 @@ async function renderPedSearch() {
   if (config.showHuntingPermit) {
     informationLabels.push(
       elements.informationLabel(
-        langPed.resultContainer.fishingPermit,
-        tryLanguageValue(ped.huntingPermitStatus, langValues)
+        langPed.resultContainer.huntingPermit,
+        (ped.fishingPermitStatus == 'Revoked' ||
+          ped.fishingPermitStatus == 'Expired') &&
+          config.warningColorsForPedCarSearch
+          ? wrapInWarningColor(
+              tryLanguageValue(ped.huntingPermitStatus, langValues)
+            )
+          : tryLanguageValue(ped.huntingPermitStatus, langValues)
       )
     )
   }
@@ -491,7 +507,7 @@ async function renderPedSearch() {
   if (cautions.length) {
     for (const i in cautions) {
       cautions[i] = config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">• ${cautions[i]}</a>`
+        ? wrapInWarningColor(`• ${cautions[i]}`)
         : `• ${cautions[i]}`
     }
     informationLabels.push(
@@ -523,6 +539,10 @@ async function renderPedSearch() {
       openArrestReport()
     })
   )
+}
+
+function wrapInWarningColor(text) {
+  return `<div style="color: var(--warning-color); display: inline">${text}</div>`
 }
 
 async function renderCarSearch() {
@@ -562,28 +582,19 @@ async function renderCarSearch() {
     elements.informationLabel(
       langCar.resultContainer.registration,
       car.registration != 'Valid' && config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-            car.registration,
-            langValues
-          )}</a>`
+        ? wrapInWarningColor(tryLanguageValue(car.registration, langValues))
         : tryLanguageValue(car.registration, langValues)
     ),
     elements.informationLabel(
       langCar.resultContainer.insurance,
       car.insurance != 'Valid' && config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-            car.insurance,
-            langValues
-          )}</a>`
+        ? wrapInWarningColor(tryLanguageValue(car.insurance, langValues))
         : tryLanguageValue(car.insurance, langValues)
     ),
     elements.informationLabel(
       langCar.resultContainer.stolen,
       car.stolen != 'No' && config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">${tryLanguageValue(
-            car.stolen,
-            langValues
-          )}</a>`
+        ? wrapInWarningColor(tryLanguageValue(car.stolen, langValues))
         : tryLanguageValue(car.stolen, langValues)
     ),
     elements.informationLabel(langCar.resultContainer.owner, car.owner, () => {
@@ -594,7 +605,7 @@ async function renderCarSearch() {
   if (car.cautions.length) {
     for (const i in car.cautions) {
       car.cautions[i] = config.warningColorsForPedCarSearch
-        ? `<a style="color: var(--warning-color); pointer-events: none;">• ${car.cautions[i]}</a>`
+        ? wrapInWarningColor(`• ${car.cautions[i]}`)
         : `• ${car.cautions[i]}`
     }
     informationLabels.push(

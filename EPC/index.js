@@ -655,51 +655,9 @@ function generateCars() {
     if (carPlateArr.includes(worldCar.licensePlate) || !getRandomPed()) {
       continue
     }
-    //? used to be a feature; removed because of StopThePed implementation
-    const plateStatus = 'Valid'
-    const registration =
-      worldCar.isPolice == 'False'
-        ? Math.floor(Math.random() * 5) == 0
-          ? Math.floor(Math.random() * 5) == 0
-            ? 'None'
-            : 'Expired'
-          : 'Valid'
-        : 'Valid'
-    const insurance =
-      worldCar.isPolice == 'False'
-        ? Math.floor(Math.random() * 5) == 0
-          ? Math.floor(Math.random() * 3) == 0
-            ? 'None'
-            : 'Expired'
-          : 'Valid'
-        : 'Valid'
     const car = {
-      licensePlate: worldCar.licensePlate,
-      model: worldCar.model,
-      isStolen: worldCar.isStolen,
-      isPolice: worldCar.isPolice,
-      driver: worldCar.driver,
-      owner: !config.useLSPDFROwner
-        ? worldCar.isPolice == 'True'
-          ? worldCar.model.toLowerCase().startsWith('police')
-            ? 'Los Santos Police Department'
-            : 'State Of San Andreas'
-          : Math.floor(Math.random() * 10) != 0 && worldCar.driver
-          ? worldCar.driver
-          : getRandomPed().name
-        : worldCar.owner,
-
-      registration:
-        worldCar.registration && config.useStopThePed
-          ? worldCar.registration
-          : registration,
-      insurance:
-        worldCar.insurance && config.useStopThePed
-          ? worldCar.insurance
-          : insurance,
+      ...worldCar,
       stolen: worldCar.isStolen == 'True' ? 'Yes' : 'No',
-      plateStatus: plateStatus,
-      color: worldCar.color,
       cautions: [],
     }
     carData.push(car)

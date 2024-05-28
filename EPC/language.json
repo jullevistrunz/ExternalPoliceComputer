@@ -40,7 +40,9 @@
       "none": "None",
       "yes": "Yes",
       "no": "No",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "ccwPermit": "CCW",
+      "fflPermit": "FFL"
     },
     "alphabetPage": {
       "lawEnforcement": {

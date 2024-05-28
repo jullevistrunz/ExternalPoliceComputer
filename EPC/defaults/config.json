@@ -1,6 +1,4 @@
 {
-  "useStopThePed": true,
-  "useLSPDFROwner": false,
   "showCurrentID": true,
   "autoShowCurrentID": true,
   "warningColorsForPedCarSearch": true,
@@ -9,8 +7,6 @@
   "additionalArrestChance": 0.1,
   "citationChance": 0.4,
   "additionalCitationChance": 0.4,
-  "probationChance": 0.25,
-  "paroleChance": 0.3,
   "showCustomizationLink": true,
   "replaceStaticWithCustomLanguage": false,
   "port": 80,
