@@ -34,7 +34,7 @@ namespace ExternalPoliceComputer {
                 string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
                 WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
 
-                string calloutData = DataToClient.PrintObjects(
+                string calloutData = WorldDataHelper.PrintObjects(
                     ("id", new Random().Next(10000, 100000).ToString()),
                     ("name", name),
                     ("description", description),

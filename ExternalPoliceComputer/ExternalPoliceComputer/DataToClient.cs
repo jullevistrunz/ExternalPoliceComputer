@@ -6,10 +6,8 @@ using CommonDataFramework.Modules.PedDatabase;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Rage;
 
-namespace ExternalPoliceComputer
-{
-    internal static class DataToClient
-    {       
+namespace ExternalPoliceComputer {
+    internal static class DataToClient {       
          internal static void AddWorldCar(Vehicle car) {
             if (car.Exists()) {
                 string data = WorldDataHelper.GetWorldCarData(car);
@@ -104,18 +102,6 @@ namespace ExternalPoliceComputer
             }
 
             File.WriteAllText($"{Main.DataPath}/callout.data", string.Join("&", calloutDataQueryArr));
-        }
-
-        // Thank you RoShit
-        internal static string PrintObjects(params (string, string)[] items) {
-            string s = "";
-            for (var index = 0; index < items.Length; index++) {
-                var item = items[index];
-                s += $"{item.Item1}={item.Item2}";
-                if (index < items.Length - 1)
-                    s += "&";
-            }
-            return s;
         }
     }
 }

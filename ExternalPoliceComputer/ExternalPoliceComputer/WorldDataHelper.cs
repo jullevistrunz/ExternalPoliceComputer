@@ -5,39 +5,12 @@ using Rage;
 
 namespace ExternalPoliceComputer
 {
-    internal static class WorldDataHelper
-    {
-         private static string GetRegistration(Vehicle car) {
-            switch (car.GetVehicleData().Registration.Status) {
-                case EDocumentStatus.Revoked:
-                case EDocumentStatus.Expired:
-                    return "Expired";
-                case EDocumentStatus.None:
-                    return "None";
-                case EDocumentStatus.Valid:
-                    return "Valid";
-            }
-            return "";
-         }
-
-        private static string GetInsurance(Vehicle car) {
-            switch (car.GetVehicleData().Insurance.Status) {
-                case EDocumentStatus.Revoked:
-                case EDocumentStatus.Expired:
-                    return "Expired";
-                case EDocumentStatus.None:
-                    return "None";
-                case EDocumentStatus.Valid:
-                    return "Valid";
-            }
-            return "";
-        }
-
-        internal static string GetWorldPedData(Ped ped) {
+    internal static class WorldDataHelper {
+         internal static string GetWorldPedData(Ped ped) {
             PedData pedData = ped.GetPedData();
             if (pedData == null) return null;
             string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
-            return DataToClient.PrintObjects(
+            return PrintObjects(
                 ("name", pedData.FullName),
                 ("birthday", birthday),
                 ("gender", pedData.Gender.ToString()),
@@ -65,17 +38,29 @@ namespace ExternalPoliceComputer
 
             DataToClient.AddWorldPed(car.GetVehicleData().Owner.Holder);
 
-            return DataToClient.PrintObjects(
+            return PrintObjects(
                 ("licensePlate", car.LicensePlate),
                 ("model", car.Model.Name),
                 ("isStolen", car.GetVehicleData().IsStolen.ToString()),
                 ("isPolice", car.IsPoliceVehicle.ToString()),
                 ("owner", car.GetVehicleData().Owner.FullName),
                 ("driver", driver),
-                ("registration", GetRegistration(car)),
-                ("insurance", GetInsurance(car)),
+                ("registration", car.GetVehicleData().Registration.Status.ToString()),
+                ("insurance", car.GetVehicleData().Insurance.Status.ToString()),
                 ("color", color)
                 );
+        }
+
+        // Thank you RoShit
+        internal static string PrintObjects(params (string, string)[] items) {
+            string s = "";
+            for (var index = 0; index < items.Length; index++) {
+                var item = items[index];
+                s += $"{item.Item1}={item.Item2}";
+                if (index < items.Length - 1)
+                    s += "&";
+            }
+            return s;
         }
     }
 }

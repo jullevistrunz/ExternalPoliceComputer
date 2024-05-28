@@ -1,10 +1,8 @@
 using LSPD_First_Response.Mod.API;
 using Rage;
 
-namespace ExternalPoliceComputer
-{
-    internal static class LSPDFREvents
-    {
+namespace ExternalPoliceComputer {
+    internal static class LSPDFREvents {
         private static void Events_OnPedPresentedId(Ped ped, LHandle pullover, LHandle pedInteraction) {
             DataToClient.AddWorldPed(ped);
             DataToClient.UpdateCurrentID(ped);
