@@ -68,9 +68,9 @@ namespace ExternalPoliceComputer {
                 DataToClient.UpdateWorldPeds();
                 DataToClient.UpdateWorldCars();
 
-                GameFiber IntervalFiber = GameFiber.StartNew(UpdateWorldDataInterval);
+                GameFiber IntervalFiber = GameFiber.StartNew(UpdateWorldDataInterval, "IntervalFiber");
 
-                GameFiber GiveCitationsFiber = GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange);
+                GameFiber GiveCitationsFiber = GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange, "GiveCitationsFiber");
 
                 Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }
