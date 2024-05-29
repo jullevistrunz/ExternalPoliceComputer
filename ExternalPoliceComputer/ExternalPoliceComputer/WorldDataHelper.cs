@@ -21,11 +21,11 @@ namespace ExternalPoliceComputer
                 ("isOnParole", pedData.IsOnParole.ToString()),
                 ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
                 ("weaponPermitStatus", pedData.WeaponPermit.Status.ToString()),
-                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate.ToLocalTime().ToString("s")),
+                ("weaponPermitExpirationDate", pedData.WeaponPermit.ExpirationDate?.ToLocalTime().ToString("s") ?? ""),
                 ("fishingPermitStatus", pedData.FishingPermit.Status.ToString()),
-                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate.ToLocalTime().ToString("s")),
+                ("fishingPermitExpirationDate", pedData.FishingPermit.ExpirationDate?.ToLocalTime().ToString("s") ?? ""),
                 ("huntingPermitStatus", pedData.HuntingPermit.Status.ToString()),
-                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate.ToLocalTime().ToString("s")),
+                ("huntingPermitExpirationDate", pedData.HuntingPermit.ExpirationDate?.ToLocalTime().ToString("s") ?? ""),
                 ("addressPostal", pedData.Address.AddressPostal.Number),
                 ("addressStreet", pedData.Address.StreetName)
                 );
