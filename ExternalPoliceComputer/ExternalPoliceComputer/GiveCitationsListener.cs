@@ -21,7 +21,7 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
-                string[] file;
+                string[] file = null;
                 
                 try {
                     file = File.ReadAllText($"{Main.DataPath}/giveCitations.data").Split(',');
@@ -30,7 +30,7 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
-                if (file.Length == 0) return;
+                if (file == null || file.Length < 1) return;
 
                 for (int i = 0; i < file.Length; i++) {
                     NameValueCollection fileData = HttpUtility.ParseQueryString(file[i]);
@@ -38,7 +38,7 @@ namespace ExternalPoliceComputer {
                     Ped[] nearbyPeds = Main.Player.GetNearbyPeds(Main.MaxNumberOfNearbyPedsOrVehicles);
 
                     Ped ped = null;
-                    for (int j = 0; j <  nearbyPeds.Length; j++) {
+                    for (int j = 0; j < nearbyPeds.Length; j++) {
                         if (nearbyPeds[j].Exists() && nearbyPeds[j].IsHuman && nearbyPeds[j].GetPedData().FullName == fileData["name"]) {
                             ped = nearbyPeds[j];
                             break;
@@ -51,7 +51,9 @@ namespace ExternalPoliceComputer {
                     PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, c);
                 }
 
+                watcher.EnableRaisingEvents = false;
                 File.WriteAllText($"{Main.DataPath}/giveCitations.data", "");
+                watcher.EnableRaisingEvents = true;
             };
         }
     }
