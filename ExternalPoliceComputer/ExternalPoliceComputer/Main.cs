@@ -65,12 +65,13 @@ namespace ExternalPoliceComputer {
                     LSPDFREvents.SubscribeToFREvents();
                 }
 
-                DataToClient.UpdateWorldPeds();
-                DataToClient.UpdateWorldCars();
+                CommonDataFramework.API.CDFEvents.OnPluginStateChanged += (bool ready) => {
+                    if (ready) {
+                        GameFiber.StartNew(UpdateWorldDataInterval, "IntervalFiber");
+                    } 
+                };
 
-                GameFiber IntervalFiber = GameFiber.StartNew(UpdateWorldDataInterval, "IntervalFiber");
-
-                GameFiber GiveCitationsFiber = GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange, "GiveCitationsFiber");
+                GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange, "GiveCitationsFiber");
 
                 Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
             }
