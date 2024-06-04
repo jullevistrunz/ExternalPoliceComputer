@@ -1,5 +1,6 @@
 ﻿using LSPD_First_Response.Mod.API;
 using Rage;
+using System.CodeDom;
 using System.IO;
 
 namespace ExternalPoliceComputer {
@@ -45,35 +46,39 @@ namespace ExternalPoliceComputer {
                     return;
                 }
 
-                useCI = DependencyCheck.IsCIAvailable();
+                GameFiber.StartNew(() => {
+                    GameFiber.WaitUntil(CommonDataFramework.API.CDFFunctions.IsPluginReady, 30000);
+                    if (!CommonDataFramework.API.CDFFunctions.IsPluginReady()) {
+                        Game.DisplayNotification("ExternalPoliceComputer failed to load. CommonDataFramework didn't load (blame Marcel).");
+                        Game.LogTrivial("ExternalPoliceComputer: Loading aborted. CommonDataFramework didn't load.");
+                        return;
+                    };
 
-                Game.LogTrivial($"ExternalPoliceComputer: CI: {useCI}");
+                    useCI = DependencyCheck.IsCIAvailable();
 
-                if (useCI) CalloutEvents.AddCalloutEventWithCI();
+                    Game.LogTrivial($"ExternalPoliceComputer: CI: {useCI}");
 
-                LSPD_First_Response.Mod.API.Events.OnPulloverStarted += LSPDFREvents.Events_OnPulloverStarted;
-                LSPD_First_Response.Mod.API.Events.OnPursuitEnded += LSPDFREvents.Events_OnPursuitEnded;
+                    if (useCI) CalloutEvents.AddCalloutEventWithCI();
 
-                usePR = DependencyCheck.IsPRAvailable();
+                    LSPD_First_Response.Mod.API.Events.OnPulloverStarted += LSPDFREvents.Events_OnPulloverStarted;
+                    LSPD_First_Response.Mod.API.Events.OnPursuitEnded += LSPDFREvents.Events_OnPursuitEnded;
 
-                Game.LogTrivial($"ExternalPoliceComputer: PR: {usePR}");
+                    usePR = DependencyCheck.IsPRAvailable();
 
-                if (usePR) {
-                    PREvents.SubscribeToPREvents();
-                }
-                else {
-                    LSPDFREvents.SubscribeToFREvents();
-                }
+                    Game.LogTrivial($"ExternalPoliceComputer: PR: {usePR}");
 
-                CommonDataFramework.API.CDFEvents.OnPluginStateChanged += (bool ready) => {
-                    if (ready) {
-                        GameFiber.StartNew(UpdateWorldDataInterval, "IntervalFiber");
-                    } 
-                };
+                    if (usePR) {
+                        PREvents.SubscribeToPREvents();
+                    } else {
+                        LSPDFREvents.SubscribeToFREvents();
+                    }
 
-                GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange, "GiveCitationsFiber");
+                    GameFiber.StartNew(UpdateWorldDataInterval, "IntervalFiber");
 
-                Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
+                    GameFiber.StartNew(GiveCitationsListener.ListenForAnimationFileChange, "GiveCitationsFiber");
+
+                    Game.DisplayNotification("ExternalPoliceComputer has been loaded.");
+                });
             }
         }
 
