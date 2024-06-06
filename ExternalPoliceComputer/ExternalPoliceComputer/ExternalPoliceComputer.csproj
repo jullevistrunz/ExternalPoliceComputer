@@ -48,7 +48,8 @@
     <Reference Include="LSPD First Response">
       <HintPath>..\..\References\LSPD First Response.dll</HintPath>
     </Reference>
-    <Reference Include="PolicingRedefined">
+    <Reference Include="PolicingRedefined, Version=1.0.0.5, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\References\PolicingRedefined.dll</HintPath>
     </Reference>
     <Reference Include="RagePluginHook">
