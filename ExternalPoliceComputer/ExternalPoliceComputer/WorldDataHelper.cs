@@ -15,7 +15,7 @@ namespace ExternalPoliceComputer
                 ("isWanted", pedData.Wanted.ToString()),
                 ("licenseStatus", pedData.DriversLicenseState.ToString()),
                 ("licenseExpiration", pedData.DriversLicenseExpiration?.ToLocalTime().ToString("s") ?? ""),
-                ("relationshipGroup", pedData.HasRealPed ? pedData.Holder.RelationshipGroup.Name : ""),
+                ("relationshipGroup", pedData.Holder.Exists() ? pedData.Holder.RelationshipGroup.Name : ""),
                 ("isOnProbation", pedData.IsOnProbation.ToString()),
                 ("isOnParole", pedData.IsOnParole.ToString()),
                 ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
