@@ -5,8 +5,7 @@ using Rage;
 namespace ExternalPoliceComputer
 {
     internal static class WorldDataHelper {
-         internal static string GetWorldPedData(Ped ped) {
-            PedData pedData = ped.GetPedData();
+         internal static string GetWorldPedDataString(PedData pedData) {
             if (pedData == null) return null;
             string birthday = $"{pedData.Birthday.Month}/{pedData.Birthday.Day}/{pedData.Birthday.Year}";
             return PrintObjects(
@@ -16,7 +15,7 @@ namespace ExternalPoliceComputer
                 ("isWanted", pedData.Wanted.ToString()),
                 ("licenseStatus", pedData.DriversLicenseState.ToString()),
                 ("licenseExpiration", pedData.DriversLicenseExpiration?.ToLocalTime().ToString("s") ?? ""),
-                ("relationshipGroup", ped.RelationshipGroup.Name),
+                ("relationshipGroup", pedData.HasRealPed ? pedData.Holder.RelationshipGroup.Name : ""),
                 ("isOnProbation", pedData.IsOnProbation.ToString()),
                 ("isOnParole", pedData.IsOnParole.ToString()),
                 ("weaponPermitPermitType", pedData.WeaponPermit.PermitType.ToString()),
@@ -31,11 +30,11 @@ namespace ExternalPoliceComputer
                 );
          }
 
-        internal static string GetWorldCarData(Vehicle car) {
+        internal static string GetWorldCarDataString(Vehicle car) {
             string driver = car.Driver.Exists() && car.Driver.IsHuman ? car.Driver.GetPedData().FullName : "";
             string color = Rage.Native.NativeFunction.Natives.GET_VEHICLE_LIVERY<int>(car) != -1 ? "" : $"{car.PrimaryColor.R}-{car.PrimaryColor.G}-{car.PrimaryColor.B}";
 
-            DataToClient.AddWorldPed(car.GetVehicleData().Owner.Holder);
+            DataToClient.AddWorldPedData(car.GetVehicleData().Owner);
 
             return PrintObjects(
                 ("licensePlate", car.LicensePlate),

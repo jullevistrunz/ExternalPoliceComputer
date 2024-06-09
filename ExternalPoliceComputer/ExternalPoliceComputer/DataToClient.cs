@@ -10,7 +10,7 @@ namespace ExternalPoliceComputer {
     internal static class DataToClient {       
          internal static void AddWorldCar(Vehicle car) {
             if (car.Exists()) {
-                string data = WorldDataHelper.GetWorldCarData(car);
+                string data = WorldDataHelper.GetWorldCarDataString(car);
                 string oldFile = File.ReadAllText($"{Main.DataPath}/worldCars.data");
                 if (oldFile.Contains(car.LicensePlate)) return;
 
@@ -22,16 +22,26 @@ namespace ExternalPoliceComputer {
          
         internal static void AddWorldPed(Ped ped) {
             if (ped.Exists() && ped.IsHuman) {
-                string data = WorldDataHelper.GetWorldPedData(ped);
+                string data = WorldDataHelper.GetWorldPedDataString(ped.GetPedData());
                 string oldFile = File.ReadAllText($"{Main.DataPath}/worldPeds.data");
                 if (oldFile.Contains(ped.GetPedData().FullName)) return;
 
                 string addComma = oldFile.Length > 0 ? "," : "";
 
                 File.WriteAllText($"{Main.DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
-            } 
+            }
         }
-               
+
+        internal static void AddWorldPedData(PedData pedData) {
+            string data = WorldDataHelper.GetWorldPedDataString(pedData);
+            string oldFile = File.ReadAllText($"{Main.DataPath}/worldPeds.data");
+            if (oldFile.Contains(pedData.FullName)) return;
+
+            string addComma = oldFile.Length > 0 ? "," : "";
+
+            File.WriteAllText($"{Main.DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
+        }
+
         internal static void UpdateWorldPeds() {
             if (!Main.Player.Exists()) {
                 Game.LogTrivial("ExternalPoliceComputer: Failed to update worldPeds.data; Invalid Player");
@@ -43,7 +53,7 @@ namespace ExternalPoliceComputer {
             for (int i = 0; i < allPeds.Length; i++) {
                 Ped ped = allPeds[i];
                 if (ped.Exists() && ped.IsHuman) {
-                    persList[i] = WorldDataHelper.GetWorldPedData(ped);
+                    persList[i] = WorldDataHelper.GetWorldPedDataString(ped.GetPedData());
                 }
             }
 
@@ -63,7 +73,7 @@ namespace ExternalPoliceComputer {
             for (int i = 0; i < allCars.Length; i++) {
                 Vehicle car = allCars[i];
                 if (car.Exists()) {
-                    carsList[i] = WorldDataHelper.GetWorldCarData(car);
+                    carsList[i] = WorldDataHelper.GetWorldCarDataString(car);
                 }
             }
 
