@@ -45,6 +45,11 @@ document.querySelectorAll('.header button').forEach((btn) => {
     this.classList.remove('notification')
     goToPage(this.classList[0])
   })
+  btn.addEventListener('contextmenu', function (e) {
+    e.preventDefault()
+    if (this.classList[0] == 'callout') return
+    openInNewWindow('page', this.classList[0])
+  })
 })
 
 document
@@ -267,7 +272,7 @@ setInterval(() => {
       ).dataset.before = language.overlay.currentID.properties[property]
     }
 
-    document.title = language.title
+    if (!query.get('window')) document.title = language.title
   }
 })()
 
@@ -323,7 +328,7 @@ const query = new URLSearchParams(window.location.search)
     case 'page':
       goToPage(query.get('name'))
       document.title = document.querySelector(
-        `.header ${query.get('name')}`
+        `.header .${query.get('name')}`
       ).innerHTML
       break
     case 'ped':
