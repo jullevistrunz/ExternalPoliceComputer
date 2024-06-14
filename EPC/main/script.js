@@ -316,11 +316,15 @@ let calloutPageInterval
 const query = new URLSearchParams(window.location.search)
 ;(async function () {
   if (!query.get('window')) return
+  const language = await getLanguage()
   document.querySelector(':root').style.setProperty('--header-height', '0px')
   document.querySelector('.overlay').classList.add('hidden')
   switch (query.get('type')) {
     case 'page':
       goToPage(query.get('name'))
+      document.title = document.querySelector(
+        `.header ${query.get('name')}`
+      ).innerHTML
       break
     case 'ped':
       await openPedInSearchPedPage(query.get('name'))
@@ -341,6 +345,10 @@ const query = new URLSearchParams(window.location.search)
       document.querySelector(
         '.content .searchPedPage .resultContainer'
       ).style.margin = '10px'
+      document.title =
+        language.searchPedTitle +
+        document.querySelector('.content .searchPedPage .resultContainer .name')
+          .innerHTML
       break
     case 'car':
       await openCarInSearchCarPage(query.get('name'))
@@ -361,6 +369,10 @@ const query = new URLSearchParams(window.location.search)
       document.querySelector(
         '.content .searchCarPage .resultContainer'
       ).style.margin = '10px'
+      document.title =
+        language.searchCarTitle +
+        document.querySelector('.content .searchCarPage .resultContainer .name')
+          .innerHTML
       break
     case 'courtByCaseNumber':
       await goToCourtCaseFromValue(query.get('name'))
@@ -392,6 +404,7 @@ const query = new URLSearchParams(window.location.search)
           '.content .courtPage .list .informationLabelContainer details'
         )
         .forEach((el) => el.setAttribute('open', ''))
+      document.title = language.courtCaseTitle + query.get('name')
       break
   }
 })()
@@ -2352,13 +2365,23 @@ async function openInNewWindow(type, name) {
   const config = await getConfig()
   const url = `/?window=true&type=${type}&name=${name}`
   const size = [config.newWindowWidth, config.newWindowHeight]
-  const offset = [
-    window.outerWidth / 2 - size[0] / 2,
-    window.outerHeight / 2 - size[1] / 2,
-  ]
-  window.open(
-    url,
-    '',
-    `width=${size[0]},height=${size[1]},left=${offset[0]},top=${offset[1]}`
-  )
+  if (config.newWindowSamePage) {
+    const offset = [
+      window.innerWidth / 2 - size[0] / 2,
+      window.innerHeight / 2 - size[1] / 2,
+    ]
+    document
+      .querySelector('.overlay .windows')
+      .appendChild(elements.newWindow(url, size, offset))
+  } else {
+    const offset = [
+      window.outerWidth / 2 - size[0] / 2,
+      window.outerHeight / 2 - size[1] / 2,
+    ]
+    window.open(
+      url,
+      '',
+      `width=${size[0]},height=${size[1]},left=${offset[0]},top=${offset[1]}`
+    )
+  }
 }

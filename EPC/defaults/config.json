@@ -22,5 +22,6 @@
   "automaticIncidentReports": true,
   "disableExternalCautions": false,
   "newWindowWidth": 600,
-  "newWindowHeight": 400
+  "newWindowHeight": 400,
+  "newWindowSamePage": true
 }
