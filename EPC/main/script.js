@@ -45,6 +45,11 @@ document.querySelectorAll('.header button').forEach((btn) => {
     this.classList.remove('notification')
     goToPage(this.classList[0])
   })
+  btn.addEventListener('contextmenu', function (e) {
+    e.preventDefault()
+    if (this.classList[0] == 'callout') return
+    openInNewWindow('page', this.classList[0])
+  })
 })
 
 document
@@ -72,6 +77,15 @@ document
   .querySelector('.searchPedPage .pedBtn')
   .addEventListener('click', renderPedSearch)
 document
+  .querySelector('.searchPedPage .pedBtn')
+  .addEventListener('contextmenu', function (e) {
+    e.preventDefault()
+    openInNewWindow(
+      'ped',
+      document.querySelector('.searchPedPage .pedInp').value
+    )
+  })
+document
   .querySelector('.searchPedPage .pedInp')
   .addEventListener('keydown', (e) => {
     if (e.key == 'Enter') {
@@ -82,6 +96,15 @@ document
 document
   .querySelector('.searchCarPage .carBtn')
   .addEventListener('click', renderCarSearch)
+document
+  .querySelector('.searchCarPage .carBtn')
+  .addEventListener('contextmenu', function (e) {
+    e.preventDefault()
+    openInNewWindow(
+      'car',
+      document.querySelector('.searchCarPage .carInp').value
+    )
+  })
 document
   .querySelector('.searchCarPage .carInp')
   .addEventListener('keydown', (e) => {
@@ -122,7 +145,11 @@ setInterval(() => {
   // currentID handler
   const config = await getConfig()
   setInterval(() => {
-    if (document.visibilityState == 'visible' && config.showCurrentID) {
+    if (
+      document.visibilityState == 'visible' &&
+      config.showCurrentID &&
+      !query.get('window')
+    ) {
       displayCurrentID(
         config.autoShowCurrentID,
         document.querySelector('.currentID').dataset.index
@@ -133,7 +160,7 @@ setInterval(() => {
   }, 5000)
 
   // calloutPage handler
-  if (!config.showCalloutPage) {
+  if (!config.showCalloutPage || query.get('window')) {
     document.querySelector('.header .callout').classList.add('hidden')
   } else if (config.autoShowCalloutPage) {
     updateCalloutPage()
@@ -244,6 +271,8 @@ setInterval(() => {
         `.overlay .currentID .properties .${property}`
       ).dataset.before = language.overlay.currentID.properties[property]
     }
+
+    if (!query.get('window')) document.title = language.title
   }
 })()
 
@@ -285,6 +314,103 @@ let calloutPageInterval
         document.body.appendChild(el)
       }
     }
+  }
+})()
+
+// window manager
+const query = new URLSearchParams(window.location.search)
+;(async function () {
+  if (!query.get('window')) return
+  const language = await getLanguage()
+  document.querySelector(':root').style.setProperty('--header-height', '0px')
+  document.querySelector('.overlay').classList.add('hidden')
+  switch (query.get('type')) {
+    case 'page':
+      goToPage(query.get('name'))
+      document.title = document.querySelector(
+        `.header .${query.get('name')}`
+      ).innerHTML
+      break
+    case 'ped':
+      await openPedInSearchPedPage(query.get('name'))
+      document
+        .querySelectorAll('.informationLabelWithOnClick')
+        .forEach((el) => {
+          el.style.pointerEvents = 'none'
+        })
+      document
+        .querySelector('.content .searchPedPage .inpContainer')
+        .classList.add('hidden')
+      document.querySelector(
+        '.content .searchPedPage .resultContainer'
+      ).style.height = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchPedPage .resultContainer'
+      ).style.width = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchPedPage .resultContainer'
+      ).style.margin = '10px'
+      document.title =
+        language.searchPedTitle +
+        document.querySelector('.content .searchPedPage .resultContainer .name')
+          .innerHTML
+      break
+    case 'car':
+      await openCarInSearchCarPage(query.get('name'))
+      document
+        .querySelectorAll('.informationLabelWithOnClick ')
+        .forEach((el) => {
+          el.style.pointerEvents = 'none'
+        })
+      document
+        .querySelector('.content .searchCarPage .inpContainer')
+        .classList.add('hidden')
+      document.querySelector(
+        '.content .searchCarPage .resultContainer'
+      ).style.height = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchCarPage .resultContainer'
+      ).style.width = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchCarPage .resultContainer'
+      ).style.margin = '10px'
+      document.title =
+        language.searchCarTitle +
+        document.querySelector('.content .searchCarPage .resultContainer .name')
+          .innerHTML
+      break
+    case 'courtByCaseNumber':
+      await goToCourtCaseFromValue(query.get('name'))
+      document
+        .querySelectorAll('.informationLabelWithOnClick')
+        .forEach((el) => {
+          el.style.pointerEvents = 'none'
+        })
+      document
+        .querySelector('.content .courtPage .inpContainer')
+        .classList.add('hidden')
+      document.querySelector('.content .courtPage .list').style.height = '100%'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.height = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.width = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.margin = '10px'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.overflow = 'auto'
+      document.querySelector('.content .courtPage .list').style.overflow =
+        'hidden'
+      document
+        .querySelectorAll(
+          '.content .courtPage .list .informationLabelContainer details'
+        )
+        .forEach((el) => el.setAttribute('open', ''))
+      document.title = language.courtCaseTitle + query.get('name')
+      break
   }
 })()
 
@@ -621,16 +747,16 @@ async function renderCarSearch() {
   )
 }
 
-function openPedInSearchPedPage(name) {
-  goToPage('searchPed')
+async function openPedInSearchPedPage(name) {
+  await goToPage('searchPed')
   document.querySelector('.searchPedPage .pedInp').value = name
-  document.querySelector('.searchPedPage .pedBtn').click()
+  await renderPedSearch()
 }
 
-function openCarInSearchCarPage(licensePlate) {
-  goToPage('searchCar')
+async function openCarInSearchCarPage(licensePlate) {
+  await goToPage('searchCar')
   document.querySelector('.searchCarPage .carInp').value = licensePlate
-  document.querySelector('.searchCarPage .carBtn').click()
+  await renderCarSearch()
 }
 
 async function renderCitationArrestOptions(type, search = null) {
@@ -1650,7 +1776,7 @@ async function updateIncidentReportOptions(
                             const id = `courtCaseLink_${Math.random()
                               .toString(36)
                               .substring(2, 7)}`
-                            const link = `<span id="${id}" class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</span>`
+                            const link = `<span id="${id}" class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${courtCase}')" oncontextmenu="openInNewWindow('courtByCaseNumber', '${courtCase}');return false;">${courtCase}</span>`
                             this.children[i].children[
                               j
                             ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
@@ -1679,7 +1805,7 @@ async function updateIncidentReportOptions(
                             const id = `pedLink_${Math.random()
                               .toString(36)
                               .substring(2, 7)}`
-                            const link = `<span id="${id}" class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${ped.name}')">${ped.name}</span>`
+                            const link = `<span id="${id}" class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${ped.name}')" oncontextmenu="openInNewWindow('ped', '${ped.name}');return false;">${ped.name}</span>`
                             this.children[i].children[
                               j
                             ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
@@ -1711,7 +1837,7 @@ async function updateIncidentReportOptions(
                             const id = `carLink_${Math.random()
                               .toString(36)
                               .substring(2, 7)}`
-                            const link = `<span id="${id}" class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${car.licensePlate}')">${car.licensePlate}</span>`
+                            const link = `<span id="${id}" class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${car.licensePlate}')" oncontextmenu="openInNewWindow('car', '${car.licensePlate}');return false;">${car.licensePlate}</span>`
                             this.children[i].children[
                               j
                             ].outerHTML = `<span>${plainTextArr[0]}</span>${link}<span>${plainTextArr[1]}</span>`
@@ -1809,34 +1935,25 @@ function convertCleanTextToRenderedText(text) {
       divArr[0] = `<br>`
     }
     for (const j in divArr) {
+      const slicedValue = divArr[j].slice(2).slice(0, -1)
       if (/[<][$][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
         divArr[
           j
-        ] = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${divArr[
-          j
-        ]
-          .slice(2)
-          .slice(0, -1)}')">${divArr[j].slice(2).slice(0, -1)}</span>`
+        ] = `<span class="link" data-type="courtCase" contenteditable="false" onclick="goToCourtCaseFromValue('${slicedValue}')" oncontextmenu="openInNewWindow('courtByCaseNumber', '${slicedValue}');return false;">${slicedValue}</span>`
       } else if (/[<][@][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
         divArr[
           j
-        ] = `<span class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${divArr[
-          j
-        ]
-          .slice(2)
-          .slice(0, -1)
-          .replace(/[_]/g, ' ')}')">${divArr[j]
-          .slice(2)
-          .slice(0, -1)
-          .replace(/[_]/g, ' ')}</span>`
+        ] = `<span class="link" data-type="ped" contenteditable="false" onclick="openPedInSearchPedPage('${slicedValue.replace(
+          /[_]/g,
+          ' '
+        )}')"oncontextmenu="openInNewWindow('ped', '${slicedValue.replace(
+          /[_]/g,
+          ' '
+        )}');return false;">${slicedValue.replace(/[_]/g, ' ')}</span>`
       } else if (/[<][#][a-zA-Z0-9_]+[>]/.test(divArr[j])) {
         divArr[
           j
-        ] = `<span class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${divArr[
-          j
-        ]
-          .slice(2)
-          .slice(0, -1)}')">${divArr[j].slice(2).slice(0, -1)}</span>`
+        ] = `<span class="link" data-type="car" contenteditable="false" onclick="openCarInSearchCarPage('${slicedValue}')" oncontextmenu="openInNewWindow('car', '${slicedValue}');return false;">${slicedValue}</span>`
       } else {
         divArr[j] = `<span>${divArr[j]}</span>`
       }
@@ -2339,5 +2456,30 @@ async function updateCalloutPage() {
     if (lastPage == 'shift') {
       renderShiftPage()
     }
+  }
+}
+
+async function openInNewWindow(type, name) {
+  const config = await getConfig()
+  const url = `/?window=true&type=${type}&name=${name}`
+  const size = [config.newWindowWidth, config.newWindowHeight]
+  if (config.newWindowSamePage) {
+    const offset = [
+      window.innerWidth / 2 - size[0] / 2,
+      window.innerHeight / 2 - size[1] / 2,
+    ]
+    document
+      .querySelector('.overlay .windows')
+      .appendChild(elements.newWindow(url, size, offset))
+  } else {
+    const offset = [
+      window.outerWidth / 2 - size[0] / 2,
+      window.outerHeight / 2 - size[1] / 2,
+    ]
+    window.open(
+      url,
+      '',
+      `width=${size[0]},height=${size[1]},left=${offset[0]},top=${offset[1]}`
+    )
   }
 }
