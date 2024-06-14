@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.4.2'
+const version = '1.4.3'
 
 // clear data on start up
 const dataDefaults = new Map([
