@@ -38,17 +38,22 @@
     <Reference Include="CalloutInterfaceAPI">
       <HintPath>..\..\References\CalloutInterfaceAPI.dll</HintPath>
     </Reference>
+    <Reference Include="CommonDataFramework, Version=1.0.0.2, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\CommonDataFramework.dll</HintPath>
+    </Reference>
     <Reference Include="IPT.Common">
       <HintPath>..\..\References\IPT.Common.dll</HintPath>
     </Reference>
     <Reference Include="LSPD First Response">
       <HintPath>..\..\References\LSPD First Response.dll</HintPath>
     </Reference>
+    <Reference Include="PolicingRedefined, Version=1.0.0.5, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\PolicingRedefined.dll</HintPath>
+    </Reference>
     <Reference Include="RagePluginHook">
       <HintPath>..\..\References\RagePluginHook.dll</HintPath>
-    </Reference>
-    <Reference Include="StopThePed">
-      <HintPath>..\..\References\StopThePed.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,10 +64,16 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GiveCitationsListener.cs" />
+    <Compile Include="CalloutEvents.cs" />
+    <Compile Include="DataToClient.cs" />
     <Compile Include="DependencyCheck.cs" />
     <Compile Include="Functions.cs" />
+    <Compile Include="LSPDFREvents.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="PREvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorldDataHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,4 @@
-﻿using Rage;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -17,7 +16,7 @@ namespace ExternalPoliceComputer {
 
                 NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
 
-                Main.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");
+                DataToClient.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");
             }
         }
 
@@ -46,7 +45,6 @@ namespace ExternalPoliceComputer {
 
             File.WriteAllText($"{Main.DataPath}/pedsCautions.data", string.Join(",", pedsCautionsDataList));
         }
-
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToCar(string licensePlate, string message) {
