@@ -4,7 +4,6 @@ const url = require('url')
 const os = require('os')
 const version = '1.4.3'
 
-
 // clear data on start up
 const dataDefaults = new Map([
   ['worldPeds.data', ''],
