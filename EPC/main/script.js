@@ -305,8 +305,12 @@ const query = new URLSearchParams(window.location.search)
       goToPage(query.get('name'))
       break
     case 'ped':
-      document.body.style.pointerEvents = 'none'
-      openPedInSearchPedPage(query.get('name'))
+      await openPedInSearchPedPage(query.get('name'))
+      document
+        .querySelectorAll('.informationLabelWithOnClick')
+        .forEach((el) => {
+          el.style.pointerEvents = 'none'
+        })
       document
         .querySelector('.content .searchPedPage .inpContainer')
         .classList.add('hidden')
@@ -321,8 +325,12 @@ const query = new URLSearchParams(window.location.search)
       ).style.margin = '10px'
       break
     case 'car':
-      document.body.style.pointerEvents = 'none'
-      openCarInSearchCarPage(query.get('name'))
+      await openCarInSearchCarPage(query.get('name'))
+      document
+        .querySelectorAll('.informationLabelWithOnClick ')
+        .forEach((el) => {
+          el.style.pointerEvents = 'none'
+        })
       document
         .querySelector('.content .searchCarPage .inpContainer')
         .classList.add('hidden')
@@ -337,11 +345,19 @@ const query = new URLSearchParams(window.location.search)
       ).style.margin = '10px'
       break
     case 'courtByCaseNumber':
-      document.body.style.pointerEvents = 'none'
-      await goToCourtCaseFromValue(query.get('name'))
+    case 'courtByDefendantName':
+      query.get('type') == 'courtByDefendantName'
+        ? await findPedInCourt(query.get('name'))
+        : await goToCourtCaseFromValue(query.get('name'))
+      document
+        .querySelectorAll('.informationLabelWithOnClick')
+        .forEach((el) => {
+          el.style.pointerEvents = 'none'
+        })
       document
         .querySelector('.content .courtPage .inpContainer')
         .classList.add('hidden')
+      document.querySelector('.content .courtPage .list').style.height = '100%'
       document.querySelector(
         '.content .courtPage .list .informationLabelContainer'
       ).style.height = 'calc(100% - 20px)'
@@ -351,6 +367,9 @@ const query = new URLSearchParams(window.location.search)
       document.querySelector(
         '.content .courtPage .list .informationLabelContainer'
       ).style.margin = '10px'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.overflow = 'auto'
       document.querySelector('.content .courtPage .list').style.overflow =
         'hidden'
       document
@@ -654,13 +673,13 @@ async function renderCarSearch() {
 async function openPedInSearchPedPage(name) {
   await goToPage('searchPed')
   document.querySelector('.searchPedPage .pedInp').value = name
-  document.querySelector('.searchPedPage .pedBtn').click()
+  await renderPedSearch()
 }
 
 async function openCarInSearchCarPage(licensePlate) {
   await goToPage('searchCar')
   document.querySelector('.searchCarPage .carInp').value = licensePlate
-  document.querySelector('.searchCarPage .carBtn').click()
+  await renderCarSearch()
 }
 
 async function renderCitationArrestOptions(type, search = null) {
