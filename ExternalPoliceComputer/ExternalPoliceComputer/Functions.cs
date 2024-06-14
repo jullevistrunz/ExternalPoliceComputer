@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Rage;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace ExternalPoliceComputer {
 
                 NameValueCollection calloutData = HttpUtility.ParseQueryString(File.ReadAllText($"{Main.DataPath}/callout.data"));
 
-                DataToClient.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");
+                Main.UpdateCalloutData("additionalMessage", calloutData["additionalMessage"] + message + "<br>");
             }
         }
 
@@ -28,7 +29,7 @@ namespace ExternalPoliceComputer {
             message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
 
             bool pedHasCautions = false;
-            
+
             for (int i = 0; i < pedsCautionsDataList.Count; i++) {
                 if (pedsCautionsDataList[i].StartsWith(name)) {
                     pedHasCautions = true;
@@ -45,6 +46,7 @@ namespace ExternalPoliceComputer {
 
             File.WriteAllText($"{Main.DataPath}/pedsCautions.data", string.Join(",", pedsCautionsDataList));
         }
+
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToCar(string licensePlate, string message) {
@@ -76,7 +78,7 @@ namespace ExternalPoliceComputer {
         public static void RemoveCautionFromPed(string name, string message) {
             string pedsCautionsData = File.ReadAllText($"{Main.DataPath}/pedsCautions.data");
             List<string> pedsCautionsDataList = !string.IsNullOrEmpty(pedsCautionsData) ? pedsCautionsData.Split(',').ToList() : new List<string>();
-            
+
             message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
 
             for (int i = 0; i < pedsCautionsDataList.Count; i++) {

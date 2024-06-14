@@ -19,9 +19,13 @@
   "disableExternalCautions": false,
   "newWindowWidth": 600,
   "newWindowHeight": 400,
-  "newWindowSamePage": true.
+  "newWindowSamePage": true,
   "printCitationsOnSubmit": true,
   "showWeaponPermit": true,
   "showFishingPermit": true,
-  "showHuntingPermit": true
+  "showHuntingPermit": true,
+  "useStopThePed": true,
+  "useLSPDFROwner": false,
+  "probationChance": 0.25,
+  "paroleChance": 0.3
 }

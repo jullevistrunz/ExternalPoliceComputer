@@ -44,9 +44,7 @@
       "none": "None",
       "yes": "Yes",
       "no": "No",
-      "unknown": "Unknown",
-      "ccwPermit": "CCW",
-      "fflPermit": "FFL"
+      "unknown": "Unknown"
     },
     "alphabetPage": {
       "lawEnforcement": {
@@ -121,7 +119,6 @@
       "resultContainer": {
         "dateOfBirth": "Date Of Birth",
         "gender": "Sex",
-        "address": "Address",
         "licenseStatus": "License Status",
         "for": "For",
         "warrant": "Outstanding Warrant",
@@ -131,10 +128,7 @@
         "cautions": {
           "gangAffiliation": "Gang Affiliation"
         },
-        "pedNotFound": "Ped Not Found",
-        "weaponPermit": "Weapon Permit",
-        "fishingPermit": "Fishing Permit",
-        "huntingPermit": "Hunting Permit"
+        "pedNotFound": "Ped Not Found"
       }
     },
     "searchCarPage": {

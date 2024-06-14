@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.5.0'
+const version = '1.4.3'
 
 // clear data on start up
 const dataDefaults = new Map([
@@ -16,7 +16,6 @@ const dataDefaults = new Map([
   ['cars.json', '[]'],
   ['court.json', '[]'],
   ['shift.json', '{"currentShift":null,"shifts":[]}'],
-  ['giveCitations.data', ''],
 ])
 let fallbackToDefaultLanguage = false
 generateDirectory()
@@ -512,10 +511,6 @@ const server = http.createServer(function (req, res) {
         )
         res.writeHead(200)
         res.end()
-      } else if (dataPath == 'giveCitations') {
-        fs.writeFileSync('data/giveCitations.data', body)
-        res.writeHead(200)
-        res.end()
       } else {
         res.writeHead(404)
         res.end()
@@ -580,17 +575,7 @@ function generatePeds() {
     const allCharges = getAllArrestOptions()
     const allCitations = getAllCitationOptions()
     const citations = getRandomCitations(allCitations)
-    const arrests = getRandomArrests(
-      allCharges,
-      worldPed.isWanted.toLowerCase() == 'true'
-    )
-    if (
-      (worldPed.isOnProbation.toLowerCase() == 'true' ||
-        worldPed.isOnParole.toLowerCase() == 'true') &&
-      arrests.length < 1
-    ) {
-      arrests.push(getCleanRandomArrest(allCharges))
-    }
+    const arrests = getRandomArrests(allCharges, worldPed.isWanted == 'True')
     const licenseOptions = JSON.parse(fs.readFileSync('licenseOptions.json'))
     const licenseData =
       worldPed.licenseStatus == 'Suspended' ||
@@ -603,14 +588,20 @@ function generatePeds() {
         : arrests.push(licenseData[0])
     }
     const probation =
-      worldPed.isOnProbation.toLowerCase() == 'true' ? 'Yes' : 'No'
-    const parole = worldPed.isOnParole.toLowerCase() == 'true' ? 'Yes' : 'No'
+      !arrests.length ||
+      Math.floor(Math.random() * (1 / config.probationChance)) != 0
+        ? 'No'
+        : 'Yes'
+    const parole =
+      probation == 'Yes' ||
+      !arrests.length ||
+      Math.floor(Math.random() * (1 / config.paroleChance)) != 0
+        ? 'No'
+        : 'Yes'
     const ped = {
       ...worldPed,
       warrantText:
-        worldPed.isWanted.toLowerCase() == 'true'
-          ? getCleanRandomArrest(allCharges)
-          : '',
+        worldPed.isWanted == 'True' ? getCleanRandomArrest(allCharges) : '',
       arrests: arrests,
       citations: citations,
       probation: probation,
@@ -655,9 +646,51 @@ function generateCars() {
     if (carPlateArr.includes(worldCar.licensePlate) || !getRandomPed()) {
       continue
     }
+    //? used to be a feature; removed because of StopThePed implementation
+    const plateStatus = 'Valid'
+    const registration =
+      worldCar.isPolice == 'False'
+        ? Math.floor(Math.random() * 5) == 0
+          ? Math.floor(Math.random() * 5) == 0
+            ? 'None'
+            : 'Expired'
+          : 'Valid'
+        : 'Valid'
+    const insurance =
+      worldCar.isPolice == 'False'
+        ? Math.floor(Math.random() * 5) == 0
+          ? Math.floor(Math.random() * 3) == 0
+            ? 'None'
+            : 'Expired'
+          : 'Valid'
+        : 'Valid'
     const car = {
-      ...worldCar,
+      licensePlate: worldCar.licensePlate,
+      model: worldCar.model,
+      isStolen: worldCar.isStolen,
+      isPolice: worldCar.isPolice,
+      driver: worldCar.driver,
+      owner: !config.useLSPDFROwner
+        ? worldCar.isPolice == 'True'
+          ? worldCar.model.toLowerCase().startsWith('police')
+            ? 'Los Santos Police Department'
+            : 'State Of San Andreas'
+          : Math.floor(Math.random() * 10) != 0 && worldCar.driver
+          ? worldCar.driver
+          : getRandomPed().name
+        : worldCar.owner,
+
+      registration:
+        worldCar.registration && config.useStopThePed
+          ? worldCar.registration
+          : registration,
+      insurance:
+        worldCar.insurance && config.useStopThePed
+          ? worldCar.insurance
+          : insurance,
       stolen: worldCar.isStolen == 'True' ? 'Yes' : 'No',
+      plateStatus: plateStatus,
+      color: worldCar.color,
       cautions: [],
     }
     carData.push(car)
