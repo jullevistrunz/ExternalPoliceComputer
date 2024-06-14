@@ -1,8 +1,4 @@
 {
-  "title": "ExternalPoliceComputer",
-  "searchPedTitle": "Ped Search: ",
-  "searchCarTitle": "Vehicle Search: ",
-  "courtCaseTitle": "Court Case: ",
   "header": {
     "map": "Map",
     "alphabet": "Phonetic Alphabet",
