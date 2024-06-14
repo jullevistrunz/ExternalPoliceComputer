@@ -360,12 +360,13 @@ body input {
 .shiftPage .incidentReport .result #incidentDescription {
   position: relative;
   font-family: monospace;
-  min-height: calc(100% - 172px);
+  height: calc(100% - 172px);
+  min-height: 250px;
   width: calc(100% - 10px - 4px - 10px);
   font-size: 16px;
   font-weight: 400;
   padding: 5px;
-  margin: 5px;
+  margin: 5px 5px 0 5px;
   border: 2px solid var(--second-accent-color);
   background-color: var(--background-color);
   color: var(--main-color);
