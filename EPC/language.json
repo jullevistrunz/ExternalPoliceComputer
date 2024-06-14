@@ -40,7 +40,9 @@
       "none": "None",
       "yes": "Yes",
       "no": "No",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "ccwPermit": "CCW",
+      "fflPermit": "FFL"
     },
     "alphabetPage": {
       "lawEnforcement": {
@@ -124,7 +126,11 @@
         "cautions": {
           "gangAffiliation": "Gang Affiliation"
         },
-        "pedNotFound": "Ped Not Found"
+        "pedNotFound": "Ped Not Found",
+        "address": "Address",
+        "weaponPermit": "Weapon Permit",
+        "fishingPermit": "Fishing Permit",
+        "huntingPermit": "Hunting Permit"
       }
     },
     "searchCarPage": {
