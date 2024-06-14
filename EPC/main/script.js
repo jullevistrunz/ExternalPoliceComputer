@@ -122,7 +122,11 @@ setInterval(() => {
   // currentID handler
   const config = await getConfig()
   setInterval(() => {
-    if (document.visibilityState == 'visible' && config.showCurrentID) {
+    if (
+      document.visibilityState == 'visible' &&
+      config.showCurrentID &&
+      !query.get('window')
+    ) {
       displayCurrentID(
         config.autoShowCurrentID,
         document.querySelector('.currentID').dataset.index
@@ -133,7 +137,7 @@ setInterval(() => {
   }, 5000)
 
   // calloutPage handler
-  if (!config.showCalloutPage) {
+  if (!config.showCalloutPage || query.get('window')) {
     document.querySelector('.header .callout').classList.add('hidden')
   } else if (config.autoShowCalloutPage) {
     updateCalloutPage()
@@ -244,6 +248,8 @@ setInterval(() => {
         `.overlay .currentID .properties .${property}`
       ).dataset.before = language.overlay.currentID.properties[property]
     }
+
+    document.title = language.title
   }
 })()
 
@@ -285,6 +291,74 @@ let calloutPageInterval
         document.body.appendChild(el)
       }
     }
+  }
+})()
+
+// window manager
+const query = new URLSearchParams(window.location.search)
+;(async function () {
+  if (!query.get('window')) return
+  document.querySelector(':root').style.setProperty('--header-height', '0px')
+  document.querySelector('.overlay').classList.add('hidden')
+  switch (query.get('type')) {
+    case 'page':
+      goToPage(query.get('name'))
+      break
+    case 'ped':
+      document.body.style.pointerEvents = 'none'
+      openPedInSearchPedPage(query.get('name'))
+      document
+        .querySelector('.content .searchPedPage .inpContainer')
+        .classList.add('hidden')
+      document.querySelector(
+        '.content .searchPedPage .resultContainer'
+      ).style.height = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchPedPage .resultContainer'
+      ).style.width = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchPedPage .resultContainer'
+      ).style.margin = '10px'
+      break
+    case 'car':
+      document.body.style.pointerEvents = 'none'
+      openCarInSearchCarPage(query.get('name'))
+      document
+        .querySelector('.content .searchCarPage .inpContainer')
+        .classList.add('hidden')
+      document.querySelector(
+        '.content .searchCarPage .resultContainer'
+      ).style.height = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchCarPage .resultContainer'
+      ).style.width = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .searchCarPage .resultContainer'
+      ).style.margin = '10px'
+      break
+    case 'courtByCaseNumber':
+      document.body.style.pointerEvents = 'none'
+      await goToCourtCaseFromValue(query.get('name'))
+      document
+        .querySelector('.content .courtPage .inpContainer')
+        .classList.add('hidden')
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.height = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.width = 'calc(100% - 20px)'
+      document.querySelector(
+        '.content .courtPage .list .informationLabelContainer'
+      ).style.margin = '10px'
+      document.querySelector('.content .courtPage .list').style.overflow =
+        'hidden'
+      document
+        .querySelectorAll(
+          '.content .courtPage .list .informationLabelContainer details'
+        )
+        .forEach((el) => el.setAttribute('open', ''))
+      break
   }
 })()
 
@@ -577,14 +651,14 @@ async function renderCarSearch() {
   )
 }
 
-function openPedInSearchPedPage(name) {
-  goToPage('searchPed')
+async function openPedInSearchPedPage(name) {
+  await goToPage('searchPed')
   document.querySelector('.searchPedPage .pedInp').value = name
   document.querySelector('.searchPedPage .pedBtn').click()
 }
 
-function openCarInSearchCarPage(licensePlate) {
-  goToPage('searchCar')
+async function openCarInSearchCarPage(licensePlate) {
+  await goToPage('searchCar')
   document.querySelector('.searchCarPage .carInp').value = licensePlate
   document.querySelector('.searchCarPage .carBtn').click()
 }
@@ -2247,4 +2321,19 @@ async function updateCalloutPage() {
       renderShiftPage()
     }
   }
+}
+
+async function openInNewWindow(type, name) {
+  const config = await getConfig()
+  const url = `/?window=true&type=${type}&name=${name}`
+  const size = [config.newWindowWidth, config.newWindowHeight]
+  const offset = [
+    window.outerWidth / 2 - size[0] / 2,
+    window.outerHeight / 2 - size[1] / 2,
+  ]
+  window.open(
+    url,
+    '',
+    `width=${size[0]},height=${size[1]},left=${offset[0]},top=${offset[1]}`
+  )
 }

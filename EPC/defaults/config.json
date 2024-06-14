@@ -20,5 +20,7 @@
   "updateCalloutPageInterval": 2000,
   "clearCalloutPageTime": null,
   "automaticIncidentReports": true,
-  "disableExternalCautions": false
+  "disableExternalCautions": false,
+  "newWindowWidth": 600,
+  "newWindowHeight": 400
 }
