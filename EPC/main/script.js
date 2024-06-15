@@ -2370,19 +2370,32 @@ async function openInNewWindow(type, name) {
   const config = await getConfig()
   const url = `/?window=true&type=${type}&name=${name}`
   const size = [config.newWindowWidth, config.newWindowHeight]
-  if (config.newWindowSamePage) {
-    const offset = [
-      window.innerWidth / 2 - size[0] / 2,
-      window.innerHeight / 2 - size[1] / 2,
+  const windowDimensions = config.newWindowSamePage
+    ? [window.innerWidth, window.innerHeight]
+    : [window.outerWidth, window.outerHeight]
+  let offset
+  if (config.newWindowOffset == 'center') {
+    offset = [
+      windowDimensions[0] / 2 - size[0] / 2,
+      windowDimensions[1] / 2 - size[1] / 2,
     ]
+  } else {
+    const top = config.newWindowOffset.split('-')[0] == 'top'
+    const left = config.newWindowOffset.split('-')[1] == 'left'
+    offset = [
+      left
+        ? config.newWindowOffsetMarginX
+        : windowDimensions[0] - size[0] - config.newWindowOffsetMarginX,
+      top
+        ? config.newWindowOffsetMarginY
+        : windowDimensions[1] - size[1] - config.newWindowOffsetMarginY,
+    ]
+  }
+  if (config.newWindowSamePage) {
     document
       .querySelector('.overlay .windows')
       .appendChild(elements.newWindow(url, size, offset))
   } else {
-    const offset = [
-      window.outerWidth / 2 - size[0] / 2,
-      window.outerHeight / 2 - size[1] / 2,
-    ]
     window.open(
       url,
       '',

@@ -23,5 +23,8 @@
   "disableExternalCautions": false,
   "newWindowWidth": 600,
   "newWindowHeight": 400,
-  "newWindowSamePage": true
+  "newWindowSamePage": true,
+  "newWindowOffset": "center",
+  "newWindowOffsetMarginX": 20,
+  "newWindowOffsetMarginY": 20
 }
