@@ -679,9 +679,18 @@ async function renderCarSearch() {
           )}</a>`
         : tryLanguageValue(car.stolen, langValues)
     ),
-    elements.informationLabel(langCar.resultContainer.owner, car.owner, () => {
-      openPedInSearchPedPage(car.owner)
-    }),
+    elements.informationLabel(
+      langCar.resultContainer.owner,
+      car.owner,
+      () => {
+        openPedInSearchPedPage(car.owner)
+      },
+      null,
+      (e) => {
+        e.preventDefault()
+        openInNewWindow('ped', car.owner)
+      }
+    ),
   ]
 
   if (car.cautions.length) {
@@ -1080,7 +1089,11 @@ async function renderCourt() {
         () => {
           openPedInSearchPedPage(courtCase.ped)
         },
-        ['pedName']
+        ['pedName'],
+        (e) => {
+          e.preventDefault()
+          openInNewWindow('ped', courtCase.ped)
+        }
       ),
       elements.informationLabel(
         langCourt.resultContainer.offense,
@@ -1241,14 +1254,14 @@ async function renderShiftPage() {
     const courtCases = []
     for (const courtCase of data.currentShift.courtCases) {
       courtCases.push(
-        `<a class="courtCaseValue" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</a>`
+        `<div class="courtCaseValue" onclick="goToCourtCaseFromValue('${courtCase}')" oncontextmenu="openInNewWindow('courtByCaseNumber', '${courtCase}');return false;">${courtCase}</div>`
       )
     }
     currentShiftEl.appendChild(
       elements.informationLabel(
         langShift.resultContainer.courtCases,
         data.currentShift.courtCases.length
-          ? courtCases.join('<br>')
+          ? courtCases.join('')
           : language.content.values.none
       )
     )
@@ -1321,15 +1334,13 @@ async function renderShiftPage() {
     const courtCases = []
     for (const courtCase of shift.courtCases) {
       courtCases.push(
-        `<a class="courtCaseValue" onclick="goToCourtCaseFromValue('${courtCase}')">${courtCase}</a>`
+        `<div class="courtCaseValue" onclick="goToCourtCaseFromValue('${courtCase}')" oncontextmenu="openInNewWindow('courtByCaseNumber', '${courtCase}');return false;">${courtCase}</div>`
       )
     }
     informationLabels.push(
       elements.informationLabel(
         langShift.resultContainer.courtCases,
-        courtCases.length
-          ? courtCases.join('<br>')
-          : language.content.values.none
+        courtCases.length ? courtCases.join('') : language.content.values.none
       )
     )
 
@@ -2367,6 +2378,7 @@ async function updateCalloutPage() {
 }
 
 async function openInNewWindow(type, name) {
+  if (query.get('window')) return
   const config = await getConfig()
   const url = `/?window=true&type=${type}&name=${name}`
   const size = [config.newWindowWidth, config.newWindowHeight]

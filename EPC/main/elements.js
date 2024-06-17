@@ -20,9 +20,16 @@ const elements = {
    * @param {string} value - The value of the information label.
    * @param {function|null} onClick - The click event handler for the information label. Defaults to null.
    * @param {string[]|null} classList - The list of additional CSS classes for the information label. Defaults to null.
+   * @param {function|null} onContextMenu - The context menu event handler for the information label. Defaults to null.
    * @returns {HTMLDivElement} The created information label element.
    */
-  informationLabel: function (key, value, onClick = null, classList = null) {
+  informationLabel: function (
+    key,
+    value,
+    onClick = null,
+    classList = null,
+    onContextMenu = null
+  ) {
     const element = document.createElement('div')
     element.classList.add('informationLabel')
     const keyEl = document.createElement('div')
@@ -36,6 +43,10 @@ const elements = {
     if (typeof onClick == 'function') {
       element.classList.add('informationLabelWithOnClick')
       element.addEventListener('click', onClick)
+    }
+    if (typeof onContextMenu == 'function') {
+      element.classList.add('informationLabelWithOnClick')
+      element.addEventListener('contextmenu', onContextMenu)
     }
     if (classList) {
       for (const classListItem of classList) {
