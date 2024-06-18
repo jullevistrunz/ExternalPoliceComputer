@@ -442,7 +442,7 @@ async function goToPage(name) {
   })
   document.querySelector(`.content .${name}Page`).classList.remove('hidden')
   document.querySelector(`.header .${name}`).classList.add('selected')
-  localStorage.setItem('lastPage', name)
+  if (!query.get('window')) localStorage.setItem('lastPage', name)
 
   if (!config.showCustomizationLink || name == 'map') {
     document
