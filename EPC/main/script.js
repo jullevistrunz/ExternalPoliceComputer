@@ -328,6 +328,9 @@ let calloutPageInterval
       })
     }
   }
+  if (totalFiles == 0) {
+    document.dispatchEvent(new Event('pluginsLoaded'))
+  }
 })()
 
 // window manager
