@@ -191,8 +191,8 @@ const server = http.createServer(function (req, res) {
     res.write(fs.readFileSync('main/index.html'))
     res.end()
   } else if (path.startsWith('/main')) {
-    try {
-      const fileName = path.substring('/main/'.length)
+    const fileName = path.substring('/main/'.length)
+    if (fs.existsSync(`main/${fileName}`)) {
       if (fileName.endsWith('.css')) {
         res.writeHead(200, { 'Content-Type': 'text/css' })
       } else if (fileName.endsWith('.js')) {
@@ -202,7 +202,7 @@ const server = http.createServer(function (req, res) {
       }
       res.write(fs.readFileSync(`main/${fileName}`))
       res.end()
-    } catch {
+    } else {
       res.writeHead(404)
       res.end()
     }

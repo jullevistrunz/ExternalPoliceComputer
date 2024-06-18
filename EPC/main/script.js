@@ -39,7 +39,10 @@ if (!mapScroll) {
   mapScroll = { x: 0, y: 0 }
 }
 
-goToPage(lastPage)
+document.addEventListener('pluginsLoaded', function () {
+  goToPage(lastPage)
+})
+
 document.querySelectorAll('.header button').forEach((btn) => {
   btn.addEventListener('click', function () {
     this.classList.remove('notification')
@@ -297,22 +300,32 @@ let calloutPageInterval
   // load active plugins
 ;(async function () {
   const plugins = await (await fetch('/data/activePlugins')).json()
+  let loadedFiles = 0
+  let totalFiles = 0
   for (const plugin of plugins) {
     const files = await (
       await fetch(`data/filesInPluginDir?name=${plugin}`)
     ).json()
 
     for (const file of files) {
+      totalFiles++
+      const el = document.createElement(
+        file.endsWith('.css') ? 'link' : 'script'
+      )
       if (file.endsWith('.css')) {
-        const el = document.createElement('link')
         el.rel = 'stylesheet'
         el.href = `/plugins/${plugin}/${file}`
         document.head.appendChild(el)
       } else if (file.endsWith('.js')) {
-        const el = document.createElement('script')
         el.src = `/plugins/${plugin}/${file}`
         document.body.appendChild(el)
       }
+      el.addEventListener('load', function () {
+        loadedFiles++
+        if (loadedFiles == totalFiles) {
+          document.dispatchEvent(new Event('pluginsLoaded'))
+        }
+      })
     }
   }
 })()
@@ -1961,6 +1974,12 @@ async function moveCursorBehindCurrentIncidentReportLink() {
   }
 }
 
+/**
+ * Removes all event listeners from the given element.
+ *
+ * @param {HTMLElement} element - The element from which to remove event listeners.
+ * @return {HTMLElement} - The new element with all event listeners removed.
+ */
 function removeAllEventListeners(element) {
   const clonedElement = element.cloneNode(true)
   element.replaceWith(clonedElement)
@@ -2187,14 +2206,15 @@ function hideCurrentID() {
   document.querySelector('.showCurrentID-container').classList.remove('hidden')
 }
 
-//? mainly for custom.js
-function reassignEventListener(
-  selector = '*',
-  eventType = 'click',
-  cb = function () {
-    console.warn('Empty Callback')
-  }
-) {
+/**
+ * Reassigns an event listener to a DOM element.
+ *
+ * @param {string} selector - The CSS selector of the element.
+ * @param {string} eventType - The type of event to listen for.
+ * @param {function} cb - The callback function to execute when the new event is triggered.
+ * @deprecated use API method instead
+ */
+function reassignEventListener(selector, eventType, cb) {
   const el = document.querySelector(selector)
   el.parentNode.replaceChild(el.cloneNode(true), el)
   document.querySelector(selector).addEventListener(eventType, cb)
