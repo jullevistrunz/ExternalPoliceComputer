@@ -76,41 +76,7 @@ You can edit all words used by EPC to your liking. `content.courtPage.resultCont
 
 Plugins can be added by creating a new folder in `EPC/plugins`. The folder's name may not include spaces. The plugin will show up on the customization page as soon as the folder is filled with files. All css and js files in that folder will be loaded once the plugin is enabled. All other files can be accessed using `/plugins/pluginName/fileName`. Plugins and their files will be loaded in alphabetical order. Check out the [Discord](#discord-server) for plugins made by the community.
 
-### Examples
-
-Creating a plugin that will log to the console twice using different js files and change the styling using two different css files (this is just to demonstrate that you can use multiple files in one plugin).
-
-- File: [`testPlugin/test1.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test1.js)
-
-```js
-console.log('test1')
-```
-
-- File: [`testPlugin/test2.js`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test2.js)
-
-```js
-console.log('test2')
-```
-
-- File: [`testPlugin/test1.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test1.css)
-
-```css
-/* Changing the main color to lavender */
-:root {
-  --main-color: lavender;
-}
-```
-
-- File: [`testPlugin/test2.css`](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/9ea98cd5259614316cf8ab7ab07d20ae5bf7da5d/Custom%20Files/plugins/testPlugin/test2.css)
-
-```css
-/* Making all informationLabel titles underlined */
-.informationLabel .key {
-  text-decoration: underline;
-}
-```
-
----
+### Example
 
 Creating a plugin that will add a background image
 
@@ -142,7 +108,7 @@ Creating a plugin that will add a background image
 
 ## Steam overlay
 
-- In steam go to Steam <a>&rarr;</a> Settings <a>&rarr;</a> In Game
+- In Steam go to Steam <a>&rarr;</a> Settings <a>&rarr;</a> In Game
 - Make sure _Enable the Steam Overlay while in-game_ is enabled
 - Set _Overlay shortcut key(s)_ to whatever key you want to use to open ExternalPoliceComputer
 - Set _Web browser home page_ to `http://127.0.0.1`
@@ -204,7 +170,7 @@ You can remove multiple messages to the same ped or vehicle, by calling the meth
 
 ## Discord Server
 
-If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download custom files made by me (or others), you can join https://discord.gg/RW9uy3spVb
+If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download plugins made by me (or others), you can join https://discord.gg/RW9uy3spVb
 
 ## License
 
