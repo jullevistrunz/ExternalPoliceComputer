@@ -58,7 +58,7 @@ const API = {
    * @param {Function} oldFunction - The original function to be extended.
    * @param {Function} [cbBefore=function(){}] - The callback function to be executed before the original function.
    * @param {Function} [cbAfter=function(){}] - The callback function to be executed after the original function.
-   * @return {Function} - The extended function.
+   * @return {Function} The extended function.
    */
   extendFunction: function (
     oldFunction,
