@@ -308,7 +308,7 @@ let calloutPageInterval
     ).json()
 
     for (const file of files) {
-      totalFiles++
+      if (file.endsWith('.css') || file.endsWith('.js')) totalFiles++
       const el = document.createElement(
         file.endsWith('.css') ? 'link' : 'script'
       )
