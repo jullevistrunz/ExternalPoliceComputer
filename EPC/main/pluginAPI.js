@@ -65,10 +65,10 @@ const API = {
     cbBefore = function () {},
     cbAfter = function () {}
   ) {
-    return async function () {
-      cbBefore()
-      await oldFunction()
-      cbAfter()
+    return async function (...args) {
+      cbBefore(...args)
+      await oldFunction(...args)
+      cbAfter(...args)
     }
   },
 }
