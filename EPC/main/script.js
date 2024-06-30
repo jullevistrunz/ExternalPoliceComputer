@@ -40,7 +40,7 @@ if (!mapScroll) {
 }
 
 document.addEventListener('pluginsLoaded', function () {
-  goToPage(lastPage)
+  if (!query.get('window')) goToPage(lastPage)
 })
 
 document.querySelectorAll('.header button').forEach((btn) => {
