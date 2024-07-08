@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const url = require('url')
 const os = require('os')
-const version = '1.4.2'
+const version = '1.4.3'
 
 // clear data on start up
 const dataDefaults = new Map([
@@ -191,8 +191,8 @@ const server = http.createServer(function (req, res) {
     res.write(fs.readFileSync('main/index.html'))
     res.end()
   } else if (path.startsWith('/main')) {
-    try {
-      const fileName = path.substring('/main/'.length)
+    const fileName = path.substring('/main/'.length)
+    if (fs.existsSync(`main/${fileName}`)) {
       if (fileName.endsWith('.css')) {
         res.writeHead(200, { 'Content-Type': 'text/css' })
       } else if (fileName.endsWith('.js')) {
@@ -202,7 +202,7 @@ const server = http.createServer(function (req, res) {
       }
       res.write(fs.readFileSync(`main/${fileName}`))
       res.end()
-    } catch {
+    } else {
       res.writeHead(404)
       res.end()
     }

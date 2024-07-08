@@ -29,7 +29,7 @@ namespace ExternalPoliceComputer {
             message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
 
             bool pedHasCautions = false;
-            
+
             for (int i = 0; i < pedsCautionsDataList.Count; i++) {
                 if (pedsCautionsDataList[i].StartsWith(name)) {
                     pedHasCautions = true;
@@ -78,7 +78,7 @@ namespace ExternalPoliceComputer {
         public static void RemoveCautionFromPed(string name, string message) {
             string pedsCautionsData = File.ReadAllText($"{Main.DataPath}/pedsCautions.data");
             List<string> pedsCautionsDataList = !string.IsNullOrEmpty(pedsCautionsData) ? pedsCautionsData.Split(',').ToList() : new List<string>();
-            
+
             message = Main.MakeStringWorkWithMyStupidQueryStrings(message);
 
             for (int i = 0; i < pedsCautionsDataList.Count; i++) {

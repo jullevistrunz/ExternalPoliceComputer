@@ -60,7 +60,7 @@ namespace ExternalPoliceComputer {
                     AddEventsWithSTP();
                 } catch {
                     UseSTP = false;
-                    
+
                     LSPD_First_Response.Mod.API.Events.OnPedPresentedId += Events_OnPedPresentedId;
                     LSPD_First_Response.Mod.API.Events.OnPedArrested += Events_OnPedArrested;
                     LSPD_First_Response.Mod.API.Events.OnPedFrisked += Events_OnPedFrisked;
@@ -325,7 +325,7 @@ namespace ExternalPoliceComputer {
                 string addComma = oldFile.Length > 0 ? "," : "";
 
                 File.WriteAllText($"{DataPath}/worldPeds.data", $"{oldFile}{addComma}{data}");
-            } 
+            }
         }
 
         private static void AddWorldCar(Vehicle car) {

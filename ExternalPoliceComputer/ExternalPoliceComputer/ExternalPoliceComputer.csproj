@@ -47,7 +47,8 @@
     <Reference Include="RagePluginHook">
       <HintPath>..\..\References\RagePluginHook.dll</HintPath>
     </Reference>
-    <Reference Include="StopThePed">
+    <Reference Include="StopThePed, Version=4.9.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\References\StopThePed.dll</HintPath>
     </Reference>
     <Reference Include="System" />

@@ -12,7 +12,7 @@
   "probationChance": 0.25,
   "paroleChance": 0.3,
   "showCustomizationLink": true,
-  "replaceStaticWithCustomLanguage": true,
+  "replaceStaticWithCustomLanguage": false,
   "port": 80,
   "defaultMapZoom": 1.5,
   "showCalloutPage": true,
@@ -20,5 +20,11 @@
   "updateCalloutPageInterval": 2000,
   "clearCalloutPageTime": null,
   "automaticIncidentReports": true,
-  "disableExternalCautions": false
+  "disableExternalCautions": false,
+  "newWindowWidth": 600,
+  "newWindowHeight": 400,
+  "newWindowSamePage": true,
+  "newWindowOffset": "center",
+  "newWindowOffsetMarginX": 20,
+  "newWindowOffsetMarginY": 20
 }

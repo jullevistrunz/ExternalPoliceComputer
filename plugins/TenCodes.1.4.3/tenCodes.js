@@ -40,25 +40,7 @@ const tenCodes = new Map([
 ])
 
 // create html base
-const tenCodesHeaderItem = document.createElement('button')
-tenCodesHeaderItem.classList.add('tenCodes')
-tenCodesHeaderItem.innerHTML = 'Ten Codes'
-tenCodesHeaderItem.addEventListener('click', function () {
-  document.querySelectorAll('.content > *').forEach((page) => {
-    page.classList.add('hidden')
-  })
-  document.querySelectorAll('.header button').forEach((page) => {
-    page.classList.remove('selected')
-  })
-  document.querySelector(`.content .tenCodesPage`).classList.remove('hidden')
-  document.querySelector(`.header .tenCodes`).classList.add('selected')
-})
-document.querySelector('.header').appendChild(tenCodesHeaderItem)
-
-const tenCodesPage = document.createElement('div')
-tenCodesPage.classList.add('tenCodesPage')
-tenCodesPage.classList.add('hidden')
-document.querySelector('.content').appendChild(tenCodesPage)
+const tenCodesPage = API.createPage('tenCodes', 'Ten Codes', true)
 
 const container = document.createElement('div')
 container.classList.add('container')
