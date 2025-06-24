@@ -1,0 +1,166 @@
+const isInIframe = window.self !== window.top
+const topWindow = isInIframe ? window.top : window
+const topDoc = isInIframe ? window.top.document : document
+
+if (!isInIframe) {
+  localStorage.removeItem('config')
+  localStorage.removeItem('language')
+}
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
+async function getConfig() {
+  const lsConfig = localStorage.getItem('config')
+  if (lsConfig) {
+    return JSON.parse(lsConfig)
+  }
+  const config = await (await fetch('/config')).json()
+  localStorage.setItem('config', JSON.stringify(config))
+  return config
+}
+
+async function getLanguage() {
+  const lsLanguage = localStorage.getItem('language')
+  if (lsLanguage) {
+    return JSON.parse(lsLanguage)
+  }
+  const language = await (await fetch('/language')).json()
+  localStorage.setItem('language', JSON.stringify(language))
+  return language
+}
+
+function traverseObject(obj, callback, path = []) {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        traverseObject(obj[key], callback, [...path, key])
+      } else {
+        callback(key, obj[key], path)
+      }
+    }
+  }
+}
+
+const keepLoadingOnButton = new Object()
+
+async function showLoadingOnButton(button) {
+  keepLoadingOnButton[button] = true
+  await sleep(50)
+  if (keepLoadingOnButton[button]) button.classList.add('loading')
+}
+
+function hideLoadingOnButton(button) {
+  button.classList.remove('loading')
+  delete keepLoadingOnButton[button]
+}
+
+function showNotification(message, icon = 'info', duration = 4000) {
+  const color =
+    {
+      warning: 'warning',
+      info: 'info',
+      error: 'error',
+      question: 'info',
+      checkMark: 'success',
+      minus: 'error',
+    }[icon] || 'info'
+
+  const wrapperEl = document.createElement('div')
+  wrapperEl.classList.add('notification')
+  wrapperEl.style.backgroundColor = `var(--color-${color}-half)`
+  wrapperEl.style.border = `1px solid var(--color-${color})`
+
+  const iconTitleWrapperEl = document.createElement('div')
+  iconTitleWrapperEl.classList.add('iconTitleWrapper')
+
+  const iconEl = document.createElement('div')
+  iconEl.classList.add('icon')
+  iconEl.innerHTML =
+    topDoc.querySelector(`.iconAccess .notificationIcons .${icon}`)
+      ?.innerHTML ??
+    topDoc.querySelector(`.iconAccess .notificationIcons .info`).innerHTML
+
+  const titleEl = document.createElement('div')
+  titleEl.classList.add('title')
+  titleEl.innerHTML = message
+
+  const timerBarEl = document.createElement('div')
+  timerBarEl.classList.add('timerBar')
+  timerBarEl.style.transition = `width ${duration}ms linear`
+  timerBarEl.style.backgroundColor = `var(--color-${color})`
+
+  iconTitleWrapperEl.appendChild(iconEl)
+  iconTitleWrapperEl.appendChild(titleEl)
+  wrapperEl.appendChild(iconTitleWrapperEl)
+  wrapperEl.appendChild(timerBarEl)
+  topDoc.querySelector('.overlay .notifications').appendChild(wrapperEl)
+
+  if (duration >= 0) removeNotification()
+  else {
+    duration = 0
+    const closeEl = document.createElement('div')
+    closeEl.classList.add('close')
+    closeEl.innerHTML = topDoc.querySelector(
+      '.iconAccess .closeWindow'
+    ).innerHTML
+    closeEl.addEventListener('click', function () {
+      removeNotification()
+    })
+    closeEl.addEventListener('mouseover', function () {
+      closeEl.style.backgroundColor = `var(--color-${color})`
+    })
+    closeEl.addEventListener('mouseout', function () {
+      closeEl.style.removeProperty('background-color')
+    })
+    wrapperEl.appendChild(closeEl)
+  }
+
+  function removeNotification() {
+    setTimeout(() => {
+      timerBarEl.style.width = '0%'
+    }, 10)
+
+    setTimeout(() => {
+      wrapperEl.style.animation =
+        'notification-fly-out var(--transition-time-long) ease-in-out forwards'
+    }, duration)
+
+    const CSSRootTransitionTimeLong = parseInt(
+      getComputedStyle(document.querySelector(':root'))
+        .getPropertyValue('--transition-time-long')
+        .trim()
+        .slice(0, -'ms'.length)
+    )
+    setTimeout(() => {
+      wrapperEl.remove()
+    }, CSSRootTransitionTimeLong + duration + 500)
+  }
+}
+
+async function getLanguageValue(value) {
+  const language = await getLanguage()
+  if (value === '' || value === null || value === undefined)
+    return language.values.empty
+  return language.values[value] || value
+}
+
+async function openInPedSearch(pedName) {
+  await topWindow.openWindow('pedSearch')
+  const iframe = topDoc
+    .querySelector('.overlay .windows')
+    .lastChild.querySelector('iframe')
+
+  console.log(iframe)
+
+  iframe.onload = () => {
+    console.log('loaded')
+    iframe.contentWindow.document.querySelector(
+      '.searchInputWrapper #pedSearchInput'
+    ).value = pedName
+    iframe.contentWindow.document
+      .querySelector('.searchInputWrapper button')
+      .click()
+  }
+}

@@ -1,0 +1,280 @@
+:root {
+  --color-background: #1a1a1a;
+  --color-surface: #2a2a2a;
+  --color-surface-dimmed: #2a2a2abf;
+  --color-surface-elevated: #3a3a3a;
+  --color-accent: #7cabcf;
+  --color-accent-dimmed: #7daccfbf;
+  --color-accent-half: #7daccf80;
+  --color-accent-secondary: #cf7cae;
+  --color-accent-secondary-dimmed: #cf7caebf;
+  --color-accent-secondary-half: #cf7cae80;
+
+  --color-text-primary: #f0f0f0;
+  --color-text-primary-dimmed: #f0f0f0bf;
+  --color-text-primary-half: #f0f0f080;
+  --color-text-disabled: #6e6e6e;
+
+  --color-border: #555555;
+
+  --color-success: #4caf50;
+  --color-success-half: #4caf5080;
+  --color-info: #2196f3;
+  --color-info-half: #2196f380;
+  --color-warning: #ffb74d;
+  --color-warning-half: #ffb74d80;
+  --color-error: #f44336;
+  --color-error-half: #f4433680;
+
+  --color-shadow: #00000080;
+
+  --transition-time-short: 100ms;
+  --transition-time-long: 250ms;
+
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  --liquid-ass: blur(18px) saturate(160%);
+}
+
+body {
+  font-family: var(--font-family);
+}
+
+.hidden {
+  visibility: hidden;
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+button {
+  padding: 6px 8px;
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  outline: none;
+  color: var(--color-text-primary);
+  border-radius: 0;
+  transition: var(--transition-time-short) ease;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-family);
+}
+
+button:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+button:not(:disabled):hover {
+  color: var(--color-accent);
+}
+
+button::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border: 0 solid var(--color-accent);
+  border-top: 0 solid transparent;
+  border-radius: 50%;
+  margin-top: -2px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  animation: buttonWrapper-button-loading 1s linear infinite;
+  transition: var(--transition-time-short) ease;
+}
+
+button.loading {
+  cursor: wait;
+}
+
+button.loading::before {
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  border: 2px solid var(--color-accent);
+  border-top: 3px solid transparent;
+}
+
+@keyframes buttonWrapper-button-loading {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+input {
+  box-sizing: border-box;
+  background-color: var(--color-surface-elevated);
+  outline: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: 6px 8px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: var(--font-family);
+  transition: var(--transition-time-short) ease;
+}
+
+input:focus,
+button:focus {
+  border-color: var(--color-accent);
+}
+
+input::placeholder {
+  color: var(--color-text-primary-half);
+}
+
+.inputWrapper {
+  --gap: 10px;
+  container-name: inputWrapper;
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.inputWrapper.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.inputWrapper > div label {
+  width: 100%;
+  color: var(--color-text-primary);
+}
+
+.inputWrapper > div input {
+  width: 100%;
+  border-radius: 3px;
+  margin-top: 2px;
+}
+
+@container inputWrapper (max-width: 600px) {
+  .inputWrapper > div {
+    flex: 1 1 calc(50% - var(--gap) * 0.5);
+  }
+}
+@container inputWrapper (min-width: 601px) and (max-width: 900px) {
+  .inputWrapper > div {
+    flex: 1 1 calc(33.333% - var(--gap) * 0.666);
+  }
+}
+@container inputWrapper (min-width: 901px) and (max-width: 1200px) {
+  .inputWrapper > div {
+    flex: 1 1 calc(25% - var(--gap) * 1);
+  }
+}
+@container inputWrapper (min-width: 1201px) {
+  .inputWrapper > div {
+    flex: 1 1 calc(20% - var(--gap) * 1.25);
+  }
+}
+
+.buttonWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.buttonWrapper button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.buttonWrapper button:first-child {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.buttonWrapper button:last-child {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.inputWrapper + .buttonWrapper {
+  margin-top: 10px;
+}
+
+.searchInputWrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 10px;
+}
+
+.searchInputWrapper * {
+  flex: 1 1 0;
+  border-radius: 0;
+  min-width: 50%;
+}
+
+.searchInputWrapper *:first-child {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.searchInputWrapper *:last-child {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.searchResponseWrapper {
+  margin: 10px;
+}
+
+.searchResponseWrapper .inputWrapper {
+  margin: 0 5px;
+}
+
+.searchResponseWrapper .inputWrapper > div {
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 5px 10px;
+  background-color: var(--color-surface-elevated);
+  transition: var(--transition-time-short) ease;
+  position: relative;
+}
+
+.searchResponseWrapper .inputWrapper > div.clickable {
+  cursor: pointer;
+}
+
+.searchResponseWrapper .inputWrapper > div.clickable:hover {
+  border-color: var(--color-accent);
+}
+
+.searchResponseWrapper .inputWrapper > div label {
+  color: var(--color-text-primary-half);
+  font-weight: 400;
+  pointer-events: none;
+}
+
+.searchResponseWrapper input:disabled {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.searchResponseSectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 10px 0;
+}
+
+.searchResponseSectionTitle:not(:first-child) {
+  padding-top: 10px;
+  border-top: 2px solid var(--color-border);
+}

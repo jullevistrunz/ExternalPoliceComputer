@@ -1,0 +1,14 @@
+body {
+  background-color: var(--color-background);
+  margin: 0;
+}
+
+.searchResponseWrapper .inputWrapper > div img {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  height: 42px;
+  padding: 5px;
+  background-color: var(--color-border);
+}

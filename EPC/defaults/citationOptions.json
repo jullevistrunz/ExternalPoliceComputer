@@ -5,32 +5,38 @@
       {
         "name": "Unlawful Speed 1-15 MPH Over Speed Limit",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Unlawful Speed 16-25 MPH Over Speed Limit",
         "minFine": 367,
-        "maxFine": 367
+        "maxFine": 367,
+        "canRevokeLicense": false
       },
       {
         "name": "Unlawful Speed 26 MPH Or More Over Speed Limit",
         "minFine": 490,
-        "maxFine": 490
+        "maxFine": 490,
+        "canRevokeLicense": true
       },
       {
         "name": "Impeding Traffic",
         "minFine": 150,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Excessive Acceleration",
         "minFine": 150,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Too Fast For Conditions",
         "minFine": 150,
-        "maxFine": 350
+        "maxFine": 350,
+        "canRevokeLicense": true
       }
     ]
   },
@@ -40,27 +46,32 @@
       {
         "name": "Failure To Stop At Stop Sign",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Stop For Traffic Signal",
         "minFine": 400,
-        "maxFine": 500
+        "maxFine": 500,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Stop At R/R Signal / Barrier",
         "minFine": 490,
-        "maxFine": 490
+        "maxFine": 490,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Comply With Lane Direction Sign / Device",
         "minFine": 150,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Wrong Direction On Posted One Way",
         "minFine": 150,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       }
     ]
   },
@@ -70,72 +81,86 @@
       {
         "name": "Improper Lane Change",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Improper Passing",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Improper Turn",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Failure To Signal",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Driving On Shoulder",
         "minFine": 237,
-        "maxFine": 237
+        "maxFine": 237,
+        "canRevokeLicense": true
       },
       {
         "name": "Passing In No Passing Zone",
         "minFine": 237,
-        "maxFine": 300
+        "maxFine": 300,
+        "canRevokeLicense": false
       },
       {
         "name": "Illegal U-Turn",
         "minFine": 234,
-        "maxFine": 234
+        "maxFine": 234,
+        "canRevokeLicense": false
       },
       {
         "name": "Failure to Maintain Lane",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Crossing Over a Center Divider, Median Or Gore",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Following Too Closely",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Driving On Sidewalk / Bicycle Path",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Riding On Exterior Of Vehicle",
         "minFine": 200,
-        "maxFine": 600
+        "maxFine": 600,
+        "canRevokeLicense": false
       },
       {
         "name": "Operating A Telecommunications Device While Driving",
         "minFine": 20,
-        "maxFine": 200
+        "maxFine": 200,
+        "canRevokeLicense": true
       },
       {
         "name": "Stopping On Rail Crossing",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       }
     ]
   },
@@ -145,47 +170,56 @@
       {
         "name": "Failure To Yield To Stopped Emergency Vehicle / Personal",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield To Emergency Vehicle",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield To Pedestrian In Cross Walk",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield To Highway Workers",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield To Public Transit Vehicles",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield At Intersection",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield Entering Highway",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Failure To Yield Leaving Obstructed Lane",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       },
       {
         "name": "Violation Of Right Of Way",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": true
       }
     ]
   },
@@ -195,17 +229,20 @@
       {
         "name": "Failure To Wear DOT Approved Helmet",
         "minFine": 150,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Riding Bicycle Not On Right",
         "minFine": 225,
-        "maxFine": 275
+        "maxFine": 275,
+        "canRevokeLicense": false
       },
       {
         "name": "Operating Bicycle On Highway",
         "minFine": 225,
-        "maxFine": 275
+        "maxFine": 275,
+        "canRevokeLicense": false
       }
     ]
   },
@@ -215,42 +252,50 @@
       {
         "name": "Defective Equipment",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Safety Belt Violation",
         "minFine": 162,
-        "maxFine": 162
+        "maxFine": 162,
+        "canRevokeLicense": false
       },
       {
         "name": "Vehicle Not Roadworthy",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Windshield Damaged In Drivers View",
         "minFine": 50,
-        "maxFine": 120
+        "maxFine": 120,
+        "canRevokeLicense": false
       },
       {
         "name": "Illegal Window Tint",
         "minFine": 25,
-        "maxFine": 197
+        "maxFine": 197,
+        "canRevokeLicense": false
       },
       {
         "name": "Lights Not Illuminated As Required",
         "minFine": 230,
-        "maxFine": 230
+        "maxFine": 230,
+        "canRevokeLicense": false
       },
       {
         "name": "Prohibited Lighting",
         "minFine": 238,
-        "maxFine": 238
+        "maxFine": 238,
+        "canRevokeLicense": false
       },
       {
         "name": "Failure To Secure Load To Vehicle",
         "minFine": 200,
-        "maxFine": 300
+        "maxFine": 300,
+        "canRevokeLicense": false
       }
     ]
   },
@@ -260,42 +305,50 @@
       {
         "name": "Failure To Insure Vehicle",
         "minFine": 100,
-        "maxFine": 200
+        "maxFine": 200,
+        "canRevokeLicense": false
       },
       {
         "name": "Expired Insurance",
         "minFine": 100,
-        "maxFine": 200
+        "maxFine": 200,
+        "canRevokeLicense": false
       },
       {
         "name": "Failure To Register Vehicle",
         "minFine": 280,
-        "maxFine": 280
+        "maxFine": 280,
+        "canRevokeLicense": false
       },
       {
         "name": "Expired Vehicle Registration",
         "minFine": 30,
-        "maxFine": 100
+        "maxFine": 100,
+        "canRevokeLicense": false
       },
       {
         "name": "Failure To Display License Plate",
         "minFine": 197,
-        "maxFine": 197
+        "maxFine": 197,
+        "canRevokeLicense": false
       },
       {
         "name": "License Not Carried",
         "minFine": 100,
-        "maxFine": 150
+        "maxFine": 150,
+        "canRevokeLicense": false
       },
       {
         "name": "Expired Drivers License",
         "minFine": 200,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": true
       },
       {
         "name": "Driving Without License",
         "minFine": 200,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": true
       }
     ]
   },
@@ -305,57 +358,68 @@
       {
         "name": "Open Container Of Alcohol",
         "minFine": 200,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Public Urination",
         "minFine": 250,
-        "maxFine": 500
+        "maxFine": 500,
+        "canRevokeLicense": false
       },
       {
         "name": "Trespassing",
         "minFine": 75,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Disturbing The Peace",
         "minFine": 350,
-        "maxFine": 400
+        "maxFine": 400,
+        "canRevokeLicense": false
       },
       {
         "name": "Littering",
         "minFine": 100,
-        "maxFine": 600
+        "maxFine": 600,
+        "canRevokeLicense": false
       },
       {
         "name": "Jaywalking",
         "minFine": 196,
-        "maxFine": 196
+        "maxFine": 196,
+        "canRevokeLicense": false
       },
       {
         "name": "Possession Of Fake ID / Drivers License",
         "minFine": 250,
-        "maxFine": 1000
+        "maxFine": 1000,
+        "canRevokeLicense": false
       },
       {
         "name": "Walking On Highway",
         "minFine": 196,
-        "maxFine": 196
+        "maxFine": 196,
+        "canRevokeLicense": false
       },
       {
         "name": "Unleashed Dog",
         "minFine": 100,
-        "maxFine": 250
+        "maxFine": 250,
+        "canRevokeLicense": false
       },
       {
         "name": "Fishing Without License",
         "minFine": 100,
-        "maxFine": 1000
+        "maxFine": 1000,
+        "canRevokeLicense": false
       },
       {
         "name": "Hunting Without License",
         "minFine": 700,
-        "maxFine": 1000
+        "maxFine": 1000,
+        "canRevokeLicense": false
       }
     ]
   }

@@ -1,0 +1,127 @@
+﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Utility;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace ExternalPoliceComputer.Setup {
+    internal class SetupController {
+
+        internal static readonly string EPCPath = "EPC";
+        internal static readonly string DataPath = $"{EPCPath}/data";
+        internal static readonly string DefaultsPath = $"{EPCPath}/defaults";
+        internal static readonly string ConfigPath = $"{EPCPath}/config.json";
+        internal static readonly string LanguagePath = $"{EPCPath}/language.json";
+        internal static readonly string CitationOptionsPath = $"{EPCPath}/citationOptions.json";
+        internal static readonly string ArrestOptionsPath = $"{EPCPath}/arrestOptions.json";
+        internal static readonly string CitationOptionsDefaultsPath = $"{DefaultsPath}/citationOptions.json";
+        internal static readonly string ArrestOptionsDefaultsPath = $"{DefaultsPath}/arrestOptions.json";
+        internal static readonly string PedDataPath = $"{DataPath}/peds.json";
+        internal static readonly string CourtDataPath = $"{DataPath}/court.json";
+        internal static readonly string ShiftHistoryDataPath = $"{DataPath}/shiftHistory.json";
+        internal static readonly string OfficerInformationDataPath = $"{DataPath}/officerInformation.json";
+        internal static readonly string LogFilePath = $"{EPCPath}/EPC.log";
+        internal static readonly string ImgDefaultsDirPath = $"{EPCPath}/imgDefaults";
+        internal static readonly string ImgDirPath = $"{EPCPath}/img";
+
+        internal static void SetupDirectory() {
+            if (!Directory.Exists(DataPath)) {
+                Directory.CreateDirectory(DataPath);
+            }
+
+            if (!File.Exists(PedDataPath)) {
+                File.WriteAllText(PedDataPath, "[]");
+            }
+
+            if (!File.Exists(CourtDataPath)) {
+                File.WriteAllText(CourtDataPath, "[]");
+            }
+
+            if (!File.Exists(ShiftHistoryDataPath)) {
+                File.WriteAllText(ShiftHistoryDataPath, "[]");
+            }
+
+            if (!File.Exists(OfficerInformationDataPath)) {
+                Helper.WriteToJsonFile(OfficerInformationDataPath, new OfficerInformationData());
+            }
+
+            if (!File.Exists(CitationOptionsPath)) {
+                File.WriteAllBytes(CitationOptionsPath, File.ReadAllBytes(CitationOptionsDefaultsPath));
+            }
+
+            if (!File.Exists(ArrestOptionsPath)) {
+                File.WriteAllBytes(ArrestOptionsPath, File.ReadAllBytes(ArrestOptionsDefaultsPath));
+            }
+
+            DataController.officerInformationData = Helper.ReadFromJsonFile<OfficerInformationData>(OfficerInformationDataPath);
+
+            DataController.courtDatabase = Helper.ReadFromJsonFile<List<CourtData>>(CourtDataPath) ?? new List<CourtData>();
+
+            DataController.shiftHistoryData = Helper.ReadFromJsonFile<List<ShiftData>>(ShiftHistoryDataPath) ?? new List<ShiftData>();
+
+            DataController.LoadPedDatabaseFromFile();
+
+            if (!File.Exists(ConfigPath)) {
+                Helper.WriteToJsonFile(ConfigPath, new Config());
+            }
+
+            if (!File.Exists(LanguagePath)) {
+                Helper.WriteToJsonFile(LanguagePath, new Language());
+            }
+
+            string[] imgDefaultsDir = Directory.GetFiles(ImgDefaultsDirPath).Select(item => item.Split('\\')[item.Split('\\').Length - 1]).ToArray();
+            if (!Directory.Exists(ImgDirPath)) Directory.CreateDirectory(ImgDirPath);
+            foreach (string imgNameInDefaultDir in imgDefaultsDir) {
+                if (File.Exists($"{ImgDirPath}/{imgNameInDefaultDir}")) continue;
+                File.WriteAllBytes($"{ImgDirPath}/{imgNameInDefaultDir}", File.ReadAllBytes($"{ImgDefaultsDirPath}/{imgNameInDefaultDir}"));
+            }
+
+            Helper.ClearLog();
+            Helper.Log($"Version: {Main.Version}");
+            Helper.Log($"Log path: {Path.GetFullPath(LogFilePath)}");
+            
+            Config config = GetConfig();
+            Helper.Log($"Config:\n{JsonConvert.SerializeObject(config, Formatting.Indented)}");
+
+            string[] EPCDirectoryFiles = Directory.GetFiles(EPCPath).Select(item => $"[File] {item.Split('\\')[1]}").ToArray();
+            string[] EPCDirectoryDirs = Directory.GetDirectories(EPCPath).Select(item => $"[Directory] {item.Split('\\')[1]}").ToArray();
+            string[] EPCDirectoryFilesAndDirs = EPCDirectoryFiles.Concat(EPCDirectoryDirs).ToArray();
+            Helper.Log($"EPC Directory:\n  {string.Join("\n  ", EPCDirectoryFilesAndDirs)}");
+        }
+
+        private static Config cachedConfig;
+        internal static Config GetConfig() {
+            if (cachedConfig == null) {
+                cachedConfig = Helper.ReadFromJsonFile<Config>(ConfigPath) ?? new Config();
+                Helper.WriteToJsonFile(ConfigPath, cachedConfig);
+            }
+            return cachedConfig;
+        }
+
+        private static Language cachedLanguage;
+        internal static Language GetLanguage() {
+            if (cachedLanguage == null) {
+                cachedLanguage = Helper.ReadFromJsonFile<Language>(LanguagePath) ?? new Language();
+                Helper.WriteToJsonFile(LanguagePath, cachedLanguage);
+            }
+            return cachedLanguage;
+        }
+
+        private static List<CitationGroup> cachedCitationOptions;
+        internal static List<CitationGroup> GetCitationOptions() {
+            cachedCitationOptions ??= Helper.ReadFromJsonFile<List<CitationGroup>>(CitationOptionsPath);
+            return cachedCitationOptions;
+        }
+
+        private static List<ArrestGroup> cachedArrestOptions;
+        internal static List<ArrestGroup> GetArrestOptions() {
+            cachedArrestOptions ??= Helper.ReadFromJsonFile<List<ArrestGroup>>(ArrestOptionsPath);
+            return cachedArrestOptions;
+        }
+
+        internal static List<EPCPedData> GetEPCPedData() {
+            return Helper.ReadFromJsonFile<List<EPCPedData>>(PedDataPath);
+        }
+    }
+}

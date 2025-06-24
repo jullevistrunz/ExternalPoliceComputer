@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-language="title">Ped Lookup</title>
+    <link rel="stylesheet" href="/style/root.css" />
+    <link rel="stylesheet" href="/style/pedSearch.css" />
+  </head>
+  <body>
+    <div class="searchInputWrapper">
+      <input
+        type="text"
+        id="pedSearchInput"
+        data-language-placeholder="searchInput"
+        placeholder="Search ped by name"
+        autocomplete="off"
+      />
+      <button data-language="search">Search Ped</button>
+    </div>
+    <div class="searchResponseWrapper hidden">
+      <div class="searchResponseSectionTitle" data-language="basicInfoTitle">
+        Basic Information
+      </div>
+      <div class="inputWrapper grid basicInfo">
+        <div>
+          <label for="firstNameInput" data-language="labels.firstName"
+            >First Name</label
+          >
+          <input
+            type="text"
+            id="firstNameInput"
+            disabled
+            data-property="FirstName"
+          />
+        </div>
+        <div>
+          <label for="lastNameInput" data-language="labels.lastName"
+            >Last Name</label
+          >
+          <input
+            type="text"
+            id="lastNameInput"
+            disabled
+            data-property="LastName"
+          />
+        </div>
+        <div>
+          <label for="genderInput" data-language="labels.gender">Gender</label>
+          <input type="text" id="genderInput" disabled data-property="Gender" />
+        </div>
+        <div>
+          <label for="birthdayInput" data-language="labels.birthday"
+            >Date Of Birth</label
+          >
+          <input
+            type="text"
+            id="birthdayInput"
+            disabled
+            data-property="Birthday"
+          />
+        </div>
+        <div>
+          <label for="ageInput" data-language="labels.age">Age</label>
+          <input type="number" id="ageInput" disabled data-property="Age" />
+        </div>
+        <div>
+          <label for="addressInput" data-language="labels.address"
+            >Address</label
+          >
+          <input
+            type="text"
+            id="addressInput"
+            disabled
+            data-property="Address"
+          />
+        </div>
+      </div>
+      <div class="searchResponseSectionTitle" data-language="legalInfoTitle">
+        Legal Information
+      </div>
+      <div class="inputWrapper grid legalInfo">
+        <div>
+          <label for="timesStoppedInput" data-language="labels.timesStopped"
+            >Times Stopped</label
+          >
+          <input
+            type="number"
+            id="timesStoppedInput"
+            disabled
+            data-property="TimesStopped"
+          />
+        </div>
+        <div>
+          <label for="wantedStatusInput" data-language="labels.wantedStatus"
+            >Wanted Status</label
+          >
+          <input
+            type="text"
+            id="wantedStatusInput"
+            disabled
+            data-property="IsWanted"
+          />
+        </div>
+        <div>
+          <label
+            for="probationStatusInput"
+            data-language="labels.probationStatus"
+            >Probation Status</label
+          >
+          <input
+            type="text"
+            id="probationStatusInput"
+            disabled
+            data-property="IsOnProbation"
+          />
+        </div>
+        <div>
+          <label for="paroleStatusInput" data-language="labels.paroleStatus"
+            >Parole Status</label
+          >
+          <input
+            type="text"
+            id="paroleStatusInput"
+            disabled
+            data-property="IsOnParole"
+          />
+        </div>
+        <div>
+          <label
+            for="gangAffiliationInput"
+            data-language="labels.gangAffiliation"
+            >Gang Affiliation</label
+          >
+          <input
+            type="text"
+            id="gangAffiliationInput"
+            disabled
+            data-property="IsInGang"
+          />
+        </div>
+        <div>
+          <label for="advisoryInput" data-language="labels.advisory"
+            >Advisory</label
+          >
+          <input
+            type="text"
+            id="advisoryInput"
+            disabled
+            data-property="AdvisoryText"
+          />
+        </div>
+      </div>
+      <div class="searchResponseSectionTitle" data-language="licensesTitle">
+        Licenses & Permits
+      </div>
+      <div class="inputWrapper grid licenses">
+        <div>
+          <label for="licenseStatusInput" data-language="labels.licenseStatus"
+            >License Status</label
+          >
+          <input
+            type="text"
+            id="licenseStatusInput"
+            disabled
+            data-property="LicenseStatus"
+          />
+        </div>
+        <div>
+          <label
+            for="licenseExpirationInput"
+            data-language="labels.licenseExpiration"
+            >License Expiration</label
+          >
+          <input
+            type="text"
+            id="licenseExpirationInput"
+            disabled
+            data-property="LicenseExpiration"
+          />
+        </div>
+        <div>
+          <label
+            for="weaponPermitStatusInput"
+            data-language="labels.weaponPermitStatus"
+            >Weapon Permit Status</label
+          >
+          <input
+            type="text"
+            id="weaponPermitStatusInput"
+            disabled
+            data-property="WeaponPermitStatus"
+          />
+        </div>
+        <div>
+          <label
+            for="weaponPermitTypeInput"
+            data-language="labels.weaponPermitType"
+            >Weapon Permit Type</label
+          >
+          <input
+            type="text"
+            id="weaponPermitTypeInput"
+            disabled
+            data-property="WeaponPermitType"
+          />
+        </div>
+        <div>
+          <label
+            for="weaponPermitExpirationInput"
+            data-language="labels.weaponPermitExpiration"
+            >Weapon Permit Expiration</label
+          >
+          <input
+            type="text"
+            id="weaponPermitExpirationInput"
+            disabled
+            data-property="WeaponPermitExpiration"
+          />
+        </div>
+        <div>
+          <label
+            for="huntingPermitStatusInput"
+            data-language="labels.huntingPermitStatus"
+            >Hunting Permit Status</label
+          >
+          <input
+            type="text"
+            id="huntingPermitStatusInput"
+            disabled
+            data-property="HuntingPermitStatus"
+          />
+        </div>
+        <div>
+          <label
+            for="huntingPermitExpirationInput"
+            data-language="labels.huntingPermitExpiration"
+            >Hunting Permit Expiration</label
+          >
+          <input
+            type="text"
+            id="huntingPermitExpirationInput"
+            disabled
+            data-property="HuntingPermitExpiration"
+          />
+        </div>
+        <div>
+          <label
+            for="fishingPermitStatusInput"
+            data-language="labels.fishingPermitStatus"
+            >Fishing Permit Status</label
+          >
+          <input
+            type="text"
+            id="fishingPermitStatusInput"
+            disabled
+            data-property="FishingPermitStatus"
+          />
+        </div>
+        <div>
+          <label
+            for="fishingPermitExpirationInput"
+            data-language="labels.fishingPermitExpiration"
+            >Fishing Permit Expiration</label
+          >
+          <input
+            type="text"
+            id="fishingPermitExpirationInput"
+            disabled
+            data-property="FishingPermitExpiration"
+          />
+        </div>
+      </div>
+      <div class="searchResponseSectionTitle" data-language="historyTitle">
+        History
+      </div>
+      <div class="inputWrapper grid history">
+        <div>
+          <label data-language="labels.citations">Citations</label>
+          <ul data-property="Citations"></ul>
+        </div>
+        <div>
+          <label data-language="labels.arrests">Arrests</label>
+          <ul data-property="Arrests"></ul>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="/script/root.js"></script>
+  <script src="/script/pedSearch.js"></script>
+</html>
