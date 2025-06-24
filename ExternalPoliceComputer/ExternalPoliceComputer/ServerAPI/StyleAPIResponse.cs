@@ -25,6 +25,10 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = File.ReadAllBytes("EPC/main/styles/vehicleSearch.css");
                 status = 200;
                 contentType = "text/css";
+            } else if (path == "reports") {
+                buffer = File.ReadAllBytes("EPC/main/styles/reports.css");
+                status = 200;
+                contentType = "text/css";
             }
         }
     }

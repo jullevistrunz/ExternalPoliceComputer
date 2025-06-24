@@ -28,6 +28,10 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = File.ReadAllBytes("EPC/main/scripts/vehicleSearch.js");
                 status = 200;
                 contentType = "application/js";
+            } else if (path == "reports") {
+                buffer = File.ReadAllBytes("EPC/main/scripts/reports.js");
+                status = 200;
+                contentType = "application/js";
             }
         }
     }

@@ -7,6 +7,7 @@ namespace ExternalPoliceComputer.Setup {
         public PedSearch pedSearch = new PedSearch();
         public VehicleSearch vehicleSearch = new VehicleSearch();
         public Values values = new Values();
+        public Reports reports = new Reports();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
@@ -30,6 +31,7 @@ namespace ExternalPoliceComputer.Setup {
                 public class Desktop {
                     public string pedSearch = "Ped Lookup";
                     public string vehicleSearch = "Vehicle Lookup";
+                    public string reports = "Reports";
                 }
 
                 public class Taskbar {
@@ -157,22 +159,30 @@ namespace ExternalPoliceComputer.Setup {
                 public string vehicleNotFound = "Couldn't find a vehicle with that license plate.";
             }
         }
-    }
 
-    public class Values {
-        public string wanted = "Wanted for";
-        public string notWanted = "Not wanted";
-        public string @true = "Yes";
-        public string @false = "No";
-        public string empty = "N/A";
-        public string Valid = "Valid";
-        public string Expired = "Expired";
-        public string Revoked = "Revoked";
-        public string Suspended = "Suspended";
-        public string Unlicensed = "Unlicensed";
-        public string None = "None";
-        public string CcwPermit = "Carrying a concealed weapon (CCW)";
-        public string FflPermit = "Federal firearms license (FFL)";
-        public string Government = "Government";
+        public class Values {
+            public string wanted = "Wanted for";
+            public string notWanted = "Not wanted";
+            public string @true = "Yes";
+            public string @false = "No";
+            public string empty = "N/A";
+            public string Valid = "Valid";
+            public string Expired = "Expired";
+            public string Revoked = "Revoked";
+            public string Suspended = "Suspended";
+            public string Unlicensed = "Unlicensed";
+            public string None = "None";
+            public string CcwPermit = "Carrying a concealed weapon (CCW)";
+            public string FflPermit = "Federal firearms license (FFL)";
+            public string Government = "Government";
+        }
+
+        public class Reports {
+            public Static @static = new Static();
+
+            public class Static {
+                public string title = "Reports";
+            }
+        }
     }
 }
