@@ -17,6 +17,7 @@ namespace ExternalPoliceComputer.Data {
         public string RegistrationExpiration;
         public string InsuranceStatus;
         public string InsuranceExpiration;
+        public VehicleBOLO[] BOLOs;
 
         internal EPCVehicleData(Vehicle vehicle) {
             Holder = vehicle;
@@ -51,7 +52,9 @@ namespace ExternalPoliceComputer.Data {
             
             string unlocalizedModelDisplayName = Rage.Native.NativeFunction.Natives.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL<string>(Holder.Model.Hash);
 
-            ModelDisplayName = Rage.Native.NativeFunction.Natives.GET_FILENAME_FOR_AUDIO_CONVERSATION<string>(unlocalizedModelDisplayName);
+            ModelDisplayName = Game.GetLocalizedString(unlocalizedModelDisplayName);
+
+            BOLOs = CDFVehicleData.GetAllBOLOs();
         }
     }
 }

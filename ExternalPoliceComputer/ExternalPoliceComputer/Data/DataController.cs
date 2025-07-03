@@ -1,5 +1,6 @@
 ﻿using CommonDataFramework.Modules;
 using CommonDataFramework.Modules.PedDatabase;
+using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
 using LSPD_First_Response.Engine.Scripting.Entities;
@@ -14,10 +15,12 @@ namespace ExternalPoliceComputer.Data {
         private static List<EPCPedData> pedDatabase = new List<EPCPedData>();
         public static IReadOnlyList<EPCPedData> PedDatabase { get { return GetPedDatabase(); } }
 
-        private static List<EPCPedData> KeepInDatabase = new List<EPCPedData>();
+        private static List<EPCPedData> keepInPedDatabase = new List<EPCPedData>();
 
         private static List<EPCVehicleData> vehicleDatabase = new List<EPCVehicleData>();
         public static IReadOnlyList<EPCVehicleData> VehicleDatabase { get { return GetVehicleDatabase(); } }
+
+        private static List<EPCVehicleData> keepInVehicleDatabase = new List<EPCVehicleData>();
 
         internal static List<CourtData> courtDatabase = new List<CourtData>();
         public static IReadOnlyList<CourtData> CourtDatabase => courtDatabase;
@@ -29,6 +32,15 @@ namespace ExternalPoliceComputer.Data {
 
         internal static List<ShiftData> shiftHistoryData = new List<ShiftData>();
         public static IReadOnlyList<ShiftData> ShiftHistoryData => shiftHistoryData;
+
+        internal static List<IncidentReport> incidentReports = new List<IncidentReport>();
+        public static IReadOnlyList<IncidentReport> IncidentReports => incidentReports;
+
+        internal static List<CitationReport> citationReports = new List<CitationReport>();
+        public static IReadOnlyList<CitationReport> CitationReports => citationReports;
+
+        internal static List<ArrestReport> arrestReports = new List<ArrestReport>();
+        public static IReadOnlyList<ArrestReport> ArrestReports => arrestReports;
 
         private static void PopulatePedDatabase() {
             if (!Main.Player.Exists()) {
@@ -60,7 +72,7 @@ namespace ExternalPoliceComputer.Data {
             if (pedDatabase.Count > SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles * SetupController.GetConfig().databaseLimitMultiplier) {
                 List<EPCPedData> keysToRemove = pedDatabase.Take(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles).ToList();
                 foreach (EPCPedData key in keysToRemove) {
-                    if (KeepInDatabase.Any(x => x.Name == key.Name)) continue;
+                    if (keepInPedDatabase.Any(x => x.Name == key.Name)) continue;
                     pedDatabase.Remove(key);
                 }
             }
@@ -72,6 +84,7 @@ namespace ExternalPoliceComputer.Data {
             if (vehicleDatabase.Count > SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles * SetupController.GetConfig().databaseLimitMultiplier) {
                 List<EPCVehicleData> keysToRemove = vehicleDatabase.Take(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles).ToList();
                 foreach (EPCVehicleData key in keysToRemove) {
+                    if (vehicleDatabase.Any(x => x.LicensePlate == key.LicensePlate)) continue;
                     vehicleDatabase.Remove(key);
                 }
             }
@@ -103,7 +116,7 @@ namespace ExternalPoliceComputer.Data {
         }
 
         public static void KeepPedInDatabase(EPCPedData pedData) {
-            if (!KeepInDatabase.Any(x => x.Name == pedData.Name)) KeepInDatabase.Add(pedData);
+            if (!keepInPedDatabase.Any(x => x.Name == pedData.Name)) keepInPedDatabase.Add(pedData);
         }
 
         internal static void LoadPedDatabaseFromFile() {
@@ -117,7 +130,25 @@ namespace ExternalPoliceComputer.Data {
         }
 
         internal static List<EPCPedData> GetPedDataToSave() {
-            return KeepInDatabase;
+            return keepInPedDatabase;
+        }
+
+        public static void KeepVehicleInDatabase(EPCVehicleData vehicleData) {
+            if (!keepInVehicleDatabase.Any(x => x.LicensePlate == vehicleData.LicensePlate)) keepInVehicleDatabase.Add(vehicleData);
+        }
+
+        internal static void LoadVehicleDatabaseFromFile() {
+            vehicleDatabase.Clear();
+            List<EPCVehicleData> fileContent = SetupController.GetEPCVehicleData();
+            foreach (EPCVehicleData data in fileContent) {
+                KeepVehicleInDatabase(data);
+                if (vehicleDatabase.Any(x => x.LicensePlate == data.LicensePlate)) continue;
+                vehicleDatabase.Add(data);
+            }
+        }
+
+        internal static List<EPCVehicleData> GetVehicleDataToSave() {
+            return keepInVehicleDatabase;
         }
 
         internal static void UpdatePedData(EPCPedData pedData) {
@@ -155,7 +186,51 @@ namespace ExternalPoliceComputer.Data {
         }
 
         internal static void AddReportToCurrentShift(string reportId) {
+            if (currentShiftData.startTime == null) return;
             currentShiftData.reports.Add(reportId);
+        }
+
+        internal static void AddReport(Report report) {
+            if (report is CitationReport citationReport) {
+                if (!string.IsNullOrEmpty(citationReport.OffenderPedName)) {
+                    EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == citationReport.OffenderPedName);
+                    if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
+                }
+
+                if (!string.IsNullOrEmpty(citationReport.OffenderVehicleLicensePlate)) {
+                    EPCVehicleData vehicleDataToAdd = vehicleDatabase.FirstOrDefault(vehicleData => vehicleData.LicensePlate == citationReport.OffenderVehicleLicensePlate);
+                    if (vehicleDataToAdd != null) KeepVehicleInDatabase(vehicleDataToAdd);
+                }
+                citationReports.Add(citationReport);
+            } else if (report is ArrestReport arrestReport) {
+                if (!string.IsNullOrEmpty(arrestReport.OffenderPedName)) {
+                    EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == arrestReport.OffenderPedName);
+                    if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
+                }
+
+                if (!string.IsNullOrEmpty(arrestReport.OffenderVehicleLicensePlate)) {
+                    EPCVehicleData vehicleDataToAdd = vehicleDatabase.FirstOrDefault(vehicleData => vehicleData.LicensePlate == arrestReport.OffenderVehicleLicensePlate);
+                    if (vehicleDataToAdd != null) KeepVehicleInDatabase(vehicleDataToAdd);
+                }
+                arrestReports.Add(arrestReport);
+            } else if (report is IncidentReport incidentReport) {
+                foreach (string offenderPedName in incidentReport.OffenderPedsNames) {
+                    if (!string.IsNullOrEmpty(offenderPedName)) {
+                        EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == offenderPedName);
+                        if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
+                    }
+                }
+
+                foreach (string witnessPedName in incidentReport.WitnessPedsNames) {
+                    if (!string.IsNullOrEmpty(witnessPedName)) {
+                        EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == witnessPedName);
+                        if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
+                    }
+                }
+
+                incidentReports.Add(incidentReport);
+            }
+            AddReportToCurrentShift(report.Id);
         }
     }
 }

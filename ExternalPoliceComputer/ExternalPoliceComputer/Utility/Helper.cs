@@ -1,10 +1,7 @@
-﻿using ExternalPoliceComputer.Setup;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Rage;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Xml;
 
@@ -68,36 +65,6 @@ namespace ExternalPoliceComputer.Utility {
 
         internal static string GetCallSignFromIPTCommon() {
             return IPT.Common.Handlers.PlayerHandler.GetCallsign();
-        }
-
-        private static Random random = new Random();
-
-        internal static CitationGroup.Charge GetRandomCitationCharge() {
-            List<CitationGroup.Charge> allCharges = SetupController.GetCitationOptions()
-                .Where(group => group.charges != null && group.charges.Count > 0)
-                .SelectMany(group => group.charges)
-                .ToList();
-            if (allCharges.Count == 0) return null; 
-            return allCharges[random.Next(allCharges.Count)];
-        }
-
-        internal static ArrestGroup.Charge GetRandomArrestCharge() {
-            List<ArrestGroup.Charge> allCharges = SetupController.GetArrestOptions()
-                .Where(group => group.charges != null && group.charges.Count > 0)
-                .SelectMany(group => group.charges)
-                .ToList();
-            if (allCharges.Count == 0) return null;
-            return allCharges[random.Next(allCharges.Count)];
-        }
-
-        internal static ArrestGroup.Charge GetRandomWarrantCharge() {
-            List<ArrestGroup.Charge> allCharges = SetupController.GetArrestOptions()
-                .Where(group => group.charges != null && group.charges.Count > 0)
-                .SelectMany(group => group.charges)
-                .Where(charge => charge.canBeWarrant)
-                .ToList();
-            if (allCharges.Count == 0) return null;
-            return allCharges[random.Next(allCharges.Count)];
         }
     }
 }

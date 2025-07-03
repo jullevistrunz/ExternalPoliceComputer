@@ -191,7 +191,7 @@ locationWS.onmessage = async (event) => {
   const icon = document.querySelector('.iconAccess .location').innerHTML
   document.querySelector(
     '.taskbar .location'
-  ).innerHTML = `${icon} ${location.street},<br>${location.area}`
+  ).innerHTML = `${icon} ${location.Postal} ${location.Street},<br>${location.Area}`
 }
 
 locationWS.onclose = async () => {
@@ -327,6 +327,8 @@ async function openWindow(name) {
     }).observe(iframe.contentDocument.querySelector('title'), {
       childList: true,
     })
+
+    iframe.contentWindow.addEventListener('mousedown', focusWindow)
   })
 
   const minimize = document.createElement('div')

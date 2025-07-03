@@ -2,3 +2,34 @@ body {
   background-color: var(--color-background);
   margin: 0;
 }
+
+.listPage {
+  padding: 10px;
+}
+
+.listPage .listWrapper {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 3fr;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
+}
+
+.listPage .listWrapper .typeSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-right: 10px;
+  border-right: 1px solid var(--color-border);
+}
+
+.listPage .listWrapper .typeSelector button {
+  border-radius: 3px;
+  width: 100%;
+}
+
+.listPage .listWrapper .typeSelector button.selected {
+  border-color: var(--color-accent-secondary);
+  background-color: var(--color-accent-secondary-half);
+}

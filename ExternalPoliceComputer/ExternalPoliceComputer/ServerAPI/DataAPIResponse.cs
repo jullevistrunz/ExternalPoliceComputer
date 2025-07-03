@@ -70,7 +70,13 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.shiftHistoryData));
                 status = 200;
                 contentType = "text/json";
-            }
+            } else if (path == "reports") {
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.incidentReports));
+            } else if (path == "citationReports") {
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.citationReports));
+            } else if (path == "arrestReports") {
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.arrestReports));
+            } 
         }
     }
 }

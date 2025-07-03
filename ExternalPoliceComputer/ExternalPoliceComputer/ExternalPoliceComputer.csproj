@@ -46,9 +46,8 @@
     <Reference Include="CalloutInterfaceAPI">
       <HintPath>..\..\References\CalloutInterfaceAPI.dll</HintPath>
     </Reference>
-    <Reference Include="CommonDataFramework, Version=1.0.0.2, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\References\CommonDataFramework.dll</HintPath>
+    <Reference Include="CommonDataFramework, Version=1.0.0.5, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\CommonDataFramework.1.0.0.5\lib\net48\CommonDataFramework.dll</HintPath>
     </Reference>
     <Reference Include="IPT.Common">
       <HintPath>..\..\References\IPT.Common.dll</HintPath>
@@ -86,6 +85,10 @@
     <Compile Include="Data\DataController.cs" />
     <Compile Include="Data\EPCVehicleData.cs" />
     <Compile Include="Data\OfficerInformationData.cs" />
+    <Compile Include="Data\Reports\ArrestReport.cs" />
+    <Compile Include="Data\Reports\CitationReport.cs" />
+    <Compile Include="Data\Reports\IncidentReport.cs" />
+    <Compile Include="Data\Reports\Report.cs" />
     <Compile Include="Data\ShiftData.cs" />
     <Compile Include="DependencyCheck.cs" />
     <Compile Include="EventListeners\CalloutEvents.cs" />

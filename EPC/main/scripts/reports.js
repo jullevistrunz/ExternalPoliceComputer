@@ -16,3 +16,26 @@ async function updateDomWithLanguage() {
       .forEach((el) => (el.title = value))
   })
 }
+
+document
+  .querySelector('.listPage .createButton')
+  .addEventListener('click', async function () {
+    const language = await getLanguage()
+    document.title = language.reports.newReportTitle
+  })
+
+document
+  .querySelectorAll('.listPage .listWrapper .typeSelector button')
+  .forEach((button) =>
+    button.addEventListener('click', async function () {
+      button.blur()
+      document
+        .querySelectorAll('.listPage .listWrapper .typeSelector button')
+        .forEach((btn) => btn.classList.remove('selected'))
+      button.classList.add('selected')
+    })
+  )
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('.listPage .listWrapper .typeSelector button').click()
+})

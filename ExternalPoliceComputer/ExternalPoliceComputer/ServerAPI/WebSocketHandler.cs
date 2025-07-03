@@ -1,4 +1,6 @@
-﻿using ExternalPoliceComputer.Setup;
+﻿using ExternalPoliceComputer.Data.Reports;
+using ExternalPoliceComputer.Setup;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -70,20 +72,27 @@ namespace ExternalPoliceComputer.ServerAPI {
             return Task.Run(async () => {
                 try {
                     while (webSocket.State == WebSocketState.Open && Server.RunServer && !token.IsCancellationRequested) {
+                        string lastResponseMsg = "";
+                        string responseMsg;
                         switch (clientMsg) {
                             case "playerLocation":
                                 if (!Main.Player.IsValid()) goto default;
-                                var zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(Main.Player.Position);
-                                string area = zone.RealAreaName;
-                                string county = zone.County.ToString();
-                                string street = Rage.World.GetStreetName(Main.Player.Position);
+                                Location location = new Location(Main.Player.Position);
 
-                                string responseMsg = $"{{ \"area\": \"{area}\", \"county\": \"{county}\", \"street\": \"{street}\" }}";
+                                responseMsg = JsonConvert.SerializeObject(location);
 
-                                await SendData(webSocket, responseMsg, clientMsg, token);
+                                if (responseMsg != lastResponseMsg) {
+                                    lastResponseMsg = responseMsg;
+                                    await SendData(webSocket, responseMsg, clientMsg, token);
+                                }
                                 break;
                             case "time":
-                                await SendData(webSocket, $"\"{Rage.World.TimeOfDay}\"", clientMsg, token);
+                                responseMsg = $"\"{Rage.World.TimeOfDay}\"";
+
+                                if (responseMsg != lastResponseMsg) {
+                                    lastResponseMsg = responseMsg;
+                                    await SendData(webSocket, responseMsg, clientMsg, token);
+                                }
                                 break;
                             default:
                                 await SendData(webSocket, $"\"Unknown interval command: '{clientMsg}'\"", clientMsg, token);

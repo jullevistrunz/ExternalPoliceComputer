@@ -155,8 +155,8 @@ namespace ExternalPoliceComputer.Setup {
             }
 
             public class Notifications {
-                public string emptySearchInput = "Please enter a vehicle's license plate.";
-                public string vehicleNotFound = "Couldn't find a vehicle with that license plate.";
+                public string emptySearchInput = "Please enter a vehicle's license plate or VIN.";
+                public string vehicleNotFound = "Couldn't find a vehicle with that license plate or VIN.";
             }
         }
 
@@ -178,10 +178,16 @@ namespace ExternalPoliceComputer.Setup {
         }
 
         public class Reports {
+            public string newReportTitle = "New Report";
             public Static @static = new Static();
 
             public class Static {
                 public string title = "Reports";
+                public ListPage listPage = new ListPage();
+
+                public class ListPage {
+                    public string createButton = "Create New Reports";
+                }
             }
         }
     }

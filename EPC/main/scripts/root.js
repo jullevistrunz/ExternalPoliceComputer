@@ -152,10 +152,7 @@ async function openInPedSearch(pedName) {
     .querySelector('.overlay .windows')
     .lastChild.querySelector('iframe')
 
-  console.log(iframe)
-
   iframe.onload = () => {
-    console.log('loaded')
     iframe.contentWindow.document.querySelector(
       '.searchInputWrapper #pedSearchInput'
     ).value = pedName

@@ -68,8 +68,6 @@ async function performSearch(query) {
     return
   }
 
-  console.log(response)
-
   document.title = `${language.vehicleSearch.static.title}: ${response.LicensePlate}`
 
   document.querySelector('.searchResponseWrapper').classList.remove('hidden')

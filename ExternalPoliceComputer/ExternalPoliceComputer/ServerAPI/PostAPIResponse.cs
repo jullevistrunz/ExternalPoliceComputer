@@ -1,4 +1,5 @@
 ﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
 using Newtonsoft.Json;
@@ -60,6 +61,30 @@ namespace ExternalPoliceComputer.ServerAPI {
                 }
 
                 Helper.WriteToJsonFile(SetupController.ShiftHistoryDataPath, DataController.shiftHistoryData);
+
+                buffer = Encoding.UTF8.GetBytes("OK");
+                contentType = "text/plain";
+                status = 200;
+            } else if (path == "createIncidentReport") {
+                Report report = JsonConvert.DeserializeObject<Report>(body);
+
+                DataController.AddReport(report);
+
+                buffer = Encoding.UTF8.GetBytes("OK");
+                contentType = "text/plain";
+                status = 200;
+            } else if (path == "createCitationReport") {
+                CitationReport report = JsonConvert.DeserializeObject<CitationReport>(body);
+
+                DataController.AddReport(report);
+
+                buffer = Encoding.UTF8.GetBytes("OK");
+                contentType = "text/plain";
+                status = 200;
+            } else if (path == "createArrestReport") {
+                ArrestReport report = JsonConvert.DeserializeObject<ArrestReport>(body);
+
+                DataController.AddReport(report);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";

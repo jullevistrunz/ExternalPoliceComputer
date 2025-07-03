@@ -7,7 +7,30 @@
     <link rel="stylesheet" href="/style/root.css" />
     <link rel="stylesheet" href="/style/reports.css" />
   </head>
-  <body></body>
+  <body>
+    <div class="listPage">
+      <div class="buttonWrapper">
+        <button class="createButton" data-language="listPage.createButton">
+          Create New Report
+        </button>
+      </div>
+      <div class="listWrapper">
+        <div class="typeSelector">
+          <button data-language="listPage.reportType.incident">
+            Incident Reports
+          </button>
+          <button data-language="listPage.reportType.citation">
+            Citation Reports
+          </button>
+          <button data-language="listPage.reportType.arrest">
+            Arrest Reports
+          </button>
+        </div>
+        <div class="reportsList"></div>
+      </div>
+    </div>
+    <div class="createPage hidden"></div>
+  </body>
   <script src="/script/root.js"></script>
   <script src="/script/reports.js"></script>
 </html>

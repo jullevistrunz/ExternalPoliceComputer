@@ -10,6 +10,7 @@ namespace ExternalPoliceComputer.Setup {
 
         internal static readonly string EPCPath = "EPC";
         internal static readonly string DataPath = $"{EPCPath}/data";
+        internal static readonly string ReportsDataPath = $"{DataPath}/reports";
         internal static readonly string DefaultsPath = $"{EPCPath}/defaults";
         internal static readonly string ConfigPath = $"{EPCPath}/config.json";
         internal static readonly string LanguagePath = $"{EPCPath}/language.json";
@@ -18,20 +19,32 @@ namespace ExternalPoliceComputer.Setup {
         internal static readonly string CitationOptionsDefaultsPath = $"{DefaultsPath}/citationOptions.json";
         internal static readonly string ArrestOptionsDefaultsPath = $"{DefaultsPath}/arrestOptions.json";
         internal static readonly string PedDataPath = $"{DataPath}/peds.json";
+        internal static readonly string VehicleDataPath = $"{DataPath}/vehicles.json";
         internal static readonly string CourtDataPath = $"{DataPath}/court.json";
         internal static readonly string ShiftHistoryDataPath = $"{DataPath}/shiftHistory.json";
         internal static readonly string OfficerInformationDataPath = $"{DataPath}/officerInformation.json";
         internal static readonly string LogFilePath = $"{EPCPath}/EPC.log";
         internal static readonly string ImgDefaultsDirPath = $"{EPCPath}/imgDefaults";
         internal static readonly string ImgDirPath = $"{EPCPath}/img";
+        internal static readonly string IncidentReportsPath = $"{ReportsDataPath}/incidentReports.json";
+        internal static readonly string CitationReportsPath = $"{ReportsDataPath}/citationReports.json";
+        internal static readonly string ArrestReportsPath = $"{ReportsDataPath}/arrestReports.json";
 
         internal static void SetupDirectory() {
             if (!Directory.Exists(DataPath)) {
                 Directory.CreateDirectory(DataPath);
             }
 
+            if (!Directory.Exists(ReportsDataPath)) {
+                Directory.CreateDirectory(ReportsDataPath);
+            }
+
             if (!File.Exists(PedDataPath)) {
                 File.WriteAllText(PedDataPath, "[]");
+            }
+
+            if (!File.Exists(VehicleDataPath)) {
+                File.WriteAllText(VehicleDataPath, "[]");
             }
 
             if (!File.Exists(CourtDataPath)) {
@@ -54,6 +67,18 @@ namespace ExternalPoliceComputer.Setup {
                 File.WriteAllBytes(ArrestOptionsPath, File.ReadAllBytes(ArrestOptionsDefaultsPath));
             }
 
+            if (!File.Exists(IncidentReportsPath)) {
+                File.WriteAllText(IncidentReportsPath, "[]");
+            }
+
+            if (!File.Exists(CitationReportsPath)) {
+                File.WriteAllText(CitationReportsPath, "[]");
+            }
+
+            if (!File.Exists(ArrestReportsPath)) {
+                File.WriteAllText(ArrestReportsPath, "[]");
+            }
+
             DataController.officerInformationData = Helper.ReadFromJsonFile<OfficerInformationData>(OfficerInformationDataPath);
 
             DataController.courtDatabase = Helper.ReadFromJsonFile<List<CourtData>>(CourtDataPath) ?? new List<CourtData>();
@@ -61,6 +86,7 @@ namespace ExternalPoliceComputer.Setup {
             DataController.shiftHistoryData = Helper.ReadFromJsonFile<List<ShiftData>>(ShiftHistoryDataPath) ?? new List<ShiftData>();
 
             DataController.LoadPedDatabaseFromFile();
+            DataController.LoadVehicleDatabaseFromFile();
 
             if (!File.Exists(ConfigPath)) {
                 Helper.WriteToJsonFile(ConfigPath, new Config());
@@ -122,6 +148,10 @@ namespace ExternalPoliceComputer.Setup {
 
         internal static List<EPCPedData> GetEPCPedData() {
             return Helper.ReadFromJsonFile<List<EPCPedData>>(PedDataPath);
+        }
+
+        internal static List<EPCVehicleData> GetEPCVehicleData() {
+            return Helper.ReadFromJsonFile<List<EPCVehicleData>>(VehicleDataPath);
         }
     }
 }
