@@ -1,4 +1,5 @@
 ﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Utility;
 using Newtonsoft.Json;
 using System.Linq;
@@ -21,8 +22,9 @@ namespace ExternalPoliceComputer.ServerAPI {
             } else if (path == "specificPed") {
                 string body = Helper.GetRequestPostData(req);
                 string name = !string.IsNullOrEmpty(body) ? body : "";
+                string reversedName = string.Join(" ", name.Split(' ').Reverse());
 
-                EPCPedData pedData = DataController.PedDatabase.FirstOrDefault(o => o.Name?.ToLower() == name.ToLower());
+                EPCPedData pedData = DataController.PedDatabase.FirstOrDefault(o => o.Name?.ToLower() == name.ToLower() || o.Name?.ToLower() == reversedName.ToLower());
 
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(pedData));
                 contentType = "text/plain";
@@ -70,13 +72,35 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.shiftHistoryData));
                 status = 200;
                 contentType = "text/json";
-            } else if (path == "reports") {
+            } else if (path == "incidentReports") {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.incidentReports));
+                status = 200;
+                contentType = "text/json";
             } else if (path == "citationReports") {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.citationReports));
+                status = 200;
+                contentType = "text/json";
             } else if (path == "arrestReports") {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.arrestReports));
-            } 
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "playerLocation") {
+                if (!Main.Player.IsValid()) {
+                    buffer = Encoding.UTF8.GetBytes("Invalid Player");
+                    status = 500;
+                    contentType = "text/plain";
+                    return;
+                }
+                Location location = new Location(Main.Player.Position);
+
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(location));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "currentTime") {
+                buffer = Encoding.UTF8.GetBytes(Rage.World.TimeOfDay.ToString());
+                status = 200;
+                contentType = "text/plain";
+            }
         }
     }
 }

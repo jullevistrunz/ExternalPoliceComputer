@@ -16,20 +16,45 @@
       </div>
       <div class="listWrapper">
         <div class="typeSelector">
-          <button data-language="listPage.reportType.incident">
+          <button
+            data-language="listPage.reportType.incident"
+            data-type="incident"
+          >
             Incident Reports
           </button>
-          <button data-language="listPage.reportType.citation">
+          <button
+            data-language="listPage.reportType.citation"
+            data-type="citation"
+          >
             Citation Reports
           </button>
-          <button data-language="listPage.reportType.arrest">
+          <button data-language="listPage.reportType.arrest" data-type="arrest">
             Arrest Reports
           </button>
         </div>
         <div class="reportsList"></div>
       </div>
     </div>
-    <div class="createPage hidden"></div>
+    <div class="createPage hidden">
+      <div class="typeSelector">
+        <button
+          data-type="incident"
+          data-language="createPage.reportType.incident"
+        >
+          Incident Report
+        </button>
+        <button
+          data-type="citation"
+          data-language="createPage.reportType.citation"
+        >
+          Citation Report
+        </button>
+        <button data-type="arrest" data-language="createPage.reportType.arrest">
+          Arrest Report
+        </button>
+      </div>
+      <div class="reportInformation"></div>
+    </div>
   </body>
   <script src="/script/root.js"></script>
   <script src="/script/reports.js"></script>

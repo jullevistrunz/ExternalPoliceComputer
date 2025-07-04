@@ -111,6 +111,11 @@ button.loading::before {
   }
 }
 
+button.selected {
+  border-color: var(--color-accent-secondary);
+  background-color: var(--color-accent-secondary-half);
+}
+
 input {
   box-sizing: border-box;
   background-color: var(--color-surface-elevated);
@@ -133,6 +138,16 @@ input::placeholder {
   color: var(--color-text-primary-half);
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
 .inputWrapper {
   --gap: 10px;
   container-name: inputWrapper;

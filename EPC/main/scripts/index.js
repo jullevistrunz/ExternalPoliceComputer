@@ -329,6 +329,9 @@ async function openWindow(name) {
     })
 
     iframe.contentWindow.addEventListener('mousedown', focusWindow)
+    iframe.contentWindow.addEventListener('mousedown', function () {
+      document.querySelector('.overlay .settings').classList.add('hide')
+    })
   })
 
   const minimize = document.createElement('div')
@@ -459,10 +462,11 @@ async function openWindow(name) {
 }
 
 document.addEventListener('mousedown', function (e) {
-  const taskbarIcons = document.querySelector('.taskbar .icons')
+  const taskbarIcon = document.querySelector('.taskbar .icons .settings')
   const settingsEl = document.querySelector('.overlay .settings')
   if (
-    taskbarIcons.contains(e.target) ||
+    e.target == taskbarIcon ||
+    taskbarIcon.contains(e.target) ||
     settingsEl.classList.contains('hide') ||
     e.target == settingsEl ||
     settingsEl.contains(e.target)
@@ -541,6 +545,10 @@ document
           lastName:
             inputWrapper.querySelector('.lastName input').value != ''
               ? inputWrapper.querySelector('.lastName input').value
+              : null,
+          badgeNumber:
+            inputWrapper.querySelector('.badgeNumber input').value != ''
+              ? inputWrapper.querySelector('.badgeNumber input').value
               : null,
           rank:
             inputWrapper.querySelector('.rank input').value != ''

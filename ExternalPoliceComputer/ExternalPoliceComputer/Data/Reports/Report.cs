@@ -8,6 +8,7 @@ namespace ExternalPoliceComputer.Data.Reports {
         public Location Location;
         public DateTime TimeStamp;
         public ReportStatus Status;
+        public string Notes;
     }
 
     public class Location {
@@ -28,6 +29,6 @@ namespace ExternalPoliceComputer.Data.Reports {
     public enum ReportStatus {
         Open,
         Closed,
-        Cancelled
+        Canceled
     }
 }

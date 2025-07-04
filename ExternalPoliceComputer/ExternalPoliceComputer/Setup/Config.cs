@@ -16,5 +16,7 @@ namespace ExternalPoliceComputer.Setup {
         public int maxNumberOfPriorCitations = 5;
         public int maxNumberOfPriorArrests = 3;
         public int maxNumberOfPriorArrestsWithWarrant = 8;
+        public string reportIdFormat = "{type}-{shortYear}-{index}"; // available: type, year, shortYear, month, day, index
+        public int reportIdIndexPad = 6;
     }
 }

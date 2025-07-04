@@ -5,5 +5,6 @@
         public string rank;
         public string callSign;
         public string agency;
+        public int? badgeNumber;
     }
 }

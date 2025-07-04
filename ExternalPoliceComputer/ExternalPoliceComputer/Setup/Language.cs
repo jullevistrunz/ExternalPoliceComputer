@@ -1,4 +1,4 @@
-﻿// Ignore Spelling: Taskbar Newtonsoft Ffl Ccw
+﻿// Ignore Spelling: Taskbar Newtonsoft Ffl Ccw Yankton Cayo Perico
 
 namespace ExternalPoliceComputer.Setup {
     internal class Language {
@@ -49,6 +49,7 @@ namespace ExternalPoliceComputer.Setup {
                         public string rank = "Rank";
                         public string callSign = "Call Sign";
                         public string agency = "Agency";
+                        public string badgeNumber = "Badge Number";
                         public string autoFill = "Auto Fill";
                         public string save = "Save";
                     }
@@ -175,19 +176,94 @@ namespace ExternalPoliceComputer.Setup {
             public string CcwPermit = "Carrying a concealed weapon (CCW)";
             public string FflPermit = "Federal firearms license (FFL)";
             public string Government = "Government";
+            public string LosSantos = "Los Santos";
+            public string LosSantosCounty = "Los Santos County";
+            public string BlaineCounty = "Blaine County";
+            public string SanAndreas = "San Andreas";
+            public string NorthYankton = "North Yankton";
+            public string CayoPerico = "Cayo Perico";
+            public string Closed = "Closed";
+            public string Open = "Open";
+            public string Canceled = "Canceled";
         }
 
         public class Reports {
             public string newReportTitle = "New Report";
+            public string save = "Save Report";
             public Static @static = new Static();
+            public Notifications notifications = new Notifications();
+            public Sections sections = new Sections();
+            public IdTypeMap idTypeMap = new IdTypeMap();
 
             public class Static {
                 public string title = "Reports";
                 public ListPage listPage = new ListPage();
+                public CreatePage createPage = new CreatePage();
 
                 public class ListPage {
                     public string createButton = "Create New Reports";
+                    public ReportType reportType = new ReportType();
+
+                    public class ReportType {
+                        public string incident = "Incident Reports";
+                        public string citation = "Citation Reports";
+                        public string arrest = "Arrest Reports";
+                    }
                 }
+
+                public class CreatePage {
+                    public ReportType reportType = new ReportType();
+
+                    public class ReportType {
+                        public string select = "Select Report Type";
+                        public string incident = "Incident Report";
+                        public string citation = "Citation Report";
+                        public string arrest = "Arrest Report";
+                    }
+                }
+            }
+
+            public class Notifications {
+                public string createPageAlreadyOpen = "Only one report can be created at a time!";
+            }
+
+            public class Sections {
+                public string notes = "Notes";
+                public GeneralInformation generalInformation = new GeneralInformation();
+                public Location location = new Location();
+                public OfficerInformation officerInformation = new OfficerInformation();
+
+                public class GeneralInformation {
+                    public string title = "General Information";
+                    public string date = "Date";
+                    public string time = "Time";
+                    public string reportId = "Report ID";
+                    public string status = "Status";
+                }
+
+                public class Location {
+                    public string title = "Location";
+                    public string area = "Area";
+                    public string street = "Street";
+                    public string county = "County";
+                    public string postal = "Postal Code";
+                }
+
+                public class OfficerInformation {
+                    public string title = "Officer Information";
+                    public string firstName = "First Name";
+                    public string lastName = "Last Name";
+                    public string rank = "Rank";
+                    public string callSign = "Call Sign";
+                    public string agency = "Agency";
+                    public string badgeNumber = "Badge Number";
+                }
+            }
+
+            public class IdTypeMap {
+                public string incident = "I";
+                public string citation = "C";
+                public string arrest = "A";
             }
         }
     }
