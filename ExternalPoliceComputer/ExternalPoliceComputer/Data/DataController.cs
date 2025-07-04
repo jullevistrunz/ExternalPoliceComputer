@@ -1,5 +1,6 @@
 ﻿using CommonDataFramework.Modules;
 using CommonDataFramework.Modules.PedDatabase;
+using CommonDataFramework.Modules.VehicleDatabase;
 using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
@@ -135,6 +136,11 @@ namespace ExternalPoliceComputer.Data {
 
         public static void KeepVehicleInDatabase(EPCVehicleData vehicleData) {
             if (!keepInVehicleDatabase.Any(x => x.LicensePlate == vehicleData.LicensePlate)) keepInVehicleDatabase.Add(vehicleData);
+            
+            EPCPedData pedData = pedDatabase.FirstOrDefault(x => x.Name == vehicleData.Owner);
+            if (pedData == null) return;
+            pedData.Name = vehicleData.Owner;
+            KeepPedInDatabase(pedData);
         }
 
         internal static void LoadVehicleDatabaseFromFile() {
