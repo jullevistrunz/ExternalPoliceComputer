@@ -1,37 +1,32 @@
-﻿using Rage;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
+﻿using ExternalPoliceComputer.Utility;
 using System.Runtime.CompilerServices;
-using System.Web;
 
 namespace ExternalPoliceComputer {
     public static class Functions {
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void SendMessage(string message) {
-            
+            Helper.Log("A plugin used a deprecated function (SendMessage).", true);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToPed(string name, string message) {
-            
+            Helper.Log("A plugin used a deprecated function (AddCautionToPed).", true);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void AddCautionToCar(string licensePlate, string message) {
-            
+            Helper.Log("A plugin used a deprecated function (AddCautionToCar).", true);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void RemoveCautionFromPed(string name, string message) {
-
+            Helper.Log("A plugin used a deprecated function (RemoveCautionFromPed).", true);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void RemoveCautionFromCar(string licensePlate, string message) {
-            
+            Helper.Log("A plugin used a deprecated function (RemoveCautionFromCar).", true);
         }
     }
 }

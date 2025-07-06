@@ -26,22 +26,6 @@ async function updateDomWithLanguage() {
   })
 }
 
-function convertMsToTimeString(ms) {
-  const totalSeconds = Math.floor(ms / 1000)
-  const h = Math.floor(totalSeconds / 3600)
-  const m = Math.floor((totalSeconds % 3600) / 60)
-  const s = totalSeconds % 60
-
-  const pad = (n) => String(n).padStart(2, '0')
-  const result = []
-
-  if (h > 0) result.push(`${pad(h)}h`)
-  if (m > 0 || h > 0) result.push(`${pad(m)}m`)
-  if (s > 0 || m > 0 || h > 0 || result.length == 0) result.push(`${pad(s)}s`)
-
-  return result.join(' ')
-}
-
 const timeWS = new WebSocket(`ws://${location.host}/ws`)
 timeWS.onopen = () => timeWS.send('interval/time')
 
@@ -155,7 +139,7 @@ async function applyCurrentShiftToDOM(currentShift, currentDate) {
       language.index.settings.currentShift.startTime
     }: ${new Date(currentShift.startTime).toLocaleTimeString()}`
 
-    const duration = convertMsToTimeString(
+    const duration = await convertMsToTimeString(
       currentDate.getTime() - new Date(currentShift.startTime).getTime()
     )
     document.querySelector(

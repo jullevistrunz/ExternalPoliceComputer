@@ -8,6 +8,7 @@ namespace ExternalPoliceComputer.Setup {
         public VehicleSearch vehicleSearch = new VehicleSearch();
         public Values values = new Values();
         public Reports reports = new Reports();
+        public Units units = new Units();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
@@ -189,7 +190,6 @@ namespace ExternalPoliceComputer.Setup {
 
         public class Reports {
             public string newReportTitle = "New Report";
-            public string save = "Save Report";
             public Static @static = new Static();
             public Notifications notifications = new Notifications();
             public Sections sections = new Sections();
@@ -212,6 +212,7 @@ namespace ExternalPoliceComputer.Setup {
                 }
 
                 public class CreatePage {
+                    public string saveButton = "Save Report";
                     public ReportType reportType = new ReportType();
 
                     public class ReportType {
@@ -225,13 +226,21 @@ namespace ExternalPoliceComputer.Setup {
 
             public class Notifications {
                 public string createPageAlreadyOpen = "Only one report can be created at a time!";
+                public string invalidPedName = "A ped with this name doesn't exist!";
+                public string invalidVehicleLicensePlate = "A vehicle with this license plate doesn't exist!";
             }
 
             public class Sections {
                 public string notes = "Notes";
+                public string fine = "Fine";
+                public string incarceration = "Incarceration";
                 public GeneralInformation generalInformation = new GeneralInformation();
                 public Location location = new Location();
                 public OfficerInformation officerInformation = new OfficerInformation();
+                public Incident incident = new Incident();
+                public Offender offender = new Offender();
+                public Citation citation = new Citation();
+                public Arrest arrest = new Arrest();
 
                 public class GeneralInformation {
                     public string title = "General Information";
@@ -258,6 +267,33 @@ namespace ExternalPoliceComputer.Setup {
                     public string agency = "Agency";
                     public string badgeNumber = "Badge Number";
                 }
+
+                public class Incident {
+                    public string titleOffenders = "Offenders";
+                    public string titleWitnesses = "Witnesses & Victims";
+                    public string labelOffenders = "Full Name Of Offender";
+                    public string labelWitnesses = "Full Name Of Witness";
+                    public string addOffender = "Add Offender";
+                    public string addWitness = "Add Witness";
+                    public string removeOffender = "Remove Offender";
+                    public string removeWitness = "Remove Witness";
+                }
+
+                public class Offender {
+                    public string title = "Offender Information";
+                    public string pedName = "Offender's Full Name";
+                    public string vehicleLicensePlate = "License Plate Of Offender's Vehicle";
+                }
+
+                public class Citation {
+                    public string title = "Citation Charges";
+                    public string searchChargesPlaceholder = "Search citations";
+                }
+
+                public class Arrest {
+                    public string title = "Arrest Charges";
+                    public string searchChargesPlaceholder = "Search charges";
+                }
             }
 
             public class IdTypeMap {
@@ -265,6 +301,17 @@ namespace ExternalPoliceComputer.Setup {
                 public string citation = "C";
                 public string arrest = "A";
             }
+        }
+
+        public class Units {
+            public string year = "y";
+            public string month = "mo";
+            public string day = "d";
+            public string hour = "h";
+            public string minute = "m";
+            public string second = "s";
+            public string currencySymbol = "$";
+            public string life = "Life";
         }
     }
 }

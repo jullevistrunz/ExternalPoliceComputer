@@ -17,27 +17,19 @@ async function updateDomWithLanguage() {
   })
 }
 
-let isOnCreatePageBool = false
-function isOnCreatePage() {
-  return isOnCreatePageBool
-}
-
 document
   .querySelector('.listPage .createButton')
   .addEventListener('click', async function () {
     const language = await getLanguage()
     for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
-      if (iframe.contentWindow.isOnCreatePage()) {
-        showNotification(
-          language.reports.notifications.createPageAlreadyOpen,
-          'warning'
-        )
+      if (iframe.contentWindow.reportIsOnCreatePage()) {
+        showNotification(language.reports.notifications.createPageAlreadyOpen)
         return
       }
     }
 
     document.title = language.reports.newReportTitle
-    isOnCreatePageBool = true
+    reportIsOnCreatePageBool = true
 
     document.querySelector('.listPage').remove()
     document.querySelector('.createPage').classList.remove('hidden')
@@ -67,9 +59,19 @@ document
   )
 
 document
+  .querySelector('.createPage .saveButton')
+  .addEventListener('click', async function () {
+    await saveReport(
+      document.querySelector('.createPage .typeSelector .selected').dataset.type
+    )
+  })
+
+document
   .querySelectorAll('.createPage .typeSelector button')
   .forEach((button) =>
     button.addEventListener('click', async function () {
+      if (button.classList.contains('loading')) return
+      showLoadingOnButton(button)
       button.blur()
       document
         .querySelectorAll('.createPage .typeSelector button')
@@ -104,36 +106,55 @@ document
         status: 'Open',
       }
 
-      const saveButton = document.createElement('button')
-      saveButton.classList.add('saveButton')
-      saveButton.innerHTML = language.reports.save
-      saveButton.addEventListener('click', function () {
-        saveReport(button.dataset.type)
-      })
       document
         .querySelector('.createPage .reportInformation')
-        .appendChild(saveButton)
+        .appendChild(await getGeneralInformationSection(generalInformation))
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(await getOfficerInformationSection(officerInformation))
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(await getLocationSection(location))
 
       switch (button.dataset.type) {
         case 'incident':
           document
             .querySelector('.createPage .reportInformation')
-            .appendChild(await getGeneralInformationSection(generalInformation))
+            .appendChild(
+              await getMultipleNameInputsSection(
+                language.reports.sections.incident.titleOffenders,
+                language.reports.sections.incident.labelOffenders,
+                language.reports.sections.incident.addOffender,
+                language.reports.sections.incident.removeOffender
+              )
+            )
           document
             .querySelector('.createPage .reportInformation')
-            .appendChild(await getOfficerInformationSection(officerInformation))
-          document
-            .querySelector('.createPage .reportInformation')
-            .appendChild(await getLocationSection(location))
-          document
-            .querySelector('.createPage .reportInformation')
-            .appendChild(await getNotesSection())
+            .appendChild(
+              await getMultipleNameInputsSection(
+                language.reports.sections.incident.titleWitnesses,
+                language.reports.sections.incident.labelWitnesses,
+                language.reports.sections.incident.addWitness,
+                language.reports.sections.incident.removeWitness
+              )
+            )
           break
         case 'citation':
-          break
         case 'arrest':
+          document
+            .querySelector('.createPage .reportInformation')
+            .appendChild(await getOffenderSection())
+          document
+            .querySelector('.createPage .reportInformation')
+            .appendChild(await getCitationArrestSection(button.dataset.type))
           break
       }
+
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(await getNotesSection())
+
+      hideLoadingOnButton(button)
     })
   )
 
@@ -228,9 +249,7 @@ async function getLocationSection(location, isList = false) {
 
   const inputWrapper = document.createElement('div')
   inputWrapper.classList.add('inputWrapper')
-  if (isList) {
-    inputWrapper.classList.add('grid')
-  }
+  inputWrapper.classList.add('grid')
 
   inputWrapper.appendChild(postal)
   inputWrapper.appendChild(street)
@@ -350,9 +369,7 @@ async function getOfficerInformationSection(
 
   const inputWrapper = document.createElement('div')
   inputWrapper.classList.add('inputWrapper')
-  if (isList) {
-    inputWrapper.classList.add('grid')
-  }
+  inputWrapper.classList.add('grid')
 
   inputWrapper.appendChild(firstName)
   inputWrapper.appendChild(lastName)
@@ -407,6 +424,7 @@ async function getGeneralInformationSection(
   const statusClosed = document.createElement('button')
   statusClosed.innerHTML = language.values.Closed
   statusClosed.classList.add('closed')
+  statusClosed.dataset.status = 'Closed'
   if (generalInformation.status == 'Closed') {
     statusClosed.classList.add('selected')
   }
@@ -420,6 +438,7 @@ async function getGeneralInformationSection(
   const statusOpen = document.createElement('button')
   statusOpen.innerHTML = language.values.Open
   statusOpen.classList.add('open')
+  statusOpen.dataset.status = 'Open'
   if (generalInformation.status == 'Open') {
     statusOpen.classList.add('selected')
   }
@@ -433,6 +452,7 @@ async function getGeneralInformationSection(
   const statusCanceled = document.createElement('button')
   statusCanceled.innerHTML = language.values.Canceled
   statusCanceled.classList.add('canceled')
+  statusCanceled.dataset.status = 'Canceled'
   if (generalInformation.status == 'Canceled') {
     statusCanceled.classList.add('selected')
   }
@@ -480,9 +500,7 @@ async function getGeneralInformationSection(
 
   const inputWrapper = document.createElement('div')
   inputWrapper.classList.add('inputWrapper')
-  if (isList) {
-    inputWrapper.classList.add('grid')
-  }
+  inputWrapper.classList.add('grid')
 
   inputWrapper.appendChild(reportId)
   inputWrapper.appendChild(status)
@@ -525,4 +543,469 @@ async function getNotesSection(notes, isList = false) {
   return sectionWrapper
 }
 
-async function saveReport(type) {}
+async function getMultipleNameInputsSection(
+  title,
+  label,
+  plusButtonText,
+  removeButtonText,
+  isList = false,
+  list = []
+) {
+  const titleEl = document.createElement('div')
+  if (isList) {
+    titleEl.classList.add('searchResponseSectionTitle')
+  } else {
+    titleEl.classList.add('title')
+  }
+  titleEl.innerHTML = title
+
+  const inputWrapper = document.createElement('div')
+  inputWrapper.classList.add('inputWrapper')
+  inputWrapper.classList.add('grid')
+
+  if (isList) {
+    for (const i in list) {
+      const input = document.createElement('div')
+      const inputLabel = document.createElement('label')
+      inputLabel.innerHTML = `${label} ${parseInt(i) + 1}`
+      inputLabel.htmlFor = `multipleNameInputsSection${title}Input${
+        parseInt(i) + 1
+      }`
+      const inputInput = document.createElement('input')
+      inputInput.type = 'text'
+      inputInput.value = list[i] || ''
+      inputInput.id = `multipleNameInputsSection${title}Input${parseInt(i) + 1}`
+      inputInput.autocomplete = 'off'
+      inputInput.disabled = isList
+      input.appendChild(inputLabel)
+      input.appendChild(inputInput)
+
+      inputWrapper.appendChild(input)
+    }
+  } else {
+    const input1 = document.createElement('div')
+    const input1Label = document.createElement('label')
+    input1Label.innerHTML = `${label} 1`
+    input1Label.htmlFor = `multipleNameInputsSection${title}Input1`
+    const input1Input = document.createElement('input')
+    input1Input.type = 'text'
+    input1Input.id = `multipleNameInputsSection${title}Input1`
+    input1Input.autocomplete = 'off'
+    input1Input.disabled = isList
+    input1Input.addEventListener('blur', function () {
+      checkForValidPedName(input1Input)
+    })
+    input1.appendChild(input1Label)
+    input1.appendChild(input1Input)
+
+    const buttonWrapper = document.createElement('div')
+    buttonWrapper.classList.add('buttonWrapper')
+
+    const plusButton = document.createElement('button')
+    plusButton.classList.add('plusButton')
+    plusButton.innerHTML = plusButtonText
+
+    const removeButton = document.createElement('button')
+
+    plusButton.addEventListener('click', function () {
+      plusButton.blur()
+      const newInput = document.createElement('div')
+      const newInputLabel = document.createElement('label')
+      newInputLabel.innerHTML = `${label} ${
+        inputWrapper.querySelectorAll('div:has(input)').length + 1
+      }`
+      newInputLabel.htmlFor = `multipleNameInputsSection${title}Input${
+        inputWrapper.querySelectorAll('div:has(input)').length + 1
+      }`
+      const newInputInput = document.createElement('input')
+      newInputInput.type = 'text'
+      newInputInput.id = `multipleNameInputsSection${title}Input${
+        inputWrapper.querySelectorAll('div:has(input)').length + 1
+      }`
+      newInputInput.autocomplete = 'off'
+      newInputInput.addEventListener('blur', function () {
+        checkForValidPedName(newInputInput)
+      })
+      newInput.appendChild(newInputLabel)
+      newInput.appendChild(newInputInput)
+
+      inputWrapper.insertBefore(newInput, buttonWrapper)
+
+      const length = inputWrapper.querySelectorAll('div:has(input)').length
+      removeButton.disabled = length < 2
+      newInputInput.focus()
+    })
+
+    removeButton.classList.add('removeButton')
+    removeButton.innerHTML = removeButtonText
+    removeButton.disabled = true
+    removeButton.addEventListener('click', function () {
+      const length = inputWrapper.querySelectorAll('div:has(input)').length
+      inputWrapper.querySelectorAll('div:has(input)')[length - 1].remove()
+
+      removeButton.disabled = length < 3
+      removeButton.blur()
+    })
+
+    inputWrapper.appendChild(input1)
+    buttonWrapper.appendChild(plusButton)
+    buttonWrapper.appendChild(removeButton)
+    inputWrapper.appendChild(buttonWrapper)
+  }
+
+  const sectionWrapper = document.createElement('div')
+  sectionWrapper.classList.add('section')
+  sectionWrapper.dataset.title = title
+
+  sectionWrapper.appendChild(titleEl)
+  sectionWrapper.appendChild(inputWrapper)
+
+  return sectionWrapper
+}
+
+async function getOffenderSection(
+  offenderInformation = { pedName: null, vehicleLicensePlate: null },
+  isList = false
+) {
+  const language = await getLanguage()
+
+  const title = document.createElement('div')
+  if (isList) {
+    title.classList.add('searchResponseSectionTitle')
+  } else {
+    title.classList.add('title')
+  }
+  title.innerHTML = language.reports.sections.offender.title
+
+  const pedName = document.createElement('div')
+  pedName.classList.add('pedName')
+  const pedNameLabel = document.createElement('label')
+  pedNameLabel.innerHTML = language.reports.sections.offender.pedName
+  pedNameLabel.htmlFor = 'offenderSectionPedNameInput'
+  const pedNameInput = document.createElement('input')
+  pedNameInput.type = 'text'
+  pedNameInput.value = offenderInformation.pedName || ''
+  pedNameInput.id = 'offenderSectionPedNameInput'
+  pedNameInput.autocomplete = 'off'
+  pedNameInput.disabled = isList
+  pedNameInput.addEventListener('blur', function () {
+    checkForValidPedName(pedNameInput)
+  })
+  pedName.appendChild(pedNameLabel)
+  pedName.appendChild(pedNameInput)
+
+  const vehicleLicensePlate = document.createElement('div')
+  vehicleLicensePlate.classList.add('vehicleLicensePlate')
+  const vehicleLicensePlateLabel = document.createElement('label')
+  vehicleLicensePlateLabel.innerHTML =
+    language.reports.sections.offender.vehicleLicensePlate
+  vehicleLicensePlateLabel.htmlFor = 'offenderSectionVehicleLicensePlateInput'
+  const vehicleLicensePlateInput = document.createElement('input')
+  vehicleLicensePlateInput.type = 'text'
+  vehicleLicensePlateInput.value = offenderInformation.vehicleLicensePlate || ''
+  vehicleLicensePlateInput.id = 'offenderSectionVehicleLicensePlateInput'
+  vehicleLicensePlateInput.autocomplete = 'off'
+  vehicleLicensePlateInput.disabled = isList
+  vehicleLicensePlateInput.addEventListener('blur', function () {
+    checkForValidVehicleLicensePlate(vehicleLicensePlateInput)
+  })
+  vehicleLicensePlate.appendChild(vehicleLicensePlateLabel)
+  vehicleLicensePlate.appendChild(vehicleLicensePlateInput)
+
+  pedName.appendChild(pedNameLabel)
+  pedName.appendChild(pedNameInput)
+
+  const inputWrapper = document.createElement('div')
+  inputWrapper.classList.add('inputWrapper')
+  inputWrapper.classList.add('grid')
+
+  inputWrapper.appendChild(pedName)
+  inputWrapper.appendChild(vehicleLicensePlate)
+
+  const sectionWrapper = document.createElement('div')
+  sectionWrapper.classList.add('section')
+
+  sectionWrapper.appendChild(title)
+  sectionWrapper.appendChild(inputWrapper)
+
+  return sectionWrapper
+}
+
+async function checkForValidPedName(inputEl) {
+  const name = inputEl.value.trim()
+  if (!name) return
+  const response = await (
+    await fetch('/data/specificPed', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: name,
+    })
+  ).json()
+  if (!response) {
+    const language = await getLanguage()
+    showNotification(language.reports.notifications.invalidPedName, 'warning')
+  }
+}
+
+async function checkForValidVehicleLicensePlate(inputEl) {
+  const name = inputEl.value.trim()
+  if (!name) return
+  const response = await (
+    await fetch('/data/specificVehicle', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: name,
+    })
+  ).json()
+  if (!response) {
+    const language = await getLanguage()
+    showNotification(
+      language.reports.notifications.invalidVehicleLicensePlate,
+      'warning'
+    )
+  }
+}
+
+async function getCitationArrestSection(type, isList = false) {
+  const language = await getLanguage()
+  const options = await (await fetch(`/${type}Options`)).json()
+
+  const title = document.createElement('div')
+  if (isList) {
+    title.classList.add('searchResponseSectionTitle')
+  } else {
+    title.classList.add('title')
+  }
+  title.innerHTML = language.reports.sections[type].title
+  title.style.borderBottom = 'none'
+  title.style.paddingBottom = '0'
+
+  const sectionWrapper = document.createElement('div')
+  sectionWrapper.classList.add('section')
+  sectionWrapper.classList.add(`${type}Section`)
+
+  const additionalWrapper = document.createElement('div')
+
+  const optionsWrapper = document.createElement('div')
+  optionsWrapper.classList.add('optionsWrapper')
+
+  const optionsList = document.createElement('div')
+  optionsList.classList.add('optionsList')
+
+  const optionsSearchInput = document.createElement('input')
+  optionsSearchInput.type = 'text'
+  optionsSearchInput.placeholder =
+    language.reports.sections[type].searchChargesPlaceholder
+  optionsSearchInput.autocomplete = 'off'
+  optionsSearchInput.id = `${type}OptionsSearchInput`
+  optionsSearchInput.addEventListener('input', async function () {
+    await performSearch(optionsSearchInput.value.trim())
+  })
+  optionsWrapper.appendChild(optionsSearchInput)
+
+  performSearch()
+  async function performSearch(search) {
+    optionsWrapper.querySelectorAll('details').forEach((el) => el.remove())
+    for (const group of options) {
+      const details = document.createElement('details')
+      if (search) details.open = true
+
+      const summary = document.createElement('summary')
+      summary.innerHTML = group.name
+      details.appendChild(summary)
+      summary.addEventListener('click', function () {
+        optionsWrapper.querySelectorAll('details').forEach((el) => {
+          if (el != details) el.open = false
+        })
+      })
+
+      for (const charge of group.charges) {
+        if (
+          search &&
+          !charge.name.toLowerCase().includes(search.toLowerCase())
+        ) {
+          continue
+        }
+        const button = document.createElement('button')
+        button.innerHTML = charge.name
+        button.addEventListener('click', async function () {
+          button.blur()
+          await addChargeToOptionsList(charge)
+        })
+
+        const chargeDetailsOnButton = document.createElement('span')
+        chargeDetailsOnButton.classList.add('chargeDetailsOnButton')
+        chargeDetailsOnButton.innerHTML = await getChargeDetailsString(
+          type,
+          charge
+        )
+
+        button.appendChild(chargeDetailsOnButton)
+        details.appendChild(button)
+      }
+      if (search && details.children.length < 2) continue
+      optionsWrapper.appendChild(details)
+    }
+  }
+
+  async function addChargeToOptionsList(charge) {
+    const chargeWrapper = document.createElement('div')
+    chargeWrapper.classList.add('chargeWrapper')
+    chargeWrapper.dataset.charge = JSON.stringify(charge)
+
+    const chargeName = document.createElement('div')
+    chargeName.classList.add('chargeName')
+    chargeName.innerHTML = charge.name
+
+    const chargeDetails = document.createElement('div')
+    chargeDetails.classList.add('chargeDetails')
+    chargeDetails.innerHTML = await getChargeDetailsString(type, charge)
+
+    const deleteChargeButton = document.createElement('button')
+    deleteChargeButton.classList.add('deleteChargeButton')
+    deleteChargeButton.innerHTML =
+      topDoc.querySelector('.iconAccess .trash').innerHTML
+    deleteChargeButton.addEventListener('click', function () {
+      chargeWrapper.remove()
+    })
+
+    chargeWrapper.appendChild(chargeName)
+    chargeWrapper.appendChild(chargeDetails)
+    if (!isList) chargeWrapper.appendChild(deleteChargeButton)
+
+    optionsList.appendChild(chargeWrapper)
+  }
+
+  sectionWrapper.appendChild(title)
+  additionalWrapper.appendChild(optionsWrapper)
+  additionalWrapper.appendChild(optionsList)
+  sectionWrapper.appendChild(additionalWrapper)
+
+  return sectionWrapper
+}
+
+async function getChargeDetailsString(type, charge) {
+  const language = await getLanguage()
+
+  let fineString = `${language.reports.sections.fine}: `
+  if (charge.minFine == charge.maxFine) {
+    fineString += await getCurrencyString(charge.minFine)
+  } else {
+    fineString += `${await getCurrencyString(
+      charge.minFine
+    )} - ${await getCurrencyString(charge.maxFine)}`
+  }
+
+  let incarcerationString = `${language.reports.sections.incarceration}: `
+  if (charge.minDays == charge.maxDays) {
+    incarcerationString += await convertDaysToYMD(charge.minDays)
+  } else {
+    incarcerationString += `${await convertDaysToYMD(charge.minDays)} - ${
+      charge.maxDays == null
+        ? language.units.life
+        : await convertDaysToYMD(charge.maxDays)
+    }`
+  }
+
+  if (type == 'citation') {
+    return fineString
+  } else if (type == 'arrest') {
+    return `${fineString} | ${incarcerationString}`
+  }
+}
+
+async function saveReport(type) {
+  const language = await getLanguage()
+
+  const el = document.querySelector('.createPage .reportInformation')
+  const generalInformation = {
+    Id: el.querySelector('#generalInformationSectionReportIdInput').value,
+    TimeStamp: new Date(
+      `${el
+        .querySelector('#generalInformationSectionDateInput')
+        .value.trim()} ${el
+        .querySelector('#generalInformationSectionTimeInput')
+        .value.trim()}`
+    ),
+    Status: el.querySelector('.statusInput .selected').dataset.status,
+    Notes: el.querySelector('#notesSectionTextarea').value.trim(),
+  }
+
+  const officerInformation = {
+    firstName: el
+      .querySelector('#officerInformationSectionFirstNameInput')
+      .value.trim(),
+    lastName: el
+      .querySelector('#officerInformationSectionLastNameInput')
+      .value.trim(),
+    badgeNumber: el
+      .querySelector('#officerInformationSectionBadgeNumberInput')
+      .value.trim(),
+    rank: el.querySelector('#officerInformationSectionRankInput').value.trim(),
+    callSign: el
+      .querySelector('#officerInformationSectionCallSignInput')
+      .value.trim(),
+    agency: el
+      .querySelector('#officerInformationSectionAgencyInput')
+      .value.trim(),
+  }
+
+  const location = {
+    Area: el.querySelector('#locationSectionAreaInput').value.trim(),
+    Street: el.querySelector('#locationSectionStreetInput').value.trim(),
+    County: el.querySelector('#locationSectionCountyInput').value.trim(),
+    Postal: el.querySelector('#locationSectionPostalInput').value.trim(),
+  }
+
+  const report = {
+    ...generalInformation,
+    OfficerInformation: officerInformation,
+    Location: location,
+  }
+
+  switch (type) {
+    case 'incident':
+      report.OffenderPedsNames = []
+      const offenderInputs = el.querySelectorAll(
+        `[data-title="${language.reports.sections.incident.titleOffenders}"] .inputWrapper > div:has(input) input`
+      )
+      for (const input of offenderInputs) {
+        if (input.value.trim()) {
+          report.OffenderPedsNames.push(input.value.trim())
+        }
+      }
+
+      report.WitnessPedsNames = []
+      const witnessInputs = el.querySelectorAll(
+        `[data-title="${language.reports.sections.incident.titleWitnesses}"] .inputWrapper > div:has(input) input`
+      )
+      for (const input of witnessInputs) {
+        if (input.value.trim()) {
+          report.WitnessPedsNames.push(input.value.trim())
+        }
+      }
+      break
+    case 'citation':
+    case 'arrest':
+      report.OffenderPedName = el
+        .querySelector('#offenderSectionPedNameInput')
+        .value.trim()
+      report.OffenderVehicleLicensePlate = el
+        .querySelector('#offenderSectionVehicleLicensePlateInput')
+        .value.trim()
+
+      report.Charges = []
+      for (const chargeEl of el.querySelectorAll(
+        `.${type}Section .optionsList .chargeWrapper`
+      )) {
+        report.Charges.push(JSON.parse(chargeEl.dataset.charge))
+      }
+      break
+  }
+
+  console.log(report)
+}

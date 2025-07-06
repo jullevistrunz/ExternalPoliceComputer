@@ -9,8 +9,7 @@ body {
   padding: 10px 0 10px 10px;
 }
 
-.listPage .listWrapper,
-.createPage {
+.listWrapper {
   display: grid;
   grid-template-columns: minmax(150px, 1fr) 3fr;
   gap: 10px;
@@ -18,12 +17,12 @@ body {
 
 .createPage .reportInformation,
 .listPage .reportsList {
-  max-height: calc(100vh - 20px);
+  max-height: calc(100vh - 73px);
   overflow: auto;
   padding-right: 10px;
 }
 
-.listPage .buttonWrapper {
+.buttonWrapper:not(:has(.plusButton)):not(:has(.removeButton)) {
   margin-right: 10px;
   margin-bottom: 10px;
   padding-bottom: 10px;
@@ -36,13 +35,8 @@ body {
   gap: 5px;
   padding-right: 10px;
   border-right: 1px solid var(--color-border);
-  max-height: calc(100vh - 20px);
-  overflow: auto;
-}
-
-.listPage .reportsList,
-.listPage .typeSelector {
   max-height: calc(100vh - 73px);
+  overflow: auto;
 }
 
 .typeSelector button {
@@ -98,14 +92,203 @@ body {
   font-weight: 400;
   padding: 5px 10px;
   outline: none;
-  transition: var(--transition-time-short) ease;
+  transition: border-color var(--transition-time-short) ease;
 }
 
 .section .notesTextarea:focus {
   border-color: var(--color-accent);
 }
 
-.createPage .saveButton {
+.createPage .reportInformation .plusButton,
+.createPage .reportInformation .removeButton {
+  max-height: 33px;
+  margin-top: auto;
+}
+
+.section.citationSection > div:not(.title),
+.section.arrestSection > div:not(.title) {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.section.citationSection .optionsWrapper,
+.section.arrestSection .optionsWrapper,
+.section.citationSection .optionsList,
+.section.arrestSection .optionsList {
+  flex: 1 1 0;
   width: 100%;
+}
+
+.section.citationSection .optionsWrapper > input,
+.section.arrestSection .optionsWrapper > input {
   border-radius: 3px;
+  width: 100%;
+}
+
+.section.citationSection .optionsWrapper details > summary,
+.section.arrestSection .optionsWrapper details > summary {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  padding: 6px 8px;
+  transition: var(--transition-time-short) ease;
+  outline: none;
+}
+
+.section.citationSection .optionsWrapper details > summary:hover,
+.section.arrestSection .optionsWrapper details > summary:hover,
+.section.citationSection .optionsWrapper details > summary:focus,
+.section.arrestSection .optionsWrapper details > summary:focus {
+  color: var(--color-accent);
+}
+
+.section.citationSection .optionsWrapper details:first-of-type summary,
+.section.arrestSection .optionsWrapper details:first-of-type summary,
+.section.citationSection .optionsWrapper details:open + details summary,
+.section.arrestSection .optionsWrapper details:open + details summary {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  margin-top: 5px;
+}
+
+.section.citationSection
+  .optionsWrapper
+  details:not(:open):last-child
+  > summary,
+.section.arrestSection .optionsWrapper details:not(:open):last-child > summary {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.section.citationSection .optionsWrapper details > button,
+.section.arrestSection .optionsWrapper details > button {
+  text-align: left;
+  width: 100%;
+  overflow: hidden;
+  font-weight: 400;
+}
+
+.section.citationSection .optionsWrapper details > button:focus,
+.section.arrestSection .optionsWrapper details > button:focus {
+  border-color: var(--color-border);
+  color: var(--color-accent);
+}
+
+.section.citationSection .optionsWrapper details > button:last-child,
+.section.arrestSection .optionsWrapper details > button:last-child {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.section.citationSection
+  .optionsWrapper
+  details:not(:last-child)
+  > :not(:last-child),
+.section.arrestSection
+  .optionsWrapper
+  details:not(:last-child)
+  > :not(:last-child) {
+  border-bottom: none;
+}
+
+.section.citationSection .optionsWrapper details > button:not(:last-child),
+.section.arrestSection .optionsWrapper details > button:not(:last-child) {
+  border-bottom: none;
+}
+
+.section.citationSection .optionsWrapper details:open > summary,
+.section.arrestSection .optionsWrapper details:open > summary {
+  border-bottom: none;
+}
+
+.section.citationSection details > button .chargeDetailsOnButton,
+.section.arrestSection details > button .chargeDetailsOnButton {
+  max-height: 0;
+  opacity: 0;
+  transition: var(--transition-time-short) ease;
+  display: block;
+  overflow: hidden;
+  color: var(--color-text-primary-half);
+}
+
+.section.citationSection details > button:hover .chargeDetailsOnButton,
+.section.arrestSection details > button:hover .chargeDetailsOnButton {
+  max-height: 20px;
+  opacity: 1;
+}
+
+.section.citationSection .optionsList,
+.section.arrestSection .optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.section.citationSection .optionsList .chargeWrapper,
+.section.arrestSection .optionsList .chargeWrapper {
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 5px 10px;
+  font-size: 14px;
+  position: relative;
+}
+
+.section.citationSection .optionsList .chargeWrapper .chargeName,
+.section.arrestSection .optionsList .chargeWrapper .chargeName {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.section.citationSection .optionsList .chargeWrapper .chargeDetails,
+.section.arrestSection .optionsList .chargeWrapper .chargeDetails {
+  color: var(--color-text-primary-half);
+  font-weight: 400;
+}
+
+.section.citationSection .optionsList .chargeWrapper .chargeName,
+.section.arrestSection .optionsList .chargeWrapper .chargeName,
+.section.citationSection .optionsList .chargeWrapper .chargeDetails,
+.section.arrestSection .optionsList .chargeWrapper .chargeDetails {
+  width: calc(100% - 40px);
+}
+
+.section.citationSection .optionsList .chargeWrapper .deleteChargeButton,
+.section.arrestSection .optionsList .chargeWrapper .deleteChargeButton {
+  fill: var(--color-text-primary);
+  border: none;
+  width: 48px;
+  height: 48px;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+}
+
+.section.citationSection .optionsList .chargeWrapper:hover .deleteChargeButton,
+.section.arrestSection .optionsList .chargeWrapper:hover .deleteChargeButton,
+.section.citationSection .optionsList .chargeWrapper .deleteChargeButton:focus,
+.section.arrestSection .optionsList .chargeWrapper .deleteChargeButton:focus {
+  opacity: 1;
+}
+
+.section.citationSection .optionsList .chargeWrapper .deleteChargeButton:focus,
+.section.arrestSection .optionsList .chargeWrapper .deleteChargeButton:focus,
+.section.arrestSection .optionsList .chargeWrapper .deleteChargeButton:hover,
+.section.citationSection .optionsList .chargeWrapper .deleteChargeButton:hover {
+  fill: var(--color-error);
+}
+
+.section.citationSection
+  .optionsList
+  .chargeWrapper
+  .deleteChargeButton::before,
+.section.arrestSection .optionsList .chargeWrapper .deleteChargeButton::before {
+  display: none;
 }

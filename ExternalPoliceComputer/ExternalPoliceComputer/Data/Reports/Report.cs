@@ -25,7 +25,7 @@ namespace ExternalPoliceComputer.Data.Reports {
             Postal = CommonDataFramework.Modules.Postals.PostalCodeController.GetPostalCode(vector3);
         }
     }
-
+    
     public enum ReportStatus {
         Open,
         Closed,

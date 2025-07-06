@@ -18,5 +18,6 @@ namespace ExternalPoliceComputer.Setup {
         public int maxNumberOfPriorArrestsWithWarrant = 8;
         public string reportIdFormat = "{type}-{shortYear}-{index}"; // available: type, year, shortYear, month, day, index
         public int reportIdIndexPad = 6;
+        public bool displayCurrencySymbolBeforeNumber = true;
     }
 }

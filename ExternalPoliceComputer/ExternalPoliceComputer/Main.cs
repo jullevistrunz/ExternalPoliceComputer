@@ -76,9 +76,6 @@ namespace ExternalPoliceComputer {
 
                         if (useCI) EventListeners.CalloutEvents.AddCalloutEventWithCI();
 
-                        Events.OnPulloverStarted += EventListeners.LSPDFREvents.Events_OnPulloverStarted;
-                        Events.OnPursuitEnded += EventListeners.LSPDFREvents.Events_OnPursuitEnded;
-
                         if (usePR) {
                             EventListeners.PREvents.SubscribeToPREvents();
                         } else {

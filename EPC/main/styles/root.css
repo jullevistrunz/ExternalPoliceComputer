@@ -148,6 +148,7 @@ input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
+
 .inputWrapper {
   --gap: 10px;
   container-name: inputWrapper;

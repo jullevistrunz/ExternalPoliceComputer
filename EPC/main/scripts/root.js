@@ -57,6 +57,11 @@ function hideLoadingOnButton(button) {
 }
 
 function showNotification(message, icon = 'info', duration = 4000) {
+  for (const notification of topDoc.querySelectorAll(
+    '.overlay .notifications .notification'
+  )) {
+    if (notification.querySelector('.title').innerHTML == message) return
+  }
   const color =
     {
       warning: 'warning',
@@ -160,4 +165,49 @@ async function openInPedSearch(pedName) {
       .querySelector('.searchInputWrapper button')
       .click()
   }
+}
+
+let reportIsOnCreatePageBool = false
+function reportIsOnCreatePage() {
+  return reportIsOnCreatePageBool
+}
+
+async function getCurrencyString(number) {
+  const language = await getLanguage()
+  const config = await getConfig()
+  if (config.displayCurrencySymbolBeforeNumber) {
+    return language.units.currencySymbol + number
+  }
+  return number + language.units.currencySymbol
+}
+
+async function convertDaysToYMD(days) {
+  const language = await getLanguage()
+  const years = Math.floor(days / 365)
+  const daysAfterYears = days % 365
+  const months = Math.floor(daysAfterYears / 30)
+  const remainingDays = daysAfterYears % 30
+  const parts = []
+  if (years) parts.push(`${years}${language.units.year}`)
+  if (months) parts.push(`${months}${language.units.month}`)
+  if (remainingDays) parts.push(`${remainingDays}${language.units.day}`)
+  return parts.join(', ') || `0${language.units.day}`
+}
+
+async function convertMsToTimeString(ms) {
+  const language = await getLanguage()
+  const totalSeconds = Math.floor(ms / 1000)
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  const s = totalSeconds % 60
+
+  const pad = (n) => String(n).padStart(2, '0')
+  const result = []
+
+  if (h > 0) result.push(`${pad(h)}${language.units.hour}`)
+  if (m > 0 || h > 0) result.push(`${pad(m)}${language.units.minute}`)
+  if (s > 0 || m > 0 || h > 0 || result.length == 0)
+    result.push(`${pad(s)}${language.units.second}`)
+
+  return result.join(' ')
 }

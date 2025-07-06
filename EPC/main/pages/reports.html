@@ -36,24 +36,34 @@
       </div>
     </div>
     <div class="createPage hidden">
-      <div class="typeSelector">
-        <button
-          data-type="incident"
-          data-language="createPage.reportType.incident"
-        >
-          Incident Report
-        </button>
-        <button
-          data-type="citation"
-          data-language="createPage.reportType.citation"
-        >
-          Citation Report
-        </button>
-        <button data-type="arrest" data-language="createPage.reportType.arrest">
-          Arrest Report
+      <div class="buttonWrapper">
+        <button class="saveButton" data-language="createPage.saveButton">
+          Save Report
         </button>
       </div>
-      <div class="reportInformation"></div>
+      <div class="listWrapper">
+        <div class="typeSelector">
+          <button
+            data-type="incident"
+            data-language="createPage.reportType.incident"
+          >
+            Incident Report
+          </button>
+          <button
+            data-type="citation"
+            data-language="createPage.reportType.citation"
+          >
+            Citation Report
+          </button>
+          <button
+            data-type="arrest"
+            data-language="createPage.reportType.arrest"
+          >
+            Arrest Report
+          </button>
+        </div>
+        <div class="reportInformation"></div>
+      </div>
     </div>
   </body>
   <script src="/script/root.js"></script>

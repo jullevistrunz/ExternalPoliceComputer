@@ -37,6 +37,14 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SetupController.GetLanguage()));
                 status = 200;
                 contentType = "text/json";
+            } else if (path == "/citationOptions") {
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SetupController.GetCitationOptions()));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "/arrestOptions") {
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SetupController.GetArrestOptions()));
+                status = 200;
+                contentType = "text/json";
             }
         }
     }

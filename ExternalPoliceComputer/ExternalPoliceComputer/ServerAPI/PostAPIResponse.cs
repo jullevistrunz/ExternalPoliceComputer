@@ -70,6 +70,8 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.AddReport(report);
 
+                Helper.WriteToJsonFile(SetupController.IncidentReportsPath, DataController.incidentReports);
+
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
@@ -78,6 +80,8 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.AddReport(report);
 
+                Helper.WriteToJsonFile(SetupController.CitationReportsPath, DataController.citationReports);
+
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
@@ -85,6 +89,8 @@ namespace ExternalPoliceComputer.ServerAPI {
                 ArrestReport report = JsonConvert.DeserializeObject<ArrestReport>(body);
 
                 DataController.AddReport(report);
+
+                Helper.WriteToJsonFile(SetupController.ArrestReportsPath, DataController.arrestReports);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";

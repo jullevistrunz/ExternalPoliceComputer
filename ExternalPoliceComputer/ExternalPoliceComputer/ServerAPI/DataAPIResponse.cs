@@ -27,7 +27,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                 EPCPedData pedData = DataController.PedDatabase.FirstOrDefault(o => o.Name?.ToLower() == name.ToLower() || o.Name?.ToLower() == reversedName.ToLower());
 
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(pedData));
-                contentType = "text/plain";
+                contentType = "text/json";
                 status = 200;
             } else if (path == "specificVehicle") {
                 string body = Helper.GetRequestPostData(req);
@@ -36,7 +36,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                 EPCVehicleData vehicleData = DataController.VehicleDatabase.FirstOrDefault(o => o.LicensePlate?.ToLower() == licensePlateOrVin.ToLower() ||o.VehicleIdentificationNumber?.ToLower() == licensePlateOrVin.ToLower());
 
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleData));
-                contentType = "text/plain";
+                contentType = "text/json";
                 status = 200;
             } else if (path == "officerInformation") {
                 Helper.Log(LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName());
@@ -100,7 +100,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(Rage.World.TimeOfDay.ToString());
                 status = 200;
                 contentType = "text/plain";
-            }
+            } 
         }
     }
 }
