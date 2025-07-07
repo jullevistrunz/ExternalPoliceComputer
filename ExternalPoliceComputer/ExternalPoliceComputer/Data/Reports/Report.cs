@@ -4,6 +4,7 @@ using System;
 namespace ExternalPoliceComputer.Data.Reports {
     public class Report {
         public string Id;
+        public int ShortYear; // this will cause issues in 100 years, but by then I'll be dead and it will no longer be my problem
         public OfficerInformationData OfficerInformation;
         public Location Location;
         public DateTime TimeStamp;
@@ -24,11 +25,13 @@ namespace ExternalPoliceComputer.Data.Reports {
             County = zone.County.ToString();
             Postal = CommonDataFramework.Modules.Postals.PostalCodeController.GetPostalCode(vector3);
         }
+
+        public Location() { }
     }
     
     public enum ReportStatus {
-        Open,
         Closed,
+        Open,
         Canceled
     }
 }

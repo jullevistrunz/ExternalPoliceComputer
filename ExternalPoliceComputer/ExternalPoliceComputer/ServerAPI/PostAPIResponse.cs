@@ -66,7 +66,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                 contentType = "text/plain";
                 status = 200;
             } else if (path == "createIncidentReport") {
-                Report report = JsonConvert.DeserializeObject<Report>(body);
+                IncidentReport report = JsonConvert.DeserializeObject<IncidentReport>(body);
 
                 DataController.AddReport(report);
 

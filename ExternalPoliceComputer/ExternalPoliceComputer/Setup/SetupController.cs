@@ -1,4 +1,5 @@
 ﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Utility;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -85,6 +86,12 @@ namespace ExternalPoliceComputer.Setup {
 
             DataController.shiftHistoryData = Helper.ReadFromJsonFile<List<ShiftData>>(ShiftHistoryDataPath) ?? new List<ShiftData>();
 
+            DataController.incidentReports = Helper.ReadFromJsonFile<List<IncidentReport>>(IncidentReportsPath);
+
+            DataController.citationReports = Helper.ReadFromJsonFile<List<CitationReport>>(CitationReportsPath);
+
+            DataController.arrestReports = Helper.ReadFromJsonFile<List<ArrestReport>>(ArrestReportsPath);
+
             DataController.LoadPedDatabaseFromFile();
             DataController.LoadVehicleDatabaseFromFile();
 
@@ -106,7 +113,7 @@ namespace ExternalPoliceComputer.Setup {
             Helper.ClearLog();
             Helper.Log($"Version: {Main.Version}");
             Helper.Log($"Log path: {Path.GetFullPath(LogFilePath)}");
-            
+
             Config config = GetConfig();
             Helper.Log($"Config:\n{JsonConvert.SerializeObject(config, Formatting.Indented)}");
 

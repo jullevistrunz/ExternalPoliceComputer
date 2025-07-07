@@ -1,6 +1,5 @@
 ;(async function () {
   const config = await getConfig()
-  const language = await getLanguage()
   if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage()
 })()
 
@@ -31,7 +30,8 @@ document
     document.title = language.reports.newReportTitle
     reportIsOnCreatePageBool = true
 
-    document.querySelector('.listPage').remove()
+    document.querySelector('.listPage').classList.add('hidden')
+    document.querySelector('.listPage .reportInformation').innerHTML = ''
     document.querySelector('.createPage').classList.remove('hidden')
 
     document.querySelector('.createPage .typeSelector button').click()
@@ -41,20 +41,74 @@ document
   .querySelectorAll('.listPage .listWrapper .typeSelector button')
   .forEach((button) =>
     button.addEventListener('click', async function () {
+      if (button.classList.contains('loading')) return
+      showLoadingOnButton(button)
       button.blur()
       document
         .querySelectorAll('.listPage .listWrapper .typeSelector button')
         .forEach((btn) => btn.classList.remove('selected'))
       button.classList.add('selected')
 
-      switch (button.dataset.type) {
-        case 'incident':
-          break
-        case 'citation':
-          break
-        case 'arrest':
-          break
+      document.querySelector('.listPage .reportsList').innerHTML = ''
+
+      const language = await getLanguage()
+
+      let reports = await (
+        await fetch(`/data/${button.dataset.type}Reports`)
+      ).json()
+      reports = reports.reverse()
+      for (const report of reports) {
+        const listElement = document.createElement('div')
+        listElement.classList.add('listElement')
+
+        const infoWrapper = document.createElement('div')
+        infoWrapper.classList.add('infoWrapper')
+
+        const iDElement = document.createElement('div')
+        iDElement.classList.add('id')
+        iDElement.innerHTML = report.Id
+
+        const statusElement = document.createElement('div')
+        statusElement.classList.add('status')
+        const statusColorMap = {
+          0: 'success',
+          1: 'info',
+          2: 'error',
+        }
+        statusElement.style.backgroundColor = `var(--color-${
+          statusColorMap[report.Status]
+        }-half)`
+        statusElement.style.borderColor = `var(--color-${
+          statusColorMap[report.Status]
+        })`
+        statusElement.innerHTML = language.reports.statusMap[report.Status]
+
+        infoWrapper.appendChild(iDElement)
+        infoWrapper.appendChild(statusElement)
+
+        const buttonWrapper = document.createElement('div')
+        buttonWrapper.classList.add('buttonWrapper')
+
+        const viewButton = document.createElement('button')
+        viewButton.classList.add('viewButton')
+        viewButton.innerHTML = language.reports.list.viewButton
+
+        const editButton = document.createElement('button')
+        editButton.classList.add('editButton')
+        editButton.innerHTML = language.reports.list.editButton
+
+        buttonWrapper.appendChild(viewButton)
+        buttonWrapper.appendChild(editButton)
+
+        listElement.appendChild(infoWrapper)
+        listElement.appendChild(buttonWrapper)
+
+        document
+          .querySelector('.listPage .reportsList')
+          .appendChild(listElement)
       }
+
+      hideLoadingOnButton(button)
     })
   )
 
@@ -95,7 +149,7 @@ document
       inGameDate.setMinutes(inGameDateArr[1])
       inGameDate.setSeconds(inGameDateArr[2])
 
-      const reportId = await getReportId(button.dataset.type)
+      const reportId = await generateReportId(button.dataset.type)
 
       const generalInformation = {
         time: config.useInGameTime
@@ -103,7 +157,7 @@ document
           : new Date().toLocaleTimeString(),
         date: new Date().toLocaleDateString(),
         reportId: reportId,
-        status: 'Open',
+        status: 1,
       }
 
       document
@@ -162,20 +216,25 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('.listPage .listWrapper .typeSelector button').click()
 })
 
-async function getReportId(type) {
+async function generateReportId(type) {
   const config = await getConfig()
   const language = await getLanguage()
   const reports = await (await fetch(`/data/${type}Reports`)).json()
+  const shortYear = new Date().getFullYear().toString().slice(-2)
+  let index = 1
+  for (const report of reports) {
+    if (report.ShortYear == shortYear) index++
+  }
   const typeMap = language.reports.idTypeMap
   let id = config.reportIdFormat
   id = id.replace('{type}', typeMap[type])
-  id = id.replace('{shortYear}', new Date().getFullYear().toString().slice(-2))
+  id = id.replace('{shortYear}', shortYear)
   id = id.replace('{year}', new Date().getFullYear())
   id = id.replace('{month}', new Date().getMonth() + 1)
   id = id.replace('{day}', new Date().getDate())
   id = id.replace(
     '{index}',
-    (reports.length + 1).toString().padStart(config.reportIdIndexPad, '0')
+    index.toString().padStart(config.reportIdIndexPad, '0')
   )
   return id
 }
@@ -422,10 +481,10 @@ async function getGeneralInformationSection(
   const statusInput = document.createElement('div')
   statusInput.classList.add('statusInput')
   const statusClosed = document.createElement('button')
-  statusClosed.innerHTML = language.values.Closed
+  statusClosed.innerHTML = language.reports.statusMap[0]
   statusClosed.classList.add('closed')
-  statusClosed.dataset.status = 'Closed'
-  if (generalInformation.status == 'Closed') {
+  statusClosed.dataset.status = 0
+  if (generalInformation.status == 0) {
     statusClosed.classList.add('selected')
   }
   statusClosed.addEventListener('click', function () {
@@ -436,10 +495,10 @@ async function getGeneralInformationSection(
     statusClosed.classList.add('selected')
   })
   const statusOpen = document.createElement('button')
-  statusOpen.innerHTML = language.values.Open
+  statusOpen.innerHTML = language.reports.statusMap[1]
   statusOpen.classList.add('open')
-  statusOpen.dataset.status = 'Open'
-  if (generalInformation.status == 'Open') {
+  statusOpen.dataset.status = 1
+  if (generalInformation.status == 1) {
     statusOpen.classList.add('selected')
   }
   statusOpen.addEventListener('click', function () {
@@ -450,10 +509,10 @@ async function getGeneralInformationSection(
     statusOpen.classList.add('selected')
   })
   const statusCanceled = document.createElement('button')
-  statusCanceled.innerHTML = language.values.Canceled
+  statusCanceled.innerHTML = language.reports.statusMap[2]
   statusCanceled.classList.add('canceled')
-  statusCanceled.dataset.status = 'Canceled'
-  if (generalInformation.status == 'Canceled') {
+  statusCanceled.dataset.status = 2
+  if (generalInformation.status == 2) {
     statusCanceled.classList.add('selected')
   }
   statusCanceled.addEventListener('click', function () {
@@ -933,6 +992,7 @@ async function saveReport(type) {
     ),
     Status: el.querySelector('.statusInput .selected').dataset.status,
     Notes: el.querySelector('#notesSectionTextarea').value.trim(),
+    ShortYear: new Date().getFullYear().toString().slice(-2),
   }
 
   const officerInformation = {
@@ -967,6 +1027,8 @@ async function saveReport(type) {
     Location: location,
   }
 
+  let response
+
   switch (type) {
     case 'incident':
       report.OffenderPedsNames = []
@@ -988,8 +1050,42 @@ async function saveReport(type) {
           report.WitnessPedsNames.push(input.value.trim())
         }
       }
+
+      response = await (
+        await fetch('/post/createIncidentReport', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(report),
+        })
+      ).text()
       break
     case 'citation':
+      report.OffenderPedName = el
+        .querySelector('#offenderSectionPedNameInput')
+        .value.trim()
+      report.OffenderVehicleLicensePlate = el
+        .querySelector('#offenderSectionVehicleLicensePlateInput')
+        .value.trim()
+
+      report.Charges = []
+      for (const chargeEl of el.querySelectorAll(
+        `.${type}Section .optionsList .chargeWrapper`
+      )) {
+        report.Charges.push(JSON.parse(chargeEl.dataset.charge))
+      }
+
+      response = await (
+        await fetch('/post/createCitationReport', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(report),
+        })
+      ).text()
+      break
     case 'arrest':
       report.OffenderPedName = el
         .querySelector('#offenderSectionPedNameInput')
@@ -1004,8 +1100,30 @@ async function saveReport(type) {
       )) {
         report.Charges.push(JSON.parse(chargeEl.dataset.charge))
       }
+
+      response = await (
+        await fetch('/post/createArrestReport', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(report),
+        })
+      ).text()
       break
   }
 
-  console.log(report)
+  if (response != 'OK') {
+    showNotification(language.reports.notifications.saveError, 'error')
+    return
+  }
+  showNotification(language.reports.notifications.saveSuccess, 'success')
+
+  document.querySelector('.createPage').classList.add('hidden')
+  document.querySelector('.createPage .reportInformation').innerHTML = ''
+  document.querySelector('.listPage').classList.remove('hidden')
+
+  document
+    .querySelector(`.listPage .typeSelector [data-type="${type}"]`)
+    .click()
 }

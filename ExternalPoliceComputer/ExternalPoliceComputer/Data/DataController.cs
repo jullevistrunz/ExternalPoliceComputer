@@ -192,7 +192,7 @@ namespace ExternalPoliceComputer.Data {
         }
 
         internal static void AddReportToCurrentShift(string reportId) {
-            if (currentShiftData.startTime == null) return;
+            if (currentShiftData.startTime == null || currentShiftData.reports.Contains(reportId)) return;
             currentShiftData.reports.Add(reportId);
         }
 

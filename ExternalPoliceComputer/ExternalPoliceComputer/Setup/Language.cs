@@ -183,17 +183,20 @@ namespace ExternalPoliceComputer.Setup {
             public string SanAndreas = "San Andreas";
             public string NorthYankton = "North Yankton";
             public string CayoPerico = "Cayo Perico";
-            public string Closed = "Closed";
-            public string Open = "Open";
-            public string Canceled = "Canceled";
         }
 
         public class Reports {
             public string newReportTitle = "New Report";
+            public string[] statusMap = {
+                "Closed",
+                "Open",
+                "Canceled"
+            };
             public Static @static = new Static();
             public Notifications notifications = new Notifications();
             public Sections sections = new Sections();
             public IdTypeMap idTypeMap = new IdTypeMap();
+            public List list = new List();
 
             public class Static {
                 public string title = "Reports";
@@ -225,9 +228,11 @@ namespace ExternalPoliceComputer.Setup {
             }
 
             public class Notifications {
-                public string createPageAlreadyOpen = "Only one report can be created at a time!";
-                public string invalidPedName = "A ped with this name doesn't exist!";
-                public string invalidVehicleLicensePlate = "A vehicle with this license plate doesn't exist!";
+                public string createPageAlreadyOpen = "Only one report can be created at a time.";
+                public string invalidPedName = "A ped with this name doesn't exist.";
+                public string invalidVehicleLicensePlate = "A vehicle with this license plate doesn't exist.";
+                public string saveSuccess = "Report saved successfully.";
+                public string saveError = "An error occurred while trying to save the report.";
             }
 
             public class Sections {
@@ -300,6 +305,11 @@ namespace ExternalPoliceComputer.Setup {
                 public string incident = "I";
                 public string citation = "C";
                 public string arrest = "A";
+            }
+
+            public class List {
+                public string viewButton = "View";
+                public string editButton = "Edit";
             }
         }
 

@@ -15,14 +15,15 @@ body {
   gap: 10px;
 }
 
-.createPage .reportInformation,
-.listPage .reportsList {
+.reportInformation,
+.reportsList {
   max-height: calc(100vh - 73px);
   overflow: auto;
   padding-right: 10px;
 }
 
-.buttonWrapper:not(:has(.plusButton)):not(:has(.removeButton)) {
+.buttonWrapper:has(.createButton),
+.buttonWrapper:has(.saveButton) {
   margin-right: 10px;
   margin-bottom: 10px;
   padding-bottom: 10px;
@@ -103,6 +104,7 @@ body {
 .createPage .reportInformation .removeButton {
   max-height: 33px;
   margin-top: auto;
+  min-width: fit-content;
 }
 
 .section.citationSection > div:not(.title),
@@ -263,7 +265,7 @@ body {
   border: none;
   width: 48px;
   height: 48px;
-  padding: 10px;
+  padding: 15px;
   position: absolute;
   right: 0;
   top: 50%;
@@ -291,4 +293,34 @@ body {
   .deleteChargeButton::before,
 .section.arrestSection .optionsList .chargeWrapper .deleteChargeButton::before {
   display: none;
+}
+
+.listPage .reportsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.listPage .reportsList .listElement {
+  padding: 10px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.listPage .reportsList .listElement .infoWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.listPage .reportsList .listElement .infoWrapper .status {
+  padding: 4px 10px;
+  border-radius: 90px;
+  border: 1px solid;
 }
