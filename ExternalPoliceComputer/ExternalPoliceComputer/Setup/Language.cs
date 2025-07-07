@@ -216,6 +216,7 @@ namespace ExternalPoliceComputer.Setup {
 
                 public class CreatePage {
                     public string saveButton = "Save Report";
+                    public string cancelButton = "Cancel";
                     public ReportType reportType = new ReportType();
 
                     public class ReportType {
@@ -310,6 +311,19 @@ namespace ExternalPoliceComputer.Setup {
             public class List {
                 public string viewButton = "View";
                 public string editButton = "Edit";
+                public string empty = "No reports of this type found.";
+                public string reportId = "Report ID";
+                public string date = "Date";
+                public string location = "Location";
+                public string involvedParties = "Involved Parties";
+                public string offender = "Offender";
+                public string vehicle = "Vehicle";
+                public Filter filter = new Filter();
+
+                public class Filter {
+                    public string title = "Filter";
+                    public string searchPlaceholder = "Search";
+                }
             }
         }
 

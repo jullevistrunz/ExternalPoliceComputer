@@ -299,9 +299,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.listPage .reportsList .listElement {
+.listPage .reportsList .listElement,
+.listPage .reportsList .filter {
   padding: 10px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -314,13 +318,46 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  color: var(--color-text-primary);
-  font-size: 16px;
-  font-weight: 600;
+}
+
+.listPage .reportsList .listElement .infoWrapper .textWrapper {
+  padding-right: 10px;
+}
+
+.listPage .reportsList .listElement .infoWrapper .textWrapper span {
+  font-weight: 400;
+  color: var(--color-text-primary-half);
 }
 
 .listPage .reportsList .listElement .infoWrapper .status {
   padding: 4px 10px;
   border-radius: 90px;
   border: 1px solid;
+}
+
+.listPage .reportsList .filter {
+  display: grid;
+  grid-template-columns: min-content 4fr 3fr;
+  gap: 10px;
+}
+
+.listPage .reportsList .filter .title {
+  font-size: 16px;
+}
+
+.listPage .reportsList .filter > * {
+  width: 100%;
+  align-content: center;
+}
+
+.listPage .reportsList .filter input {
+  border-radius: 3px;
+}
+
+.listPage .reportsList .filter .buttonWrapper {
+  flex-wrap: nowrap;
+}
+
+.listPage .reportsList .filter .buttonWrapper button {
+  min-width: fit-content;
 }

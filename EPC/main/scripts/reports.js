@@ -57,60 +57,248 @@ document
         await fetch(`/data/${button.dataset.type}Reports`)
       ).json()
       reports = reports.reverse()
-      for (const report of reports) {
-        const listElement = document.createElement('div')
-        listElement.classList.add('listElement')
 
-        const infoWrapper = document.createElement('div')
-        infoWrapper.classList.add('infoWrapper')
+      const filterElement = document.createElement('div')
+      filterElement.classList.add('filter')
 
-        const iDElement = document.createElement('div')
-        iDElement.classList.add('id')
-        iDElement.innerHTML = report.Id
+      const filterTitle = document.createElement('div')
+      filterTitle.classList.add('title')
+      filterTitle.innerHTML = language.reports.list.filter.title
 
-        const statusElement = document.createElement('div')
-        statusElement.classList.add('status')
-        const statusColorMap = {
-          0: 'success',
-          1: 'info',
-          2: 'error',
-        }
-        statusElement.style.backgroundColor = `var(--color-${
-          statusColorMap[report.Status]
-        }-half)`
-        statusElement.style.borderColor = `var(--color-${
-          statusColorMap[report.Status]
-        })`
-        statusElement.innerHTML = language.reports.statusMap[report.Status]
+      const filterInput = document.createElement('input')
+      filterInput.id = 'reportsListFilterInput'
+      filterInput.type = 'text'
+      filterInput.placeholder = language.reports.list.filter.searchPlaceholder
+      filterInput.addEventListener('input', async function () {
+        await applyFilter()
+      })
 
-        infoWrapper.appendChild(iDElement)
-        infoWrapper.appendChild(statusElement)
+      const statusButtonWrapper = document.createElement('div')
+      statusButtonWrapper.classList.add('buttonWrapper')
 
-        const buttonWrapper = document.createElement('div')
-        buttonWrapper.classList.add('buttonWrapper')
+      const closedButton = document.createElement('button')
+      closedButton.innerHTML = language.reports.statusMap[0]
+      closedButton.dataset.status = 0
+      closedButton.classList.add('selected')
 
-        const viewButton = document.createElement('button')
-        viewButton.classList.add('viewButton')
-        viewButton.innerHTML = language.reports.list.viewButton
+      const openButton = document.createElement('button')
+      openButton.innerHTML = language.reports.statusMap[1]
+      openButton.dataset.status = 1
+      openButton.classList.add('selected')
 
-        const editButton = document.createElement('button')
-        editButton.classList.add('editButton')
-        editButton.innerHTML = language.reports.list.editButton
+      const canceledButton = document.createElement('button')
+      canceledButton.innerHTML = language.reports.statusMap[2]
+      canceledButton.dataset.status = 2
 
-        buttonWrapper.appendChild(viewButton)
-        buttonWrapper.appendChild(editButton)
+      statusButtonWrapper.appendChild(closedButton)
+      statusButtonWrapper.appendChild(openButton)
+      statusButtonWrapper.appendChild(canceledButton)
 
-        listElement.appendChild(infoWrapper)
-        listElement.appendChild(buttonWrapper)
+      for (const button of statusButtonWrapper.querySelectorAll('button')) {
+        button.addEventListener('click', async function () {
+          button.blur()
+          button.classList.toggle('selected')
+          await applyFilter()
+        })
+      }
 
+      filterElement.appendChild(filterTitle)
+      filterElement.appendChild(filterInput)
+      filterElement.appendChild(statusButtonWrapper)
+
+      if (reports.length < 1) {
+        document.querySelector('.listPage .reportsList').innerHTML +=
+          language.reports.list.empty
+      } else {
         document
           .querySelector('.listPage .reportsList')
-          .appendChild(listElement)
+          .appendChild(filterElement)
+
+        await applyFilter()
+      }
+
+      async function applyFilter() {
+        const newReports = []
+        function addToNewReports(report) {
+          if (!newReports.includes(report)) {
+            newReports.push(report)
+          }
+        }
+        function removeFromNewReports(report) {
+          const index = newReports.indexOf(report)
+          if (index > -1) newReports.splice(index, 1)
+        }
+        for (const report of reports) {
+          if (
+            report.OffenderPedName?.toLowerCase().includes(
+              filterInput.value.toLowerCase()
+            ) ||
+            report.OffenderVehicleLicensePlate?.toLowerCase().includes(
+              filterInput.value.toLowerCase()
+            ) ||
+            report.Id.toLowerCase().includes(filterInput.value.toLowerCase()) ||
+            new Date(report.TimeStamp)
+              .toLocaleDateString()
+              .toLowerCase()
+              .includes(filterInput.value.toLowerCase()) ||
+            `${report.Location.Postal} ${report.Location.Street}`
+              .toLowerCase()
+              .includes(filterInput.value.toLowerCase()) ||
+            report.Location.Area.toLowerCase().includes(
+              filterInput.value.toLowerCase()
+            )
+          ) {
+            addToNewReports(report)
+          }
+
+          if (report.OffenderPedsNames) {
+            for (const pedName of report.OffenderPedsNames) {
+              if (
+                pedName.toLowerCase().includes(filterInput.value.toLowerCase())
+              ) {
+                addToNewReports(report)
+                break
+              }
+            }
+          }
+
+          if (report.WitnessPedsNames) {
+            for (const pedName of report.WitnessPedsNames) {
+              if (
+                pedName.toLowerCase().includes(filterInput.value.toLowerCase())
+              ) {
+                addToNewReports(report)
+                break
+              }
+            }
+          }
+
+          for (const statusButton of statusButtonWrapper.querySelectorAll(
+            'button'
+          )) {
+            if (
+              !statusButton.classList.contains('selected') &&
+              report.Status == statusButton.dataset.status
+            ) {
+              removeFromNewReports(report)
+            }
+          }
+        }
+        await renderReports(newReports, button.dataset.type)
       }
 
       hideLoadingOnButton(button)
     })
   )
+
+async function renderReports(reports, type) {
+  const language = await getLanguage()
+
+  document
+    .querySelectorAll('.listPage .reportsList .listElement')
+    .forEach((el) => el.remove())
+
+  for (const report of reports) {
+    const listElement = document.createElement('div')
+    listElement.classList.add('listElement')
+
+    const infoWrapper = document.createElement('div')
+    infoWrapper.classList.add('infoWrapper')
+
+    const iDElement = document.createElement('div')
+    iDElement.classList.add('id')
+    iDElement.innerHTML = `${language.reports.list.reportId}: <span>${report.Id}</span>`
+
+    const dateElement = document.createElement('div')
+    dateElement.innerHTML = `${language.reports.list.date}: <span>${new Date(
+      report.TimeStamp
+    ).toLocaleDateString()}</span>`
+
+    const locationElement = document.createElement('div')
+    locationElement.innerHTML = `${language.reports.list.location}: <span>${report.Location.Postal} ${report.Location.Street}, ${report.Location.Area}</span>`
+
+    const textWrapper = document.createElement('div')
+    textWrapper.appendChild(iDElement)
+    textWrapper.appendChild(dateElement)
+    textWrapper.appendChild(locationElement)
+    textWrapper.classList.add('textWrapper')
+
+    switch (type) {
+      case 'incident':
+        const involvedPartiesElement = document.createElement('div')
+        const involvedParties = [
+          ...report.OffenderPedsNames,
+          ...report.WitnessPedsNames,
+        ]
+        involvedPartiesElement.innerHTML = `${
+          language.reports.list.involvedParties
+        }: <span>${involvedParties.join(', ')}</span>`
+
+        if (involvedParties.length > 1)
+          textWrapper.appendChild(involvedPartiesElement)
+        break
+      case 'citation':
+      case 'arrest':
+        const offenderElement = document.createElement('div')
+        offenderElement.innerHTML = `${language.reports.list.offender}: <span>${report.OffenderPedName}</span>`
+
+        const vehicleElement = document.createElement('div')
+        vehicleElement.innerHTML = `${language.reports.list.vehicle}: <span>${report.OffenderVehicleLicensePlate}</span>`
+
+        if (report.OffenderPedName) textWrapper.appendChild(offenderElement)
+        if (report.OffenderVehicleLicensePlate)
+          textWrapper.appendChild(vehicleElement)
+        break
+    }
+
+    const statusElement = document.createElement('div')
+    statusElement.classList.add('status')
+    statusElement.dataset.status = report.Status
+    const statusColorMap = {
+      0: 'success',
+      1: 'info',
+      2: 'error',
+    }
+    statusElement.style.backgroundColor = `var(--color-${
+      statusColorMap[report.Status]
+    }-half)`
+    statusElement.style.borderColor = `var(--color-${
+      statusColorMap[report.Status]
+    })`
+    statusElement.innerHTML = language.reports.statusMap[report.Status]
+
+    infoWrapper.appendChild(textWrapper)
+    infoWrapper.appendChild(statusElement)
+
+    const buttonWrapper = document.createElement('div')
+    buttonWrapper.classList.add('buttonWrapper')
+
+    const viewButton = document.createElement('button')
+    viewButton.classList.add('viewButton')
+    viewButton.innerHTML = language.reports.list.viewButton
+
+    const editButton = document.createElement('button')
+    editButton.classList.add('editButton')
+    editButton.innerHTML = language.reports.list.editButton
+
+    buttonWrapper.appendChild(viewButton)
+    buttonWrapper.appendChild(editButton)
+
+    listElement.appendChild(infoWrapper)
+    listElement.appendChild(buttonWrapper)
+
+    document.querySelector('.listPage .reportsList').appendChild(listElement)
+  }
+}
+
+document
+  .querySelector('.createPage .cancelButton')
+  .addEventListener('click', function () {
+    document.querySelector('.createPage').classList.add('hidden')
+    document.querySelector('.createPage .reportInformation').innerHTML = ''
+    document.querySelector('.listPage').classList.remove('hidden')
+    reportIsOnCreatePageBool = false
+  })
 
 document
   .querySelector('.createPage .saveButton')
@@ -1122,6 +1310,7 @@ async function saveReport(type) {
   document.querySelector('.createPage').classList.add('hidden')
   document.querySelector('.createPage .reportInformation').innerHTML = ''
   document.querySelector('.listPage').classList.remove('hidden')
+  reportIsOnCreatePageBool = false
 
   document
     .querySelector(`.listPage .typeSelector [data-type="${type}"]`)
