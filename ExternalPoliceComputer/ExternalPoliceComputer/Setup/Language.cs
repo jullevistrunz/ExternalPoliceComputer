@@ -187,6 +187,7 @@ namespace ExternalPoliceComputer.Setup {
 
         public class Reports {
             public string newReportTitle = "New Report";
+            public string editReportTitle = "Edit Report";
             public string[] statusMap = {
                 "Closed",
                 "Open",
@@ -234,6 +235,11 @@ namespace ExternalPoliceComputer.Setup {
                 public string invalidVehicleLicensePlate = "A vehicle with this license plate doesn't exist.";
                 public string saveSuccess = "Report saved successfully.";
                 public string saveError = "An error occurred while trying to save the report.";
+                public string invalidTimeStamp = "Invalid date or time.";
+                public string invalidTime = "Invalid time.";
+                public string invalidDate = "Invalid date.";
+                public string noCharges = "Empty charges list.";
+                public string noOffender = "No offender specified.";
             }
 
             public class Sections {

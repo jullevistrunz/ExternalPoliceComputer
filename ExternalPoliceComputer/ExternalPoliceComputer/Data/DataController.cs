@@ -1,10 +1,10 @@
 ﻿using CommonDataFramework.Modules;
 using CommonDataFramework.Modules.PedDatabase;
-using CommonDataFramework.Modules.VehicleDatabase;
 using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
 using LSPD_First_Response.Engine.Scripting.Entities;
+using Newtonsoft.Json;
 using Rage;
 using System;
 using System.Collections.Generic;
@@ -51,6 +51,7 @@ namespace ExternalPoliceComputer.Data {
             Ped[] nearbyPeds = Main.Player.GetNearbyPeds(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles);
             for (int i = 0; i < nearbyPeds.Length; i++) {
                 EPCPedData epcPedData = new EPCPedData(nearbyPeds[i]);
+                if (epcPedData == null || epcPedData.Name == null) continue;
                 if (pedDatabase.Any(x => x.Name == epcPedData.Name)) continue;
                 pedDatabase.Add(epcPedData);
             }
@@ -64,6 +65,7 @@ namespace ExternalPoliceComputer.Data {
             Vehicle[] nearbyVehicles = Main.Player.GetNearbyVehicles(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles);
             for (int i = 0; i < nearbyVehicles.Length; i++) {
                 EPCVehicleData epcVehicleData = new EPCVehicleData(nearbyVehicles[i]);
+                if (epcVehicleData == null || epcVehicleData.LicensePlate == null) continue;
                 if (vehicleDatabase.Any(x => x.LicensePlate == epcVehicleData.LicensePlate)) continue;
                 vehicleDatabase.Add(epcVehicleData);
             }
@@ -118,12 +120,14 @@ namespace ExternalPoliceComputer.Data {
 
         public static void KeepPedInDatabase(EPCPedData pedData) {
             if (!keepInPedDatabase.Any(x => x.Name == pedData.Name)) keepInPedDatabase.Add(pedData);
+            Helper.WriteToJsonFile(SetupController.PedDataPath, keepInPedDatabase);
         }
 
         internal static void LoadPedDatabaseFromFile() {
             pedDatabase.Clear();
             List<EPCPedData> fileContent = SetupController.GetEPCPedData();
             foreach (EPCPedData data in fileContent) {
+                if (data == null || data.Name == null) continue;
                 KeepPedInDatabase(data);
                 if (pedDatabase.Any(x => x.Name == data.Name)) continue;
                 pedDatabase.Add(data);
@@ -136,6 +140,7 @@ namespace ExternalPoliceComputer.Data {
 
         public static void KeepVehicleInDatabase(EPCVehicleData vehicleData) {
             if (!keepInVehicleDatabase.Any(x => x.LicensePlate == vehicleData.LicensePlate)) keepInVehicleDatabase.Add(vehicleData);
+            Helper.WriteToJsonFile(SetupController.VehicleDataPath, keepInVehicleDatabase);
             
             EPCPedData pedData = pedDatabase.FirstOrDefault(x => x.Name == vehicleData.Owner);
             if (pedData == null) return;
@@ -147,6 +152,7 @@ namespace ExternalPoliceComputer.Data {
             vehicleDatabase.Clear();
             List<EPCVehicleData> fileContent = SetupController.GetEPCVehicleData();
             foreach (EPCVehicleData data in fileContent) {
+                if (data == null || data.LicensePlate == null) continue;
                 KeepVehicleInDatabase(data);
                 if (vehicleDatabase.Any(x => x.LicensePlate == data.LicensePlate)) continue;
                 vehicleDatabase.Add(data);
@@ -198,43 +204,76 @@ namespace ExternalPoliceComputer.Data {
 
         internal static void AddReport(Report report) {
             if (report is CitationReport citationReport) {
+                int index = citationReports.FindIndex(x => x.Id == citationReport.Id);
+
                 if (!string.IsNullOrEmpty(citationReport.OffenderPedName)) {
-                    EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == citationReport.OffenderPedName);
-                    if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
+                    int pedIndex = pedDatabase.FindIndex(pedData => pedData.Name.ToLower() == citationReport.OffenderPedName.ToLower());
+                    if (pedIndex != -1) {
+                        EPCPedData pedDataToAdd = pedDatabase[pedIndex];
+
+                        pedDataToAdd.Citations.AddRange(citationReport.Charges.Where(x => !x.addedByReportInEdit));
+
+                        KeepPedInDatabase(pedDataToAdd);
+                        pedDatabase[pedIndex] = pedDataToAdd;
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(citationReport.OffenderVehicleLicensePlate)) {
-                    EPCVehicleData vehicleDataToAdd = vehicleDatabase.FirstOrDefault(vehicleData => vehicleData.LicensePlate == citationReport.OffenderVehicleLicensePlate);
+                    EPCVehicleData vehicleDataToAdd = vehicleDatabase.FirstOrDefault(vehicleData => vehicleData.LicensePlate.ToLower() == citationReport.OffenderVehicleLicensePlate.ToLower());
                     if (vehicleDataToAdd != null) KeepVehicleInDatabase(vehicleDataToAdd);
                 }
-                citationReports.Add(citationReport);
+
+                if (index != -1) {
+                    citationReports[index] = citationReport;
+                } else {
+                    citationReports.Add(citationReport);
+                }
             } else if (report is ArrestReport arrestReport) {
-                if (!string.IsNullOrEmpty(arrestReport.OffenderPedName)) {
-                    EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == arrestReport.OffenderPedName);
-                    if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
+                int index = arrestReports.FindIndex(x => x.Id == arrestReport.Id);
+
+                if (!string.IsNullOrEmpty(arrestReport.OffenderPedName.ToLower())) {
+                    int pedIndex = pedDatabase.FindIndex(pedData => pedData.Name.ToLower() == arrestReport.OffenderPedName.ToLower());
+                    if (pedIndex != -1) {
+                        EPCPedData pedDataToAdd = pedDatabase[pedIndex];
+
+                        pedDataToAdd.Arrests.AddRange(arrestReport.Charges.Where(x => !x.addedByReportInEdit));
+
+                        KeepPedInDatabase(pedDataToAdd);
+                        pedDatabase[pedIndex] = pedDataToAdd;
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(arrestReport.OffenderVehicleLicensePlate)) {
-                    EPCVehicleData vehicleDataToAdd = vehicleDatabase.FirstOrDefault(vehicleData => vehicleData.LicensePlate == arrestReport.OffenderVehicleLicensePlate);
+                    EPCVehicleData vehicleDataToAdd = vehicleDatabase.FirstOrDefault(vehicleData => vehicleData.LicensePlate.ToLower() == arrestReport.OffenderVehicleLicensePlate.ToLower());
                     if (vehicleDataToAdd != null) KeepVehicleInDatabase(vehicleDataToAdd);
                 }
-                arrestReports.Add(arrestReport);
+
+                if (index != -1) {
+                    arrestReports[index] = arrestReport;
+                } else {
+                    arrestReports.Add(arrestReport);
+                }
             } else if (report is IncidentReport incidentReport) {
                 foreach (string offenderPedName in incidentReport.OffenderPedsNames) {
                     if (!string.IsNullOrEmpty(offenderPedName)) {
-                        EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == offenderPedName);
+                        EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name.ToLower() == offenderPedName.ToLower());
                         if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
                     }
                 }
 
                 foreach (string witnessPedName in incidentReport.WitnessPedsNames) {
                     if (!string.IsNullOrEmpty(witnessPedName)) {
-                        EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name == witnessPedName);
+                        EPCPedData pedDataToAdd = pedDatabase.FirstOrDefault(pedData => pedData.Name.ToLower() == witnessPedName.ToLower());
                         if (pedDataToAdd != null) KeepPedInDatabase(pedDataToAdd);
                     }
                 }
 
-                incidentReports.Add(incidentReport);
+                int index = incidentReports.FindIndex(x => x.Id == incidentReport.Id);
+                if (index != -1) {
+                    incidentReports[index] = incidentReport;
+                } else {
+                    incidentReports.Add(incidentReport);
+                }
             }
             AddReportToCurrentShift(report.Id);
         }

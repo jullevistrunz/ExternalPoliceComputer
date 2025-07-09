@@ -5,6 +5,8 @@ const topDoc = isInIframe ? window.top.document : document
 if (!isInIframe) {
   localStorage.removeItem('config')
   localStorage.removeItem('language')
+  localStorage.removeItem('citationOptions')
+  localStorage.removeItem('arrestOptions')
 }
 
 function sleep(ms) {
@@ -29,6 +31,26 @@ async function getLanguage() {
   const language = await (await fetch('/language')).json()
   localStorage.setItem('language', JSON.stringify(language))
   return language
+}
+
+async function getCitationOptions() {
+  const lsCitationOptions = localStorage.getItem('citationOptions')
+  if (lsCitationOptions) {
+    return JSON.parse(lsCitationOptions)
+  }
+  const citationOptions = await (await fetch('/citationOptions')).json()
+  localStorage.setItem('citationOptions', JSON.stringify(citationOptions))
+  return citationOptions
+}
+
+async function getArrestOptions() {
+  const lsArrestOptions = localStorage.getItem('arrestOptions')
+  if (lsArrestOptions) {
+    return JSON.parse(lsArrestOptions)
+  }
+  const arrestOptions = await (await fetch('/arrestOptions')).json()
+  localStorage.setItem('arrestOptions', JSON.stringify(arrestOptions))
+  return arrestOptions
 }
 
 function traverseObject(obj, callback, path = []) {
@@ -57,11 +79,6 @@ function hideLoadingOnButton(button) {
 }
 
 function showNotification(message, icon = 'info', duration = 4000) {
-  for (const notification of topDoc.querySelectorAll(
-    '.overlay .notifications .notification'
-  )) {
-    if (notification.querySelector('.title').innerHTML == message) return
-  }
   const color =
     {
       warning: 'warning',
@@ -100,7 +117,18 @@ function showNotification(message, icon = 'info', duration = 4000) {
   iconTitleWrapperEl.appendChild(titleEl)
   wrapperEl.appendChild(iconTitleWrapperEl)
   wrapperEl.appendChild(timerBarEl)
-  topDoc.querySelector('.overlay .notifications').appendChild(wrapperEl)
+  let replacesOldNotification = false
+  for (const notification of topDoc.querySelectorAll(
+    '.overlay .notifications .notification'
+  )) {
+    if (notification.querySelector('.title').innerHTML == message) {
+      notification.replaceWith(wrapperEl)
+      wrapperEl.style.animation = 'none'
+      replacesOldNotification = true
+    }
+  }
+  if (!replacesOldNotification)
+    topDoc.querySelector('.overlay .notifications').appendChild(wrapperEl)
 
   if (duration >= 0) removeNotification()
   else {
@@ -124,12 +152,13 @@ function showNotification(message, icon = 'info', duration = 4000) {
 
   function removeNotification() {
     setTimeout(() => {
-      timerBarEl.style.width = '0%'
+      if (timerBarEl) timerBarEl.style.width = '0%'
     }, 10)
 
     setTimeout(() => {
-      wrapperEl.style.animation =
-        'notification-fly-out var(--transition-time-long) ease-in-out forwards'
+      if (wrapperEl)
+        wrapperEl.style.animation =
+          'notification-fly-out var(--transition-time-long) ease-in-out forwards'
     }, duration)
 
     const CSSRootTransitionTimeLong = parseInt(
@@ -139,7 +168,7 @@ function showNotification(message, icon = 'info', duration = 4000) {
         .slice(0, -'ms'.length)
     )
     setTimeout(() => {
-      wrapperEl.remove()
+      if (wrapperEl) wrapperEl.remove()
     }, CSSRootTransitionTimeLong + duration + 500)
   }
 }

@@ -41,8 +41,8 @@ body {
 }
 
 .hidden {
-  visibility: hidden;
-  display: none;
+  visibility: hidden !important;
+  display: none !important;
 }
 
 .overlay {
@@ -69,8 +69,11 @@ button {
 }
 
 button:disabled {
-  color: var(--color-text-disabled);
   cursor: not-allowed;
+}
+
+button:disabled:not(.selected) {
+  color: var(--color-text-disabled);
   opacity: 0.75;
 }
 

@@ -66,5 +66,19 @@ namespace ExternalPoliceComputer.Utility {
         internal static string GetCallSignFromIPTCommon() {
             return IPT.Common.Handlers.PlayerHandler.GetCallsign();
         }
+
+        internal static string GenerateUniqueId(int length) {
+            if (length <= 0) return string.Empty;
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            char[] id = new char[length];
+
+            for (int i = 0; i < length; i++) {
+                id[i] = chars[random.Next(chars.Length)];
+            }
+
+            return new string(id);
+        }
     }
 }

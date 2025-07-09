@@ -11,7 +11,7 @@ body {
 
 .listWrapper {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) 3fr;
+  grid-template-columns: minmax(100px, 1fr) 3fr;
   gap: 10px;
 }
 
@@ -339,6 +339,7 @@ body {
   display: grid;
   grid-template-columns: min-content 4fr 3fr;
   gap: 10px;
+  min-width: fit-content;
 }
 
 .listPage .reportsList .filter .title {
@@ -360,4 +361,15 @@ body {
 
 .listPage .reportsList .filter .buttonWrapper button {
   min-width: fit-content;
+}
+
+.searchResponseWrapper:not(:first-child) .searchResponseSectionTitle {
+  padding-top: 10px;
+  border-top: 2px solid var(--color-border);
+}
+
+.searchResponseWrapper .chargeWrapper,
+.searchResponseWrapper .notesTextarea {
+  margin: 0 5px;
+  width: calc(100% - 22px - 10px);
 }

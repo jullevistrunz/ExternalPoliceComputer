@@ -34,7 +34,19 @@ document
     document.querySelector('.listPage .reportInformation').innerHTML = ''
     document.querySelector('.createPage').classList.remove('hidden')
 
-    document.querySelector('.createPage .typeSelector button').click()
+    document.querySelector('.createPage .listWrapper').style.display = 'grid'
+    document
+      .querySelector('.createPage .typeSelector')
+      .classList.remove('hidden')
+
+    document
+      .querySelector(
+        `.createPage .typeSelector [data-type="${
+          document.querySelector('.listPage .typeSelector .selected').dataset
+            .type
+        }"]`
+      )
+      .click()
   })
 
 document
@@ -49,9 +61,21 @@ document
         .forEach((btn) => btn.classList.remove('selected'))
       button.classList.add('selected')
 
-      document.querySelector('.listPage .reportsList').innerHTML = ''
-
       const language = await getLanguage()
+
+      document.title = document
+        .querySelector('title')
+        .dataset.language.split('.')
+        .reduce((acc, key) => acc?.[key], language.reports.static)
+
+      document
+        .querySelector('.listPage .listWrapper .reportInformation')
+        .classList.add('hidden')
+      document
+        .querySelector('.listPage .listWrapper .reportsList')
+        .classList.remove('hidden')
+
+      document.querySelector('.listPage .reportsList').innerHTML = ''
 
       let reports = await (
         await fetch(`/data/${button.dataset.type}Reports`)
@@ -191,6 +215,12 @@ document
     })
   )
 
+const statusColorMap = {
+  0: 'success',
+  1: 'info',
+  2: 'error',
+}
+
 async function renderReports(reports, type) {
   const language = await getLanguage()
 
@@ -254,11 +284,6 @@ async function renderReports(reports, type) {
     const statusElement = document.createElement('div')
     statusElement.classList.add('status')
     statusElement.dataset.status = report.Status
-    const statusColorMap = {
-      0: 'success',
-      1: 'info',
-      2: 'error',
-    }
     statusElement.style.backgroundColor = `var(--color-${
       statusColorMap[report.Status]
     }-half)`
@@ -276,10 +301,144 @@ async function renderReports(reports, type) {
     const viewButton = document.createElement('button')
     viewButton.classList.add('viewButton')
     viewButton.innerHTML = language.reports.list.viewButton
+    viewButton.addEventListener('click', async function () {
+      if (viewButton.classList.contains('loading')) return
+      showLoadingOnButton(viewButton)
+
+      await renderReportInformation(true)
+
+      hideLoadingOnButton(viewButton)
+    })
 
     const editButton = document.createElement('button')
     editButton.classList.add('editButton')
     editButton.innerHTML = language.reports.list.editButton
+    editButton.addEventListener('click', async function () {
+      if (editButton.classList.contains('loading')) return
+      showLoadingOnButton(editButton)
+
+      const language = await getLanguage()
+      for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
+        if (iframe.contentWindow.reportIsOnCreatePage()) {
+          showNotification(language.reports.notifications.createPageAlreadyOpen)
+          return
+        }
+      }
+
+      document.title = language.reports.editReportTitle
+      reportIsOnCreatePageBool = true
+
+      document
+        .querySelectorAll('.createPage .typeSelector .selected')
+        .forEach((el) => el.classList.remove('selected'))
+      document
+        .querySelector(
+          `.createPage .typeSelector [data-type="${
+            document.querySelector('.listPage .typeSelector .selected').dataset
+              .type
+          }"]`
+        )
+        .classList.add('selected')
+
+      document.querySelector('.createPage .listWrapper').style.display = 'block'
+      document
+        .querySelector('.createPage .typeSelector')
+        .classList.add('hidden')
+
+      await renderReportInformation(false)
+
+      hideLoadingOnButton(editButton)
+    })
+
+    async function renderReportInformation(isList) {
+      const reportInformationEl = document.querySelector(
+        `.${isList ? 'listPage' : 'createPage'} .listWrapper .reportInformation`
+      )
+
+      if (isList) {
+        document
+          .querySelector('.listPage .listWrapper .reportsList')
+          .classList.add('hidden')
+        reportInformationEl.classList.remove('hidden')
+      } else {
+        document.querySelector('.listPage').classList.add('hidden')
+        document.querySelector('.createPage').classList.remove('hidden')
+      }
+
+      reportInformationEl.innerHTML = ''
+
+      const generalInformation = {
+        reportId: report.Id,
+        status: report.Status,
+        date: new Date(report.TimeStamp).toLocaleDateString(),
+        time: new Date(report.TimeStamp).toLocaleTimeString(),
+      }
+
+      const officerInformation = report.OfficerInformation
+
+      const location = report.Location
+
+      reportInformationEl.appendChild(
+        await getGeneralInformationSection(generalInformation, isList)
+      )
+      reportInformationEl.appendChild(
+        await getOfficerInformationSection(officerInformation, isList)
+      )
+      reportInformationEl.appendChild(
+        await getLocationSection(location, isList)
+      )
+
+      switch (type) {
+        case 'incident':
+          if (report.OffenderPedsNames.length > 0) {
+            reportInformationEl.appendChild(
+              await getMultipleNameInputsSection(
+                language.reports.sections.incident.titleOffenders,
+                language.reports.sections.incident.labelOffenders,
+                language.reports.sections.incident.addOffender,
+                language.reports.sections.incident.removeOffender,
+                isList,
+                report.OffenderPedsNames
+              )
+            )
+          }
+          if (report.WitnessPedsNames.length > 0) {
+            reportInformationEl.appendChild(
+              await getMultipleNameInputsSection(
+                language.reports.sections.incident.titleWitnesses,
+                language.reports.sections.incident.labelWitnesses,
+                language.reports.sections.incident.addWitness,
+                language.reports.sections.incident.removeWitness,
+                isList,
+                report.WitnessPedsNames
+              )
+            )
+          }
+          break
+        case 'citation':
+        case 'arrest':
+          reportInformationEl.appendChild(
+            await getOffenderSection(
+              {
+                pedName: report.OffenderPedName,
+                vehicleLicensePlate: report.OffenderVehicleLicensePlate,
+              },
+              isList,
+              false
+            )
+          )
+          if (report.Charges.length > 0) {
+            reportInformationEl.appendChild(
+              await getCitationArrestSection(type, isList, report.Charges)
+            )
+          }
+          break
+      }
+
+      reportInformationEl.appendChild(
+        await getNotesSection(report.Notes, isList)
+      )
+    }
 
     buttonWrapper.appendChild(viewButton)
     buttonWrapper.appendChild(editButton)
@@ -298,6 +457,15 @@ document
     document.querySelector('.createPage .reportInformation').innerHTML = ''
     document.querySelector('.listPage').classList.remove('hidden')
     reportIsOnCreatePageBool = false
+
+    document
+      .querySelector(
+        `.listPage .typeSelector [data-type="${
+          document.querySelector('.createPage .typeSelector .selected').dataset
+            .type
+        }"]`
+      )
+      .click()
   })
 
 document
@@ -487,7 +655,7 @@ async function getLocationSection(location, isList = false) {
   countyLabel.htmlFor = 'locationSectionCountyInput'
   const countyInput = document.createElement('input')
   countyInput.type = 'text'
-  countyInput.value = language.values[location.County] || ''
+  countyInput.value = language.values[location.County] || location.County || ''
   countyInput.id = 'locationSectionCountyInput'
   countyInput.autocomplete = 'off'
   countyInput.disabled = isList
@@ -505,6 +673,7 @@ async function getLocationSection(location, isList = false) {
 
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   sectionWrapper.appendChild(title)
   sectionWrapper.appendChild(inputWrapper)
@@ -627,6 +796,7 @@ async function getOfficerInformationSection(
 
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   sectionWrapper.appendChild(title)
   sectionWrapper.appendChild(inputWrapper)
@@ -665,57 +835,73 @@ async function getGeneralInformationSection(
   const status = document.createElement('div')
   status.classList.add('status')
   const statusLabel = document.createElement('label')
+  statusLabel.htmlFor = 'generalInformationSectionStatusInput'
   statusLabel.innerHTML = language.reports.sections.generalInformation.status
-  const statusInput = document.createElement('div')
-  statusInput.classList.add('statusInput')
-  const statusClosed = document.createElement('button')
-  statusClosed.innerHTML = language.reports.statusMap[0]
-  statusClosed.classList.add('closed')
-  statusClosed.dataset.status = 0
-  if (generalInformation.status == 0) {
-    statusClosed.classList.add('selected')
-  }
-  statusClosed.addEventListener('click', function () {
-    statusClosed.blur()
-    statusInput
-      .querySelectorAll('button')
-      .forEach((btn) => btn.classList.remove('selected'))
-    statusClosed.classList.add('selected')
-  })
-  const statusOpen = document.createElement('button')
-  statusOpen.innerHTML = language.reports.statusMap[1]
-  statusOpen.classList.add('open')
-  statusOpen.dataset.status = 1
-  if (generalInformation.status == 1) {
-    statusOpen.classList.add('selected')
-  }
-  statusOpen.addEventListener('click', function () {
-    statusOpen.blur()
-    statusInput
-      .querySelectorAll('button')
-      .forEach((btn) => btn.classList.remove('selected'))
-    statusOpen.classList.add('selected')
-  })
-  const statusCanceled = document.createElement('button')
-  statusCanceled.innerHTML = language.reports.statusMap[2]
-  statusCanceled.classList.add('canceled')
-  statusCanceled.dataset.status = 2
-  if (generalInformation.status == 2) {
-    statusCanceled.classList.add('selected')
-  }
-  statusCanceled.addEventListener('click', function () {
-    statusCanceled.blur()
-    statusInput
-      .querySelectorAll('button')
-      .forEach((btn) => btn.classList.remove('selected'))
-    statusCanceled.classList.add('selected')
-  })
-
   status.appendChild(statusLabel)
-  statusInput.appendChild(statusClosed)
-  statusInput.appendChild(statusOpen)
-  statusInput.appendChild(statusCanceled)
-  status.appendChild(statusInput)
+
+  if (isList) {
+    const statusInput = document.createElement('input')
+    statusInput.type = 'text'
+    statusInput.value = language.reports.statusMap[generalInformation.status]
+    statusInput.id = 'generalInformationSectionStatusInput'
+    statusInput.disabled = true
+    statusInput.style.color = `var(--color-${
+      statusColorMap[generalInformation.status]
+    })`
+    status.appendChild(statusInput)
+  } else {
+    const statusInput = document.createElement('div')
+    statusInput.classList.add('statusInput')
+    const statusClosed = document.createElement('button')
+    statusClosed.innerHTML = language.reports.statusMap[0]
+    statusClosed.classList.add('closed')
+    statusClosed.dataset.status = 0
+    if (generalInformation.status == 0) {
+      statusClosed.classList.add('selected')
+    }
+    statusClosed.addEventListener('click', function () {
+      statusClosed.blur()
+      statusInput
+        .querySelectorAll('button')
+        .forEach((btn) => btn.classList.remove('selected'))
+      statusClosed.classList.add('selected')
+    })
+
+    const statusOpen = document.createElement('button')
+    statusOpen.innerHTML = language.reports.statusMap[1]
+    statusOpen.classList.add('open')
+    statusOpen.dataset.status = 1
+    if (generalInformation.status == 1) {
+      statusOpen.classList.add('selected')
+    }
+    statusOpen.addEventListener('click', function () {
+      statusOpen.blur()
+      statusInput
+        .querySelectorAll('button')
+        .forEach((btn) => btn.classList.remove('selected'))
+      statusOpen.classList.add('selected')
+    })
+
+    const statusCanceled = document.createElement('button')
+    statusCanceled.innerHTML = language.reports.statusMap[2]
+    statusCanceled.classList.add('canceled')
+    statusCanceled.dataset.status = 2
+    if (generalInformation.status == 2) {
+      statusCanceled.classList.add('selected')
+    }
+    statusCanceled.addEventListener('click', function () {
+      statusCanceled.blur()
+      statusInput
+        .querySelectorAll('button')
+        .forEach((btn) => btn.classList.remove('selected'))
+      statusCanceled.classList.add('selected')
+    })
+
+    statusInput.appendChild(statusClosed)
+    statusInput.appendChild(statusOpen)
+    statusInput.appendChild(statusCanceled)
+    status.appendChild(statusInput)
+  }
 
   const date = document.createElement('div')
   date.classList.add('date')
@@ -728,6 +914,11 @@ async function getGeneralInformationSection(
   dateInput.id = 'generalInformationSectionDateInput'
   dateInput.autocomplete = 'off'
   dateInput.disabled = isList
+  dateInput.addEventListener('blur', function () {
+    if (dateInput.value && !isValidDate(new Date(dateInput.value))) {
+      showNotification(language.reports.notifications.invalidDate, 'warning')
+    }
+  })
   date.appendChild(dateLabel)
   date.appendChild(dateInput)
 
@@ -742,6 +933,14 @@ async function getGeneralInformationSection(
   timeInput.id = 'generalInformationSectionTimeInput'
   timeInput.autocomplete = 'off'
   timeInput.disabled = isList
+  timeInput.addEventListener('blur', function () {
+    if (
+      timeInput.value &&
+      !isValidDate(new Date(`${new Date().toDateString()} ${timeInput.value}`))
+    ) {
+      showNotification(language.reports.notifications.invalidTime, 'warning')
+    }
+  })
   time.appendChild(timeLabel)
   time.appendChild(timeInput)
 
@@ -756,6 +955,7 @@ async function getGeneralInformationSection(
 
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   sectionWrapper.appendChild(title)
   sectionWrapper.appendChild(inputWrapper)
@@ -780,9 +980,11 @@ async function getNotesSection(notes, isList = false) {
   notesTextarea.classList.add('notesTextarea')
   notesTextarea.value = notes || ''
   notesTextarea.id = 'notesSectionTextarea'
+  notesTextarea.disabled = isList
 
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   sectionWrapper.appendChild(title)
   sectionWrapper.appendChild(notesTextarea)
@@ -903,6 +1105,7 @@ async function getMultipleNameInputsSection(
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
   sectionWrapper.dataset.title = title
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   sectionWrapper.appendChild(titleEl)
   sectionWrapper.appendChild(inputWrapper)
@@ -912,7 +1115,8 @@ async function getMultipleNameInputsSection(
 
 async function getOffenderSection(
   offenderInformation = { pedName: null, vehicleLicensePlate: null },
-  isList = false
+  isList = false,
+  canBeEdited = true
 ) {
   const language = await getLanguage()
 
@@ -934,7 +1138,7 @@ async function getOffenderSection(
   pedNameInput.value = offenderInformation.pedName || ''
   pedNameInput.id = 'offenderSectionPedNameInput'
   pedNameInput.autocomplete = 'off'
-  pedNameInput.disabled = isList
+  pedNameInput.disabled = isList || !canBeEdited
   pedNameInput.addEventListener('blur', function () {
     checkForValidPedName(pedNameInput)
   })
@@ -952,7 +1156,7 @@ async function getOffenderSection(
   vehicleLicensePlateInput.value = offenderInformation.vehicleLicensePlate || ''
   vehicleLicensePlateInput.id = 'offenderSectionVehicleLicensePlateInput'
   vehicleLicensePlateInput.autocomplete = 'off'
-  vehicleLicensePlateInput.disabled = isList
+  vehicleLicensePlateInput.disabled = isList || !canBeEdited
   vehicleLicensePlateInput.addEventListener('blur', function () {
     checkForValidVehicleLicensePlate(vehicleLicensePlateInput)
   })
@@ -971,6 +1175,7 @@ async function getOffenderSection(
 
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   sectionWrapper.appendChild(title)
   sectionWrapper.appendChild(inputWrapper)
@@ -1017,9 +1222,10 @@ async function checkForValidVehicleLicensePlate(inputEl) {
   }
 }
 
-async function getCitationArrestSection(type, isList = false) {
+async function getCitationArrestSection(type, isList = false, list = []) {
   const language = await getLanguage()
-  const options = await (await fetch(`/${type}Options`)).json()
+  const options =
+    type == 'citation' ? await getCitationOptions() : await getArrestOptions()
 
   const title = document.createElement('div')
   if (isList) {
@@ -1034,6 +1240,7 @@ async function getCitationArrestSection(type, isList = false) {
   const sectionWrapper = document.createElement('div')
   sectionWrapper.classList.add('section')
   sectionWrapper.classList.add(`${type}Section`)
+  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
 
   const additionalWrapper = document.createElement('div')
 
@@ -1122,13 +1329,20 @@ async function getCitationArrestSection(type, isList = false) {
 
     chargeWrapper.appendChild(chargeName)
     chargeWrapper.appendChild(chargeDetails)
-    if (!isList) chargeWrapper.appendChild(deleteChargeButton)
+    if (list.length < 1) chargeWrapper.appendChild(deleteChargeButton)
 
     optionsList.appendChild(chargeWrapper)
   }
 
+  if (list.length > 0) {
+    for (const charge of list) {
+      charge.addedByReportInEdit = true
+      await addChargeToOptionsList(charge)
+    }
+  }
+
   sectionWrapper.appendChild(title)
-  additionalWrapper.appendChild(optionsWrapper)
+  if (list.length < 1) additionalWrapper.appendChild(optionsWrapper)
   additionalWrapper.appendChild(optionsList)
   sectionWrapper.appendChild(additionalWrapper)
 
@@ -1181,6 +1395,14 @@ async function saveReport(type) {
     Status: el.querySelector('.statusInput .selected').dataset.status,
     Notes: el.querySelector('#notesSectionTextarea').value.trim(),
     ShortYear: new Date().getFullYear().toString().slice(-2),
+  }
+
+  if (!isValidDate(generalInformation.TimeStamp)) {
+    return showNotification(
+      `${language.reports.notifications.saveError} ${language.reports.notifications.invalidTimeStamp}`,
+      'error',
+      6000
+    )
   }
 
   const officerInformation = {
@@ -1253,6 +1475,14 @@ async function saveReport(type) {
       report.OffenderPedName = el
         .querySelector('#offenderSectionPedNameInput')
         .value.trim()
+
+      if (!report.OffenderPedName) {
+        return showNotification(
+          `${language.reports.notifications.saveError} ${language.reports.notifications.noOffender}`,
+          'error'
+        )
+      }
+
       report.OffenderVehicleLicensePlate = el
         .querySelector('#offenderSectionVehicleLicensePlateInput')
         .value.trim()
@@ -1261,7 +1491,15 @@ async function saveReport(type) {
       for (const chargeEl of el.querySelectorAll(
         `.${type}Section .optionsList .chargeWrapper`
       )) {
-        report.Charges.push(JSON.parse(chargeEl.dataset.charge))
+        const charge = JSON.parse(chargeEl.dataset.charge)
+        report.Charges.push(charge)
+      }
+
+      if (report.Charges.length < 1) {
+        return showNotification(
+          `${language.reports.notifications.saveError} ${language.reports.notifications.noCharges}`,
+          'error'
+        )
       }
 
       response = await (
@@ -1278,6 +1516,14 @@ async function saveReport(type) {
       report.OffenderPedName = el
         .querySelector('#offenderSectionPedNameInput')
         .value.trim()
+
+      if (!report.OffenderPedName) {
+        return showNotification(
+          `${language.reports.notifications.saveError} ${language.reports.notifications.noOffender}`,
+          'error'
+        )
+      }
+
       report.OffenderVehicleLicensePlate = el
         .querySelector('#offenderSectionVehicleLicensePlateInput')
         .value.trim()
@@ -1286,7 +1532,15 @@ async function saveReport(type) {
       for (const chargeEl of el.querySelectorAll(
         `.${type}Section .optionsList .chargeWrapper`
       )) {
-        report.Charges.push(JSON.parse(chargeEl.dataset.charge))
+        const charge = JSON.parse(chargeEl.dataset.charge)
+        report.Charges.push(charge)
+      }
+
+      if (report.Charges.length < 1) {
+        return showNotification(
+          `${language.reports.notifications.saveError} ${language.reports.notifications.noCharges}`,
+          'error'
+        )
       }
 
       response = await (
@@ -1315,4 +1569,8 @@ async function saveReport(type) {
   document
     .querySelector(`.listPage .typeSelector [data-type="${type}"]`)
     .click()
+}
+
+function isValidDate(date) {
+  return date instanceof Date && !isNaN(date) && !isNaN(date.getTime())
 }
