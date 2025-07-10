@@ -22,7 +22,9 @@ document
     const language = await getLanguage()
     for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
       if (iframe.contentWindow.reportIsOnCreatePage()) {
-        showNotification(language.reports.notifications.createPageAlreadyOpen)
+        topWindow.showNotification(
+          language.reports.notifications.createPageAlreadyOpen
+        )
         return
       }
     }
@@ -320,7 +322,9 @@ async function renderReports(reports, type) {
       const language = await getLanguage()
       for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
         if (iframe.contentWindow.reportIsOnCreatePage()) {
-          showNotification(language.reports.notifications.createPageAlreadyOpen)
+          topWindow.showNotification(
+            language.reports.notifications.createPageAlreadyOpen
+          )
           return
         }
       }
@@ -916,7 +920,10 @@ async function getGeneralInformationSection(
   dateInput.disabled = isList
   dateInput.addEventListener('blur', function () {
     if (dateInput.value && !isValidDate(new Date(dateInput.value))) {
-      showNotification(language.reports.notifications.invalidDate, 'warning')
+      topWindow.showNotification(
+        language.reports.notifications.invalidDate,
+        'warning'
+      )
     }
   })
   date.appendChild(dateLabel)
@@ -938,7 +945,10 @@ async function getGeneralInformationSection(
       timeInput.value &&
       !isValidDate(new Date(`${new Date().toDateString()} ${timeInput.value}`))
     ) {
-      showNotification(language.reports.notifications.invalidTime, 'warning')
+      topWindow.showNotification(
+        language.reports.notifications.invalidTime,
+        'warning'
+      )
     }
   })
   time.appendChild(timeLabel)
@@ -1015,6 +1025,12 @@ async function getMultipleNameInputsSection(
   if (isList) {
     for (const i in list) {
       const input = document.createElement('div')
+      if (isList && list[i]) {
+        input.classList.add('clickable')
+        input.addEventListener('click', function () {
+          openInPedSearch(list[i])
+        })
+      }
       const inputLabel = document.createElement('label')
       inputLabel.innerHTML = `${label} ${parseInt(i) + 1}`
       inputLabel.htmlFor = `multipleNameInputsSection${title}Input${
@@ -1130,6 +1146,12 @@ async function getOffenderSection(
 
   const pedName = document.createElement('div')
   pedName.classList.add('pedName')
+  if (isList && offenderInformation.pedName) {
+    pedName.classList.add('clickable')
+    pedName.addEventListener('click', function () {
+      openInPedSearch(offenderInformation.pedName)
+    })
+  }
   const pedNameLabel = document.createElement('label')
   pedNameLabel.innerHTML = language.reports.sections.offender.pedName
   pedNameLabel.htmlFor = 'offenderSectionPedNameInput'
@@ -1147,6 +1169,12 @@ async function getOffenderSection(
 
   const vehicleLicensePlate = document.createElement('div')
   vehicleLicensePlate.classList.add('vehicleLicensePlate')
+  if (isList && offenderInformation.vehicleLicensePlate) {
+    vehicleLicensePlate.classList.add('clickable')
+    vehicleLicensePlate.addEventListener('click', function () {
+      openInVehicleSearch(offenderInformation.vehicleLicensePlate)
+    })
+  }
   const vehicleLicensePlateLabel = document.createElement('label')
   vehicleLicensePlateLabel.innerHTML =
     language.reports.sections.offender.vehicleLicensePlate
@@ -1197,7 +1225,10 @@ async function checkForValidPedName(inputEl) {
   ).json()
   if (!response) {
     const language = await getLanguage()
-    showNotification(language.reports.notifications.invalidPedName, 'warning')
+    topWindow.showNotification(
+      language.reports.notifications.invalidPedName,
+      'warning'
+    )
   }
 }
 
@@ -1215,7 +1246,7 @@ async function checkForValidVehicleLicensePlate(inputEl) {
   ).json()
   if (!response) {
     const language = await getLanguage()
-    showNotification(
+    topWindow.showNotification(
       language.reports.notifications.invalidVehicleLicensePlate,
       'warning'
     )
@@ -1398,7 +1429,7 @@ async function saveReport(type) {
   }
 
   if (!isValidDate(generalInformation.TimeStamp)) {
-    return showNotification(
+    return topWindow.showNotification(
       `${language.reports.notifications.saveError} ${language.reports.notifications.invalidTimeStamp}`,
       'error',
       6000
@@ -1477,7 +1508,7 @@ async function saveReport(type) {
         .value.trim()
 
       if (!report.OffenderPedName) {
-        return showNotification(
+        return topWindow.showNotification(
           `${language.reports.notifications.saveError} ${language.reports.notifications.noOffender}`,
           'error'
         )
@@ -1496,7 +1527,7 @@ async function saveReport(type) {
       }
 
       if (report.Charges.length < 1) {
-        return showNotification(
+        return topWindow.showNotification(
           `${language.reports.notifications.saveError} ${language.reports.notifications.noCharges}`,
           'error'
         )
@@ -1518,7 +1549,7 @@ async function saveReport(type) {
         .value.trim()
 
       if (!report.OffenderPedName) {
-        return showNotification(
+        return topWindow.showNotification(
           `${language.reports.notifications.saveError} ${language.reports.notifications.noOffender}`,
           'error'
         )
@@ -1537,7 +1568,7 @@ async function saveReport(type) {
       }
 
       if (report.Charges.length < 1) {
-        return showNotification(
+        return topWindow.showNotification(
           `${language.reports.notifications.saveError} ${language.reports.notifications.noCharges}`,
           'error'
         )
@@ -1556,10 +1587,16 @@ async function saveReport(type) {
   }
 
   if (response != 'OK') {
-    showNotification(language.reports.notifications.saveError, 'error')
+    topWindow.showNotification(
+      language.reports.notifications.saveError,
+      'error'
+    )
     return
   }
-  showNotification(language.reports.notifications.saveSuccess, 'success')
+  topWindow.showNotification(
+    language.reports.notifications.saveSuccess,
+    'success'
+  )
 
   document.querySelector('.createPage').classList.add('hidden')
   document.querySelector('.createPage .reportInformation').innerHTML = ''

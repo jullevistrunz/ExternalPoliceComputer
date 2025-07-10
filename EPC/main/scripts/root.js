@@ -78,6 +78,16 @@ function hideLoadingOnButton(button) {
   delete keepLoadingOnButton[button]
 }
 
+/**
+ * Displays a notification message on the screen with customizable icon, color, and duration.
+ * If a notification with the same message already exists, it replaces the old one.
+ * If duration is negative, the notification will persist until manually closed.
+ * The function should only be called from the top window context, to ensure the notification gets deleted even if the current context no longer exists.
+ *
+ * @param {string} message - The notification message to display.
+ * @param {'warning'|'info'|'error'|'question'|'checkMark'|'minus'} [icon='info'] - The icon type to display with the notification.
+ * @param {number} [duration=4000] - Duration in milliseconds before the notification disappears. If negative, notification stays until closed.
+ */
 function showNotification(message, icon = 'info', duration = 4000) {
   const color =
     {
@@ -190,6 +200,22 @@ async function openInPedSearch(pedName) {
     iframe.contentWindow.document.querySelector(
       '.searchInputWrapper #pedSearchInput'
     ).value = pedName
+    iframe.contentWindow.document
+      .querySelector('.searchInputWrapper button')
+      .click()
+  }
+}
+
+async function openInVehicleSearch(vehicleLicensePlate) {
+  await topWindow.openWindow('vehicleSearch')
+  const iframe = topDoc
+    .querySelector('.overlay .windows')
+    .lastChild.querySelector('iframe')
+
+  iframe.onload = () => {
+    iframe.contentWindow.document.querySelector(
+      '.searchInputWrapper #vehicleSearchInput'
+    ).value = vehicleLicensePlate
     iframe.contentWindow.document
       .querySelector('.searchInputWrapper button')
       .click()

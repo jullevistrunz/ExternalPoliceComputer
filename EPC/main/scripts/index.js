@@ -386,26 +386,7 @@ async function openWindow(name) {
     windowElement.style.scale = '0'
     taskbarIcon.style.opacity = '0'
     await sleep(CSSRootTransitionTimeLong)
-    if (
-      document.querySelectorAll('.overlay .notifications .notification')
-        .length == 0
-    ) {
-      windowElement.remove()
-    } else {
-      windowElement.classList.add('hidden')
-      const ms = new MutationObserver(() => {
-        if (
-          document.querySelectorAll('.overlay .notifications .notification')
-            .length == 0
-        ) {
-          windowElement.remove()
-          ms.disconnect()
-        }
-      })
-      ms.observe(document.querySelector('.overlay .notifications'), {
-        childList: true,
-      })
-    }
+    windowElement.remove()
     taskbarIcon.remove()
   })
   iconTitleWrapper.appendChild(icon)

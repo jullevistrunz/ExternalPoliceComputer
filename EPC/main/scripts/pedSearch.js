@@ -42,7 +42,7 @@ document
 async function performSearch(query) {
   const language = await getLanguage()
   if (!query) {
-    showNotification(
+    topWindow.showNotification(
       language.pedSearch.notifications.emptySearchInput,
       'warning'
     )
@@ -59,7 +59,7 @@ async function performSearch(query) {
   ).json()
 
   if (!response) {
-    showNotification(language.pedSearch.notifications.pedNotFound, 'warning')
+    topWindow.showNotification(language.pedSearch.notifications.pedNotFound, 'warning')
     return
   }
 

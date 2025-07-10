@@ -44,7 +44,7 @@ document
 async function performSearch(query) {
   const language = await getLanguage()
   if (!query) {
-    showNotification(
+    topWindow.showNotification(
       language.vehicleSearch.notifications.emptySearchInput,
       'warning'
     )
@@ -61,7 +61,7 @@ async function performSearch(query) {
   ).json()
 
   if (!response) {
-    showNotification(
+    topWindow.showNotification(
       language.vehicleSearch.notifications.vehicleNotFound,
       'warning'
     )
