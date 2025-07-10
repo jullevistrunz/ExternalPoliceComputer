@@ -19,203 +19,203 @@ async function updateDomWithLanguage() {
 document
   .querySelector('.listPage .createButton')
   .addEventListener('click', async function () {
-    const language = await getLanguage()
-    for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
-      if (iframe.contentWindow.reportIsOnCreatePage()) {
-        topWindow.showNotification(
-          language.reports.notifications.createPageAlreadyOpen
-        )
-        return
-      }
-    }
-
-    document.title = language.reports.newReportTitle
-    reportIsOnCreatePageBool = true
-
-    document.querySelector('.listPage').classList.add('hidden')
-    document.querySelector('.listPage .reportInformation').innerHTML = ''
-    document.querySelector('.createPage').classList.remove('hidden')
-
-    document.querySelector('.createPage .listWrapper').style.display = 'grid'
-    document
-      .querySelector('.createPage .typeSelector')
-      .classList.remove('hidden')
-
-    document
-      .querySelector(
-        `.createPage .typeSelector [data-type="${
-          document.querySelector('.listPage .typeSelector .selected').dataset
-            .type
-        }"]`
-      )
-      .click()
+    await onCreateButtonClick()
   })
+
+async function onCreateButtonClick() {
+  const language = await getLanguage()
+  for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
+    if (iframe.contentWindow.reportIsOnCreatePage()) {
+      topWindow.showNotification(
+        language.reports.notifications.createPageAlreadyOpen
+      )
+      return
+    }
+  }
+
+  document.title = language.reports.newReportTitle
+  reportIsOnCreatePageBool = true
+
+  document.querySelector('.listPage').classList.add('hidden')
+  document.querySelector('.listPage .reportInformation').innerHTML = ''
+  document.querySelector('.createPage').classList.remove('hidden')
+
+  document.querySelector('.createPage .listWrapper').style.display = 'grid'
+  document.querySelector('.createPage .typeSelector').classList.remove('hidden')
+
+  await onCreatePageTypeSelectorButtonClick(
+    document.querySelector('.listPage .typeSelector .selected').dataset.type
+  )
+}
 
 document
   .querySelectorAll('.listPage .listWrapper .typeSelector button')
   .forEach((button) =>
     button.addEventListener('click', async function () {
-      if (button.classList.contains('loading')) return
-      showLoadingOnButton(button)
-      button.blur()
-      document
-        .querySelectorAll('.listPage .listWrapper .typeSelector button')
-        .forEach((btn) => btn.classList.remove('selected'))
-      button.classList.add('selected')
-
-      const language = await getLanguage()
-
-      document.title = document
-        .querySelector('title')
-        .dataset.language.split('.')
-        .reduce((acc, key) => acc?.[key], language.reports.static)
-
-      document
-        .querySelector('.listPage .listWrapper .reportInformation')
-        .classList.add('hidden')
-      document
-        .querySelector('.listPage .listWrapper .reportsList')
-        .classList.remove('hidden')
-
-      document.querySelector('.listPage .reportsList').innerHTML = ''
-
-      let reports = await (
-        await fetch(`/data/${button.dataset.type}Reports`)
-      ).json()
-      reports = reports.reverse()
-
-      const filterElement = document.createElement('div')
-      filterElement.classList.add('filter')
-
-      const filterTitle = document.createElement('div')
-      filterTitle.classList.add('title')
-      filterTitle.innerHTML = language.reports.list.filter.title
-
-      const filterInput = document.createElement('input')
-      filterInput.id = 'reportsListFilterInput'
-      filterInput.type = 'text'
-      filterInput.placeholder = language.reports.list.filter.searchPlaceholder
-      filterInput.addEventListener('input', async function () {
-        await applyFilter()
-      })
-
-      const statusButtonWrapper = document.createElement('div')
-      statusButtonWrapper.classList.add('buttonWrapper')
-
-      const closedButton = document.createElement('button')
-      closedButton.innerHTML = language.reports.statusMap[0]
-      closedButton.dataset.status = 0
-      closedButton.classList.add('selected')
-
-      const openButton = document.createElement('button')
-      openButton.innerHTML = language.reports.statusMap[1]
-      openButton.dataset.status = 1
-      openButton.classList.add('selected')
-
-      const canceledButton = document.createElement('button')
-      canceledButton.innerHTML = language.reports.statusMap[2]
-      canceledButton.dataset.status = 2
-
-      statusButtonWrapper.appendChild(closedButton)
-      statusButtonWrapper.appendChild(openButton)
-      statusButtonWrapper.appendChild(canceledButton)
-
-      for (const button of statusButtonWrapper.querySelectorAll('button')) {
-        button.addEventListener('click', async function () {
-          button.blur()
-          button.classList.toggle('selected')
-          await applyFilter()
-        })
-      }
-
-      filterElement.appendChild(filterTitle)
-      filterElement.appendChild(filterInput)
-      filterElement.appendChild(statusButtonWrapper)
-
-      if (reports.length < 1) {
-        document.querySelector('.listPage .reportsList').innerHTML +=
-          language.reports.list.empty
-      } else {
-        document
-          .querySelector('.listPage .reportsList')
-          .appendChild(filterElement)
-
-        await applyFilter()
-      }
-
-      async function applyFilter() {
-        const newReports = []
-        function addToNewReports(report) {
-          if (!newReports.includes(report)) {
-            newReports.push(report)
-          }
-        }
-        function removeFromNewReports(report) {
-          const index = newReports.indexOf(report)
-          if (index > -1) newReports.splice(index, 1)
-        }
-        for (const report of reports) {
-          if (
-            report.OffenderPedName?.toLowerCase().includes(
-              filterInput.value.toLowerCase()
-            ) ||
-            report.OffenderVehicleLicensePlate?.toLowerCase().includes(
-              filterInput.value.toLowerCase()
-            ) ||
-            report.Id.toLowerCase().includes(filterInput.value.toLowerCase()) ||
-            new Date(report.TimeStamp)
-              .toLocaleDateString()
-              .toLowerCase()
-              .includes(filterInput.value.toLowerCase()) ||
-            `${report.Location.Postal} ${report.Location.Street}`
-              .toLowerCase()
-              .includes(filterInput.value.toLowerCase()) ||
-            report.Location.Area.toLowerCase().includes(
-              filterInput.value.toLowerCase()
-            )
-          ) {
-            addToNewReports(report)
-          }
-
-          if (report.OffenderPedsNames) {
-            for (const pedName of report.OffenderPedsNames) {
-              if (
-                pedName.toLowerCase().includes(filterInput.value.toLowerCase())
-              ) {
-                addToNewReports(report)
-                break
-              }
-            }
-          }
-
-          if (report.WitnessPedsNames) {
-            for (const pedName of report.WitnessPedsNames) {
-              if (
-                pedName.toLowerCase().includes(filterInput.value.toLowerCase())
-              ) {
-                addToNewReports(report)
-                break
-              }
-            }
-          }
-
-          for (const statusButton of statusButtonWrapper.querySelectorAll(
-            'button'
-          )) {
-            if (
-              !statusButton.classList.contains('selected') &&
-              report.Status == statusButton.dataset.status
-            ) {
-              removeFromNewReports(report)
-            }
-          }
-        }
-        await renderReports(newReports, button.dataset.type)
-      }
-
-      hideLoadingOnButton(button)
+      await onListPageTypeSelectorButtonClick(button.dataset.type)
     })
   )
+
+async function onListPageTypeSelectorButtonClick(type) {
+  const button = document.querySelector(
+    `.listPage .typeSelector [data-type="${type}"]`
+  )
+
+  if (button.classList.contains('loading')) return
+  showLoadingOnButton(button)
+  button.blur()
+
+  document
+    .querySelectorAll('.listPage .listWrapper .typeSelector button')
+    .forEach((btn) => btn.classList.remove('selected'))
+  button.classList.add('selected')
+
+  const language = await getLanguage()
+
+  document.title = document
+    .querySelector('title')
+    .dataset.language.split('.')
+    .reduce((acc, key) => acc?.[key], language.reports.static)
+
+  document
+    .querySelector('.listPage .listWrapper .reportInformation')
+    .classList.add('hidden')
+  document
+    .querySelector('.listPage .listWrapper .reportsList')
+    .classList.remove('hidden')
+
+  document.querySelector('.listPage .reportsList').innerHTML = ''
+
+  let reports = await (
+    await fetch(`/data/${button.dataset.type}Reports`)
+  ).json()
+  reports = reports.reverse()
+
+  const filterElement = document.createElement('div')
+  filterElement.classList.add('filter')
+
+  const filterTitle = document.createElement('div')
+  filterTitle.classList.add('title')
+  filterTitle.innerHTML = language.reports.list.filter.title
+
+  const filterInput = document.createElement('input')
+  filterInput.id = 'reportsListFilterInput'
+  filterInput.type = 'text'
+  filterInput.placeholder = language.reports.list.filter.searchPlaceholder
+  filterInput.addEventListener('input', async function () {
+    await applyFilter()
+  })
+
+  const statusButtonWrapper = document.createElement('div')
+  statusButtonWrapper.classList.add('buttonWrapper')
+
+  const closedButton = document.createElement('button')
+  closedButton.innerHTML = language.reports.statusMap[0]
+  closedButton.dataset.status = 0
+  closedButton.classList.add('selected')
+
+  const openButton = document.createElement('button')
+  openButton.innerHTML = language.reports.statusMap[1]
+  openButton.dataset.status = 1
+  openButton.classList.add('selected')
+
+  const canceledButton = document.createElement('button')
+  canceledButton.innerHTML = language.reports.statusMap[2]
+  canceledButton.dataset.status = 2
+
+  statusButtonWrapper.appendChild(closedButton)
+  statusButtonWrapper.appendChild(openButton)
+  statusButtonWrapper.appendChild(canceledButton)
+
+  for (const button of statusButtonWrapper.querySelectorAll('button')) {
+    button.addEventListener('click', async function () {
+      button.blur()
+      button.classList.toggle('selected')
+      await applyFilter()
+    })
+  }
+
+  filterElement.appendChild(filterTitle)
+  filterElement.appendChild(filterInput)
+  filterElement.appendChild(statusButtonWrapper)
+
+  if (reports.length < 1) {
+    document.querySelector('.listPage .reportsList').innerHTML +=
+      language.reports.list.empty
+  } else {
+    document.querySelector('.listPage .reportsList').appendChild(filterElement)
+
+    await applyFilter()
+  }
+
+  async function applyFilter() {
+    const newReports = []
+    function addToNewReports(report) {
+      if (!newReports.includes(report)) {
+        newReports.push(report)
+      }
+    }
+    function removeFromNewReports(report) {
+      const index = newReports.indexOf(report)
+      if (index > -1) newReports.splice(index, 1)
+    }
+    for (const report of reports) {
+      if (
+        report.OffenderPedName?.toLowerCase().includes(
+          filterInput.value.toLowerCase()
+        ) ||
+        report.OffenderVehicleLicensePlate?.toLowerCase().includes(
+          filterInput.value.toLowerCase()
+        ) ||
+        report.Id.toLowerCase().includes(filterInput.value.toLowerCase()) ||
+        new Date(report.TimeStamp)
+          .toLocaleDateString()
+          .toLowerCase()
+          .includes(filterInput.value.toLowerCase()) ||
+        `${report.Location.Postal} ${report.Location.Street}`
+          .toLowerCase()
+          .includes(filterInput.value.toLowerCase()) ||
+        report.Location.Area.toLowerCase().includes(
+          filterInput.value.toLowerCase()
+        )
+      ) {
+        addToNewReports(report)
+      }
+
+      if (report.OffenderPedsNames) {
+        for (const pedName of report.OffenderPedsNames) {
+          if (pedName.toLowerCase().includes(filterInput.value.toLowerCase())) {
+            addToNewReports(report)
+            break
+          }
+        }
+      }
+
+      if (report.WitnessPedsNames) {
+        for (const pedName of report.WitnessPedsNames) {
+          if (pedName.toLowerCase().includes(filterInput.value.toLowerCase())) {
+            addToNewReports(report)
+            break
+          }
+        }
+      }
+
+      for (const statusButton of statusButtonWrapper.querySelectorAll(
+        'button'
+      )) {
+        if (
+          !statusButton.classList.contains('selected') &&
+          report.Status == statusButton.dataset.status
+        ) {
+          removeFromNewReports(report)
+        }
+      }
+    }
+    await renderReports(newReports, button.dataset.type)
+  }
+
+  hideLoadingOnButton(button)
+}
 
 const statusColorMap = {
   0: 'success',
@@ -456,20 +456,15 @@ async function renderReports(reports, type) {
 
 document
   .querySelector('.createPage .cancelButton')
-  .addEventListener('click', function () {
+  .addEventListener('click', async function () {
     document.querySelector('.createPage').classList.add('hidden')
     document.querySelector('.createPage .reportInformation').innerHTML = ''
     document.querySelector('.listPage').classList.remove('hidden')
     reportIsOnCreatePageBool = false
 
-    document
-      .querySelector(
-        `.listPage .typeSelector [data-type="${
-          document.querySelector('.createPage .typeSelector .selected').dataset
-            .type
-        }"]`
-      )
-      .click()
+    await onListPageTypeSelectorButtonClick(
+      document.querySelector('.createPage .typeSelector .selected').dataset.type
+    )
   })
 
 document
@@ -484,93 +479,97 @@ document
   .querySelectorAll('.createPage .typeSelector button')
   .forEach((button) =>
     button.addEventListener('click', async function () {
-      if (button.classList.contains('loading')) return
-      showLoadingOnButton(button)
-      button.blur()
-      document
-        .querySelectorAll('.createPage .typeSelector button')
-        .forEach((btn) => btn.classList.remove('selected'))
-      button.classList.add('selected')
-
-      document.querySelector('.createPage .reportInformation').innerHTML = ''
-
-      const config = await getConfig()
-      const language = await getLanguage()
-      const location = await (await fetch('/data/playerLocation')).json()
-      const officerInformation = await (
-        await fetch('/data/officerInformationData')
-      ).json()
-
-      const inGameDateArr = (
-        await (await fetch('/data/currentTime')).text()
-      ).split(':')
-      const inGameDate = new Date()
-      inGameDate.setHours(inGameDateArr[0])
-      inGameDate.setMinutes(inGameDateArr[1])
-      inGameDate.setSeconds(inGameDateArr[2])
-
-      const reportId = await generateReportId(button.dataset.type)
-
-      const generalInformation = {
-        time: config.useInGameTime
-          ? inGameDate.toLocaleTimeString()
-          : new Date().toLocaleTimeString(),
-        date: new Date().toLocaleDateString(),
-        reportId: reportId,
-        status: 1,
-      }
-
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(await getGeneralInformationSection(generalInformation))
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(await getOfficerInformationSection(officerInformation))
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(await getLocationSection(location))
-
-      switch (button.dataset.type) {
-        case 'incident':
-          document
-            .querySelector('.createPage .reportInformation')
-            .appendChild(
-              await getMultipleNameInputsSection(
-                language.reports.sections.incident.titleOffenders,
-                language.reports.sections.incident.labelOffenders,
-                language.reports.sections.incident.addOffender,
-                language.reports.sections.incident.removeOffender
-              )
-            )
-          document
-            .querySelector('.createPage .reportInformation')
-            .appendChild(
-              await getMultipleNameInputsSection(
-                language.reports.sections.incident.titleWitnesses,
-                language.reports.sections.incident.labelWitnesses,
-                language.reports.sections.incident.addWitness,
-                language.reports.sections.incident.removeWitness
-              )
-            )
-          break
-        case 'citation':
-        case 'arrest':
-          document
-            .querySelector('.createPage .reportInformation')
-            .appendChild(await getOffenderSection())
-          document
-            .querySelector('.createPage .reportInformation')
-            .appendChild(await getCitationArrestSection(button.dataset.type))
-          break
-      }
-
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(await getNotesSection())
-
-      hideLoadingOnButton(button)
+      await onCreatePageTypeSelectorButtonClick(button.dataset.type)
     })
   )
+
+async function onCreatePageTypeSelectorButtonClick(type) {
+  const button = document.querySelector(
+    `.createPage .typeSelector [data-type="${type}"]`
+  )
+
+  button.blur()
+  document
+    .querySelectorAll('.createPage .typeSelector button')
+    .forEach((btn) => btn.classList.remove('selected'))
+  button.classList.add('selected')
+
+  document.querySelector('.createPage .reportInformation').innerHTML = ''
+
+  const config = await getConfig()
+  const language = await getLanguage()
+  const location = await (await fetch('/data/playerLocation')).json()
+  const officerInformation = await (
+    await fetch('/data/officerInformationData')
+  ).json()
+
+  const inGameDateArr = (await (await fetch('/data/currentTime')).text()).split(
+    ':'
+  )
+  const inGameDate = new Date()
+  inGameDate.setHours(inGameDateArr[0])
+  inGameDate.setMinutes(inGameDateArr[1])
+  inGameDate.setSeconds(inGameDateArr[2])
+
+  const reportId = await generateReportId(button.dataset.type)
+
+  const generalInformation = {
+    time: config.useInGameTime
+      ? inGameDate.toLocaleTimeString()
+      : new Date().toLocaleTimeString(),
+    date: new Date().toLocaleDateString(),
+    reportId: reportId,
+    status: type == 'citation' || type == 'arrest' ? 0 : 1,
+  }
+
+  document
+    .querySelector('.createPage .reportInformation')
+    .appendChild(await getGeneralInformationSection(generalInformation))
+  document
+    .querySelector('.createPage .reportInformation')
+    .appendChild(await getOfficerInformationSection(officerInformation))
+  document
+    .querySelector('.createPage .reportInformation')
+    .appendChild(await getLocationSection(location))
+
+  switch (type) {
+    case 'incident':
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(
+          await getMultipleNameInputsSection(
+            language.reports.sections.incident.titleOffenders,
+            language.reports.sections.incident.labelOffenders,
+            language.reports.sections.incident.addOffender,
+            language.reports.sections.incident.removeOffender
+          )
+        )
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(
+          await getMultipleNameInputsSection(
+            language.reports.sections.incident.titleWitnesses,
+            language.reports.sections.incident.labelWitnesses,
+            language.reports.sections.incident.addWitness,
+            language.reports.sections.incident.removeWitness
+          )
+        )
+      break
+    case 'citation':
+    case 'arrest':
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(await getOffenderSection())
+      document
+        .querySelector('.createPage .reportInformation')
+        .appendChild(await getCitationArrestSection(type))
+      break
+  }
+
+  document
+    .querySelector('.createPage .reportInformation')
+    .appendChild(await getNotesSection())
+}
 
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('.listPage .listWrapper .typeSelector button').click()
@@ -1603,9 +1602,7 @@ async function saveReport(type) {
   document.querySelector('.listPage').classList.remove('hidden')
   reportIsOnCreatePageBool = false
 
-  document
-    .querySelector(`.listPage .typeSelector [data-type="${type}"]`)
-    .click()
+  await onListPageTypeSelectorButtonClick(type)
 }
 
 function isValidDate(date) {

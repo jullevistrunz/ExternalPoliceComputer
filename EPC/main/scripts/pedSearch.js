@@ -59,7 +59,10 @@ async function performSearch(query) {
   ).json()
 
   if (!response) {
-    topWindow.showNotification(language.pedSearch.notifications.pedNotFound, 'warning')
+    topWindow.showNotification(
+      language.pedSearch.notifications.pedNotFound,
+      'warning'
+    )
     return
   }
 
@@ -117,6 +120,12 @@ async function performSearch(query) {
         break
       case 'Citations':
       case 'Arrests':
+        el.parentElement.classList.add('clickable')
+        el.parentElement.onclick = () =>
+          openPedInReport(
+            key == 'Citations' ? 'citation' : 'arrest',
+            response.Name
+          )
         el.innerHTML =
           response[key].length > 0
             ? response[key].map((item) => `<li>${item.name}</li>`).join('')

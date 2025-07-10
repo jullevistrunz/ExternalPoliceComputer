@@ -222,6 +222,23 @@ async function openInVehicleSearch(vehicleLicensePlate) {
   }
 }
 
+async function openPedInReport(type, pedName = '') {
+  await topWindow.openWindow('reports')
+  const iframe = topDoc
+    .querySelector('.overlay .windows')
+    .lastChild.querySelector('iframe')
+
+  iframe.onload = async () => {
+    await iframe.contentWindow.onCreateButtonClick()
+
+    await iframe.contentWindow.onCreatePageTypeSelectorButtonClick(type)
+
+    iframe.contentWindow.document.querySelector(
+      '.createPage #offenderSectionPedNameInput'
+    ).value = pedName
+  }
+}
+
 let reportIsOnCreatePageBool = false
 function reportIsOnCreatePage() {
   return reportIsOnCreatePageBool
