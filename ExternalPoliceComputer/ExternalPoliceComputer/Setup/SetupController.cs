@@ -30,6 +30,7 @@ namespace ExternalPoliceComputer.Setup {
         internal static readonly string IncidentReportsPath = $"{ReportsDataPath}/incidentReports.json";
         internal static readonly string CitationReportsPath = $"{ReportsDataPath}/citationReports.json";
         internal static readonly string ArrestReportsPath = $"{ReportsDataPath}/arrestReports.json";
+        internal static readonly string IpAddressesPath = $"{EPCPath}/ipAresses.txt";
 
         internal static void SetupDirectory() {
             if (!Directory.Exists(DataPath)) {

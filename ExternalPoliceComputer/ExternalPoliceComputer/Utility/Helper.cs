@@ -2,7 +2,10 @@
 using Rage;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Xml;
 
 
@@ -79,6 +82,26 @@ namespace ExternalPoliceComputer.Utility {
             }
 
             return new string(id);
+        }
+
+        internal static string GetLocalIPAddress() {
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces()) {
+                if (ni.OperationalStatus != OperationalStatus.Up ||
+                    ni.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                    continue;
+
+                IPInterfaceProperties ipProps = ni.GetIPProperties();
+
+                foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses) {
+                    if (addr.Address.AddressFamily == AddressFamily.InterNetwork &&
+                        !IPAddress.IsLoopback(addr.Address) &&
+                        !addr.Address.ToString().StartsWith("169.254")) {
+                        return addr.Address.ToString();
+                    }
+                }
+            }
+
+            return "";
         }
     }
 }

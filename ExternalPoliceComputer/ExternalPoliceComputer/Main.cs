@@ -22,7 +22,7 @@ namespace ExternalPoliceComputer {
         public override void Finally() {
             Data.DataController.EndCurrentShift();
             Server.Stop();
-            Game.LogTrivial(GetLanguage().inGame.unloaded);
+            Game.DisplayNotification(GetLanguage().inGame.unloaded);
         }
 
         private static void Functions_OnOnDutyStateChanged(bool OnDuty) {

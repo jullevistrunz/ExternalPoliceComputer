@@ -1,5 +1,7 @@
 ﻿using ExternalPoliceComputer.ServerAPI;
+using Rage;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading;
 using static ExternalPoliceComputer.Utility.Helper;
@@ -15,6 +17,11 @@ namespace ExternalPoliceComputer {
             RunServer = true;
             listener = new HttpListener();
             listener.Prefixes.Add($"http://+:{Setup.SetupController.GetConfig().port}/");
+            string fullIp = $"http://{GetLocalIPAddress()}:{Setup.SetupController.GetConfig().port}";
+            string fullName = $"http://{Environment.MachineName}:{Setup.SetupController.GetConfig().port}";
+            Game.DisplayNotification($"{Setup.SetupController.GetLanguage().inGame.listeningOnIpAddress}{fullIp}");
+            Game.DisplayNotification($"{Setup.SetupController.GetLanguage().inGame.listeningOnIpAddress}{fullName}");
+            File.WriteAllText(Setup.SetupController.IpAddressesPath, $"{fullIp}\n{fullName}");
             listener.Start();
 
             while (RunServer) {
