@@ -124,6 +124,13 @@ namespace ExternalPoliceComputer.Setup {
             Helper.Log($"EPC Directory:\n  {string.Join("\n  ", EPCDirectoryFilesAndDirs)}");
         }
 
+        internal static void ClearCache() {
+            cachedConfig = null;
+            cachedLanguage = null;
+            cachedCitationOptions = null;
+            cachedArrestOptions = null;
+        }
+
         private static Config cachedConfig;
         internal static Config GetConfig() {
             if (cachedConfig == null) {
