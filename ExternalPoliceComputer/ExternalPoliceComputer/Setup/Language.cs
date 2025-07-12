@@ -17,7 +17,7 @@ namespace ExternalPoliceComputer.Setup {
             public string errorMissingCDF = "ExternalPoliceComputer failed to load. Couldn't find CommonDataFramework.";
             public string unloaded = "ExternalPoliceComputer has been unloaded.";
             public string errorCDFLoadingAborted = "ExternalPoliceComputer failed to load. CommonDataFramework didn't load (blame Marcel).";
-            public string listeningOnIpAddress = "EPC is listening on: ";
+            public string listeningOnIpAddress = "EPC can be accessed on: ";
         }
 
         public class Index {
@@ -348,6 +348,7 @@ namespace ExternalPoliceComputer.Setup {
         }
 
         public class ShiftHistory {
+            public string empty = "No shifts found.";
             public string startTime = "Start Time";
             public string endTime = "End Time";
             public string duration = "Duration";

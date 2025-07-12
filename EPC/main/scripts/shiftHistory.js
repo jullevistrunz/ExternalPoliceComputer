@@ -6,6 +6,10 @@
 
   const shiftHistory = await (await fetch('/data/shiftHistory')).json()
 
+  if (shiftHistory.length < 1) {
+    document.querySelector('.list').innerHTML = language.shiftHistory.empty
+  }
+
   for (const shift of shiftHistory.reverse()) {
     const listItem = document.createElement('div')
     listItem.classList.add('listItem')
