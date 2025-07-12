@@ -92,6 +92,8 @@ namespace ExternalPoliceComputer.Data {
                 CDFPedData.TimesStopped += Citations.Count / 2 + Arrests.Count / 2;
             }
 
+            CDFPedData.Citations = Citations.Count;
+
             TimesStopped = CDFPedData.TimesStopped;
         }
     }
