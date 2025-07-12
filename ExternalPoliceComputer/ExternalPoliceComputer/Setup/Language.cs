@@ -9,6 +9,7 @@ namespace ExternalPoliceComputer.Setup {
         public Values values = new Values();
         public Reports reports = new Reports();
         public Units units = new Units();
+        public ShiftHistory shiftHistory = new ShiftHistory();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
@@ -34,6 +35,7 @@ namespace ExternalPoliceComputer.Setup {
                     public string pedSearch = "Ped Lookup";
                     public string vehicleSearch = "Vehicle Lookup";
                     public string reports = "Reports";
+                    public string shiftHistory = "Shift History";
                 }
 
                 public class Taskbar {
@@ -343,6 +345,18 @@ namespace ExternalPoliceComputer.Setup {
             public string second = "s";
             public string currencySymbol = "$";
             public string life = "Life";
+        }
+
+        public class ShiftHistory {
+            public string startTime = "Start Time";
+            public string endTime = "End Time";
+            public string duration = "Duration";
+            public string reports = "Reports";
+            public Static @static = new Static();
+            
+            public class Static {
+                public string title = "Shift History";
+            }
         }
     }
 }

@@ -1,20 +1,8 @@
 ;(async function () {
   const config = await getConfig()
-  if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage()
+  if (config.updateDomWithLanguageOnLoad)
+    await updateDomWithLanguage('pedSearch')
 })()
-
-async function updateDomWithLanguage() {
-  const language = await getLanguage()
-  traverseObject(language.pedSearch.static, (key, value, path = []) => {
-    const selector = [...path, key].join('.')
-    document
-      .querySelectorAll(`[data-language="${selector}"]`)
-      .forEach((el) => (el.innerHTML = value))
-    document
-      .querySelectorAll(`[data-language-placeholder="${selector}"]`)
-      .forEach((el) => (el.placeholder = value))
-  })
-}
 
 document
   .querySelector('.searchInputWrapper #pedSearchInput')

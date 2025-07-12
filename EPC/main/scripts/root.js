@@ -239,6 +239,45 @@ async function openPedInReport(type, pedName = '') {
   }
 }
 
+async function openIdInReport(id, type = null) {
+  await topWindow.openWindow('reports')
+  const iframe = topDoc
+    .querySelector('.overlay .windows')
+    .lastChild.querySelector('iframe')
+
+  let found = false
+
+  iframe.onload = async () => {
+    iframe.contentWindow.document.addEventListener(
+      'pageLoaded',
+      async function () {
+        if (type) {
+          await performSearch(type)
+          return
+        }
+        const reportTypes = ['citation', 'arrest', 'incident']
+        for (const reportType of reportTypes) {
+          if (!found) await performSearch(reportType)
+        }
+      }
+    )
+  }
+
+  async function performSearch(reportType) {
+    await iframe.contentWindow.onListPageTypeSelectorButtonClick(reportType)
+
+    for (const listElement of iframe.contentWindow.document.querySelectorAll(
+      '.listPage .reportsList .listElement'
+    )) {
+      if (listElement.dataset.id == id) {
+        listElement.querySelector('.viewButton').click()
+        found = true
+        return
+      }
+    }
+  }
+}
+
 let reportIsOnCreatePageBool = false
 function reportIsOnCreatePage() {
   return reportIsOnCreatePageBool
@@ -282,4 +321,17 @@ async function convertMsToTimeString(ms) {
     result.push(`${pad(s)}${language.units.second}`)
 
   return result.join(' ')
+}
+
+async function updateDomWithLanguage(page) {
+  const language = await getLanguage()
+  traverseObject(language[page].static, (key, value, path = []) => {
+    const selector = [...path, key].join('.')
+    document
+      .querySelectorAll(`[data-language="${selector}"]`)
+      .forEach((el) => (el.innerHTML = value))
+    document
+      .querySelectorAll(`[data-language-title="${selector}"]`)
+      .forEach((el) => (el.title = value))
+  })
 }

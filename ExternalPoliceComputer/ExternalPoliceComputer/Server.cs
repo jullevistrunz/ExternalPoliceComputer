@@ -17,12 +17,12 @@ namespace ExternalPoliceComputer {
             RunServer = true;
             listener = new HttpListener();
             listener.Prefixes.Add($"http://+:{Setup.SetupController.GetConfig().port}/");
+            listener.Start();
             string fullIp = $"http://{GetLocalIPAddress()}:{Setup.SetupController.GetConfig().port}";
             string fullName = $"http://{Environment.MachineName}:{Setup.SetupController.GetConfig().port}";
             Game.DisplayNotification($"{Setup.SetupController.GetLanguage().inGame.listeningOnIpAddress}{fullIp}");
             Game.DisplayNotification($"{Setup.SetupController.GetLanguage().inGame.listeningOnIpAddress}{fullName}");
             File.WriteAllText(Setup.SetupController.IpAddressesPath, $"{fullIp}\n{fullName}");
-            listener.Start();
 
             while (RunServer) {
                 try {

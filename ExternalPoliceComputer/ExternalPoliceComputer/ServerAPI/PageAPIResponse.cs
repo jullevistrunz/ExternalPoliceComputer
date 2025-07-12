@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net;
+using static ExternalPoliceComputer.Setup.SetupController;
 
 namespace ExternalPoliceComputer.ServerAPI {
     internal class PageAPIResponse : APIResponse {
@@ -9,15 +10,19 @@ namespace ExternalPoliceComputer.ServerAPI {
             if (path.EndsWith(".html")) path = path.Substring(0, path.Length - ".html".Length);
 
             if (path == "pedSearch") {
-                buffer = File.ReadAllBytes("EPC/main/pages/pedSearch.html");
+                buffer = File.ReadAllBytes($"{EPCPath}/main/pages/pedSearch.html");
                 status = 200;
                 contentType = "text/html";
             } else if (path == "vehicleSearch") {
-                buffer = File.ReadAllBytes("EPC/main/pages/vehicleSearch.html");
+                buffer = File.ReadAllBytes($"{EPCPath}/main/pages/vehicleSearch.html");
                 status = 200;
                 contentType = "text/html";
             } else if (path == "reports") {
-                buffer = File.ReadAllBytes("EPC/main/pages/reports.html");
+                buffer = File.ReadAllBytes($"{EPCPath}/main/pages/reports.html");
+                status = 200;
+                contentType = "text/html";
+            } else if (path == "shiftHistory") {
+                buffer = File.ReadAllBytes($"{EPCPath}/main/pages/shiftHistory.html");
                 status = 200;
                 contentType = "text/html";
             }

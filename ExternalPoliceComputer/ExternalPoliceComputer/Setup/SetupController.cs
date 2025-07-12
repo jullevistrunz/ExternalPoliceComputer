@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace ExternalPoliceComputer.Setup {
     internal class SetupController {
-
         internal static readonly string EPCPath = "EPC";
         internal static readonly string DataPath = $"{EPCPath}/data";
         internal static readonly string ReportsDataPath = $"{DataPath}/reports";

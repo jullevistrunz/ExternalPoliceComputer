@@ -283,6 +283,9 @@ input[type='number'] {
   border: none;
   padding: 0;
   font-weight: 600;
+}
+
+.searchResponseWrapper .clickable input:disabled {
   pointer-events: none;
 }
 

@@ -1,7 +1,7 @@
 ;(async function () {
   const config = await getConfig()
   const language = await getLanguage()
-  if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage()
+  if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage('index')
   const version = await (await fetch('/version')).text()
   document.querySelector(
     '.overlay .settings .version'
@@ -12,19 +12,6 @@
   ).json()
   applyOfficerInformationToDOM(officerInformationData)
 })()
-
-async function updateDomWithLanguage() {
-  const language = await getLanguage()
-  traverseObject(language.index.static, (key, value, path = []) => {
-    const selector = [...path, key].join('.')
-    document
-      .querySelectorAll(`[data-language="${selector}"]`)
-      .forEach((el) => (el.innerHTML = value))
-    document
-      .querySelectorAll(`[data-language-title="${selector}"]`)
-      .forEach((el) => (el.title = value))
-  })
-}
 
 const timeWS = new WebSocket(`ws://${location.host}/ws`)
 timeWS.onopen = () => timeWS.send('interval/time')

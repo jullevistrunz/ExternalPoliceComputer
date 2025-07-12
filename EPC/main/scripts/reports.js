@@ -1,20 +1,7 @@
 ;(async function () {
   const config = await getConfig()
-  if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage()
+  if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage('reports')
 })()
-
-async function updateDomWithLanguage() {
-  const language = await getLanguage()
-  traverseObject(language.reports.static, (key, value, path = []) => {
-    const selector = [...path, key].join('.')
-    document
-      .querySelectorAll(`[data-language="${selector}"]`)
-      .forEach((el) => (el.innerHTML = value))
-    document
-      .querySelectorAll(`[data-language-title="${selector}"]`)
-      .forEach((el) => (el.title = value))
-  })
-}
 
 document
   .querySelector('.listPage .createButton')
@@ -86,9 +73,7 @@ async function onListPageTypeSelectorButtonClick(type) {
 
   document.querySelector('.listPage .reportsList').innerHTML = ''
 
-  let reports = await (
-    await fetch(`/data/${button.dataset.type}Reports`)
-  ).json()
+  let reports = await (await fetch(`/data/${type}Reports`)).json()
   reports = reports.reverse()
 
   const filterElement = document.createElement('div')
@@ -233,6 +218,7 @@ async function renderReports(reports, type) {
   for (const report of reports) {
     const listElement = document.createElement('div')
     listElement.classList.add('listElement')
+    listElement.dataset.id = report.Id
 
     const infoWrapper = document.createElement('div')
     infoWrapper.classList.add('infoWrapper')
@@ -571,8 +557,10 @@ async function onCreatePageTypeSelectorButtonClick(type) {
     .appendChild(await getNotesSection())
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelector('.listPage .listWrapper .typeSelector button').click()
+const pageLoadedEvent = new Event('pageLoaded')
+document.addEventListener('DOMContentLoaded', async function () {
+  await onListPageTypeSelectorButtonClick('incident')
+  document.dispatchEvent(pageLoadedEvent)
 })
 
 async function generateReportId(type) {
