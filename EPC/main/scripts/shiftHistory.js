@@ -50,3 +50,11 @@
     document.querySelector('.list').appendChild(listItem)
   }
 })()
+
+const shiftHistoryWS = new WebSocket(`ws://${location.host}/ws`)
+shiftHistoryWS.onopen = () => shiftHistoryWS.send('shiftHistoryUpdated')
+
+shiftHistoryWS.onmessage = (event) => {
+  if (JSON.parse(event.data).response == 'Shift history updated')
+    location.reload()
+}

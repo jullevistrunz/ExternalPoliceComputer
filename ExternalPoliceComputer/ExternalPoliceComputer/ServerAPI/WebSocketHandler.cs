@@ -1,4 +1,5 @@
-﻿using ExternalPoliceComputer.Data.Reports;
+﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using Newtonsoft.Json;
 using System;
@@ -56,6 +57,14 @@ namespace ExternalPoliceComputer.ServerAPI {
                         switch (clientMsg) {
                             case "ping":
                                 await SendData(webSocket, "\"Pong!\"", clientMsg);
+                                break;
+                            case "shiftHistoryUpdated":
+                                DataController.ShiftHistoryUpdated += OnShiftHistoryUpdated;
+
+                                void OnShiftHistoryUpdated() {
+                                    if (webSocket.State != WebSocketState.Open || !Server.RunServer) return;
+                                    SendData(webSocket, "\"Shift history updated\"", "shiftHistoryUpdated").Wait();
+                                }
                                 break;
                             default:
                                 await SendData(webSocket, $"\"Unknown command: '{clientMsg}'\"", clientMsg);

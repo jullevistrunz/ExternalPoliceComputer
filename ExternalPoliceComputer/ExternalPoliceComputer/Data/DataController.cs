@@ -195,7 +195,10 @@ namespace ExternalPoliceComputer.Data {
             currentShiftData.endTime = SetupController.GetConfig().useInGameTime ? DateTime.ParseExact(World.TimeOfDay.ToString(), "HH:mm:ss", CultureInfo.InvariantCulture) : DateTime.Now;
             shiftHistoryData.Add(currentShiftData);
             currentShiftData = new ShiftData();
+            ShiftHistoryUpdated?.Invoke();
         }
+
+        internal static event Action ShiftHistoryUpdated;
 
         internal static void AddReportToCurrentShift(string reportId) {
             if (currentShiftData.startTime == null || currentShiftData.reports.Contains(reportId)) return;
