@@ -46,8 +46,8 @@
     <Reference Include="CalloutInterfaceAPI">
       <HintPath>..\..\References\CalloutInterfaceAPI.dll</HintPath>
     </Reference>
-    <Reference Include="CommonDataFramework, Version=1.0.0.5, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\CommonDataFramework.1.0.0.5\lib\net48\CommonDataFramework.dll</HintPath>
+    <Reference Include="CommonDataFramework, Version=1.0.0.6, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\CommonDataFramework.1.0.0.6\lib\net48\CommonDataFramework.dll</HintPath>
     </Reference>
     <Reference Include="IPT.Common">
       <HintPath>..\..\References\IPT.Common.dll</HintPath>
@@ -114,6 +114,7 @@
     <Compile Include="Setup\Config.cs" />
     <Compile Include="Setup\Language.cs" />
     <Compile Include="Utility\CitationArrestHelper.cs" />
+    <Compile Include="Utility\PRHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

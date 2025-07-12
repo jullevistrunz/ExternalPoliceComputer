@@ -227,6 +227,7 @@ namespace ExternalPoliceComputer.Data {
                     citationReports[index] = citationReport;
                 } else {
                     citationReports.Add(citationReport);
+                    if (Main.usePR) PRHelper.GiveCitation(citationReport);
                 }
             } else if (report is ArrestReport arrestReport) {
                 int index = arrestReports.FindIndex(x => x.Id == arrestReport.Id);
