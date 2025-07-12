@@ -17,26 +17,12 @@
     const timeWrapper = document.createElement('div')
     timeWrapper.classList.add('timeWrapper')
 
-    const startTime = document.createElement('div')
-    startTime.innerHTML = `<span>${
-      language.shiftHistory.startTime
-    }: </span><span>${new Date(shift.startTime).toLocaleString()}</span>`
+    const startDate = new Date(shift.startTime)
+    const endDate = new Date(shift.endTime)
 
-    const endTime = document.createElement('div')
-    endTime.innerHTML = `<span>${
-      language.shiftHistory.endTime
-    }: </span><span>${new Date(shift.endTime).toLocaleString()}</span>`
-
-    const duration = document.createElement('div')
-    duration.innerHTML = `<span>${
-      language.shiftHistory.duration
-    }: </span><span>${await convertMsToTimeString(
-      new Date(shift.endTime) - new Date(shift.startTime)
-    )}</span>`
-
-    timeWrapper.appendChild(startTime)
-    timeWrapper.appendChild(endTime)
-    timeWrapper.appendChild(duration)
+    timeWrapper.innerHTML = `<span>${startDate.toLocaleString()}</span><span style="font-size: 24px; transform: translateY(-2px); margin: 0 5px;">&rarr;</span><span>${endDate.toLocaleString()}</span><span class="half">(${await convertMsToTimeString(
+      endDate - startDate
+    )})</span>`
 
     const reportsTitle = document.createElement('div')
     reportsTitle.classList.add('reportsTitle')

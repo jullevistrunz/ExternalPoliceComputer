@@ -26,24 +26,16 @@ body {
 .listItem .timeWrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0 5px;
   align-items: center;
   padding: 10px 0;
 }
 
-.listItem .timeWrapper > div {
-  flex: 1 1 0;
-  min-width: fit-content;
-  display: flex;
-  flex-direction: row;
-}
-
-.listItem .timeWrapper span:first-child {
+.listItem .timeWrapper span {
   min-width: fit-content;
 }
 
-.listItem .timeWrapper span:last-child {
-  margin-left: 5px;
+.listItem .timeWrapper span.half {
   font-weight: 400;
   color: var(--color-text-primary-half);
 }

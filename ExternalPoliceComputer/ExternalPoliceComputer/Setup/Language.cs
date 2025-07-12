@@ -349,9 +349,6 @@ namespace ExternalPoliceComputer.Setup {
 
         public class ShiftHistory {
             public string empty = "No shifts found.";
-            public string startTime = "Start Time";
-            public string endTime = "End Time";
-            public string duration = "Duration";
             public string reports = "Reports";
             public Static @static = new Static();
             
