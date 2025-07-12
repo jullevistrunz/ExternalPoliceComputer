@@ -14,7 +14,7 @@ namespace ExternalPoliceComputer.Utility {
             Ped ped = pedData.Holder;
             if (ped == null || !ped.IsValid()) return;
             foreach (CitationReport.Charge charge in citationReport.Charges) {
-                Citation citation = new Citation(ped, charge.name, charge.maxFine, SetupController.GetLanguage().units.currencySymbol, SetupController.GetConfig().displayCurrencySymbolBeforeNumber);
+                Citation citation = new Citation(ped, charge.name, charge.maxFine, SetupController.GetLanguage().units.currencySymbol, SetupController.GetConfig().displayCurrencySymbolBeforeNumber, charge.isArrestable);
                 PolicingRedefined.API.PedAPI.GiveCitationToPed(ped, citation);
             }
         }

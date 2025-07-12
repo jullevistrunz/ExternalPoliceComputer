@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Ignore Spelling: Arrestable
+
+using System.Collections.Generic;
 
 namespace ExternalPoliceComputer.Setup {
     public class ArrestGroup : CitationGroup {
@@ -9,6 +11,7 @@ namespace ExternalPoliceComputer.Setup {
             public int? maxDays;
             public float probation;
             public bool canBeWarrant;
+            public new bool isArrestable = true;
         }
     }
 }

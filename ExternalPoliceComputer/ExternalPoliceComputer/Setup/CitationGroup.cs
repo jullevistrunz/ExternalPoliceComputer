@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Ignore Spelling: Arrestable
+
+using System.Collections.Generic;
 
 namespace ExternalPoliceComputer.Setup {
     public class CitationGroup {
@@ -10,6 +12,7 @@ namespace ExternalPoliceComputer.Setup {
             public int minFine;
             public int maxFine;
             public bool canRevokeLicense;
+            public bool isArrestable;
         }
     }
 }
