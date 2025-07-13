@@ -58,3 +58,8 @@ shiftHistoryWS.onmessage = (event) => {
   if (JSON.parse(event.data).response == 'Shift history updated')
     location.reload()
 }
+
+shiftHistoryWS.onclose = async () => {
+  const language = await getLanguage()
+  showNotification(language.index.notifications.webSocketOnClose, 'warning', -1)
+}

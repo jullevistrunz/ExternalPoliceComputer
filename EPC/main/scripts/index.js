@@ -13,33 +13,39 @@
   applyOfficerInformationToDOM(officerInformationData)
 })()
 
-const timeWS = new WebSocket(`ws://${location.host}/ws`)
-timeWS.onopen = () => timeWS.send('interval/time')
-
 let currentShift = null
 
-timeWS.onmessage = async (event) => {
+;(async function () {
   const config = await getConfig()
-  const data = JSON.parse(event.data)
-  const inGameDateArr = data.response.split(':')
-  const inGameDate = new Date()
-  inGameDate.setHours(inGameDateArr[0])
-  inGameDate.setMinutes(inGameDateArr[1])
-  inGameDate.setSeconds(inGameDateArr[2])
-  const realDate = new Date()
-  document.querySelector('.taskbar .time').innerHTML = `${
-    config.useInGameTime
-      ? inGameDate.toLocaleTimeString()
-      : realDate.toLocaleTimeString()
-  }<br>${realDate.toLocaleDateString()}`
+  setInterval(
+    async function () {
+      const data = await (
+        await fetch('/currentTime', {
+          signal: AbortSignal.timeout(config.updateInterval),
+        })
+      ).text()
+      const inGameDateArr = data.split(':')
+      const inGameDate = new Date()
+      inGameDate.setHours(inGameDateArr[0])
+      inGameDate.setMinutes(inGameDateArr[1])
+      inGameDate.setSeconds(inGameDateArr[2])
+      const realDate = new Date()
+      document.querySelector('.taskbar .time').innerHTML = `${
+        config.useInGameTime
+          ? inGameDate.toLocaleTimeString()
+          : realDate.toLocaleTimeString()
+      }<br>${realDate.toLocaleDateString()}`
 
-  currentShift =
-    currentShift ?? (await (await fetch('/data/currentShift')).json())
-  applyCurrentShiftToDOM(
-    currentShift,
-    config.useInGameTime ? inGameDate : realDate
+      currentShift =
+        currentShift ?? (await (await fetch('/data/currentShift')).json())
+      applyCurrentShiftToDOM(
+        currentShift,
+        config.useInGameTime ? inGameDate : realDate
+      )
+    },
+    config.updateInterval > 200 ? config.updateInterval : 200
   )
-}
+})()
 
 document
   .querySelector('.overlay .settings .currentShift .buttonWrapper .startShift')
@@ -149,26 +155,23 @@ async function applyCurrentShiftToDOM(currentShift, currentDate) {
   }
 }
 
-timeWS.onclose = async () => {
-  const language = await getLanguage()
-  showNotification(language.index.notifications.webSocketOnClose, 'warning', -1)
-}
-
-const locationWS = new WebSocket(`ws://${location.host}/ws`)
-locationWS.onopen = () => locationWS.send('interval/playerLocation')
-
-locationWS.onmessage = async (event) => {
-  const location = JSON.parse(event.data).response
-  const icon = document.querySelector('.iconAccess .location').innerHTML
-  document.querySelector(
-    '.taskbar .location'
-  ).innerHTML = `${icon} ${location.Postal} ${location.Street},<br>${location.Area}`
-}
-
-locationWS.onclose = async () => {
-  const language = await getLanguage()
-  showNotification(language.index.notifications.webSocketOnClose, 'warning', -1)
-}
+;(async function () {
+  const config = await getConfig()
+  setInterval(
+    async function () {
+      const location = await (
+        await fetch('/playerLocation', {
+          signal: AbortSignal.timeout(config.updateInterval),
+        })
+      ).json()
+      const icon = document.querySelector('.iconAccess .location').innerHTML
+      document.querySelector(
+        '.taskbar .location'
+      ).innerHTML = `${icon} ${location.Postal} ${location.Street},<br>${location.Area}`
+    },
+    config.updateInterval > 200 ? config.updateInterval : 200
+  )
+})()
 
 const desktopItems = document.querySelectorAll('.desktop .desktopItem')
 

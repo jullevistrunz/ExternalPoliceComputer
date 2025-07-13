@@ -4,7 +4,6 @@ using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
 using LSPD_First_Response.Engine.Scripting.Entities;
-using Newtonsoft.Json;
 using Rage;
 using System;
 using System.Collections.Generic;
@@ -42,6 +41,9 @@ namespace ExternalPoliceComputer.Data {
 
         internal static List<ArrestReport> arrestReports = new List<ArrestReport>();
         public static IReadOnlyList<ArrestReport> ArrestReports => arrestReports;
+
+        internal static Location playerLocation;
+        internal static string currentTime;
 
         private static void PopulatePedDatabase() {
             if (!Main.Player.Exists()) {
