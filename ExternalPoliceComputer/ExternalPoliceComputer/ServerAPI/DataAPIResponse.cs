@@ -84,6 +84,22 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.arrestReports));
                 status = 200;
                 contentType = "text/json";
+            } else if (path == "playerLocation") {
+                if (!Main.Player.IsValid()) {
+                    buffer = Encoding.UTF8.GetBytes("Invalid Player");
+                    status = 500;
+                    contentType = "text/plain";
+                    return;
+                }
+                Location location = new Location(Main.Player.Position);
+
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(location));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "currentTime") {
+                buffer = Encoding.UTF8.GetBytes(Rage.World.TimeOfDay.ToString());
+                status = 200;
+                contentType = "text/plain";
             } 
         }
     }

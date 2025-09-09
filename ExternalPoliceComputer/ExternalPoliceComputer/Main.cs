@@ -1,5 +1,4 @@
-﻿using ExternalPoliceComputer.Data;
-using LSPD_First_Response.Mod.API;
+﻿using LSPD_First_Response.Mod.API;
 using Rage;
 using System.IO;
 using System.Threading;
@@ -21,7 +20,7 @@ namespace ExternalPoliceComputer {
         }
 
         public override void Finally() {
-            DataController.EndCurrentShift();
+            Data.DataController.EndCurrentShift();
             Server.Stop();
             ClearCache();
             Game.DisplayNotification(GetLanguage().inGame.unloaded);
@@ -83,16 +82,6 @@ namespace ExternalPoliceComputer {
                         } else {
                             EventListeners.LSPDFREvents.SubscribeToLSPDFREvents();
                         }
-
-                        GameFiber IntervalFiber = GameFiber.StartNew(() => {
-                            while (Server.RunServer) {
-                                if (Player.IsValid()) {
-                                    DataController.playerLocation = new Data.Reports.Location(Player.Position);
-                                }
-                                DataController.currentTime = World.TimeOfDay.ToString();
-                                GameFiber.Wait(GetConfig().updateInterval);
-                            }
-                        });
 
                         Game.DisplayNotification(GetLanguage().inGame.loaded);
                     });

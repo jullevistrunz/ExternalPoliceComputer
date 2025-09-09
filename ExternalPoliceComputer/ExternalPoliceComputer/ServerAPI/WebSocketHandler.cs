@@ -1,4 +1,7 @@
 ﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data.Reports;
+using ExternalPoliceComputer.Setup;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -43,27 +46,78 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                     string clientMsg = Encoding.UTF8.GetString(buffer, 0, result.Count).Trim();
 
-                    switch (clientMsg) {
-                        case "ping":
-                            await SendData(webSocket, "\"Pong!\"", clientMsg);
-                            break;
-                        case "shiftHistoryUpdated":
-                            DataController.ShiftHistoryUpdated += OnShiftHistoryUpdated;
+                    if (clientMsg.StartsWith("interval/")) {
+                        string intervalMsg = clientMsg.Substring("interval/".Length);
+                        CancellationTokenSource cts = new CancellationTokenSource();
+                        lock (WebSocketLock) {
+                            IntervalTokens[webSocket] = cts;
+                        }
+                        await SendUpdatesOnInterval(webSocket, clientMsg.Substring("interval/".Length), cts.Token);
+                    } else {
+                        switch (clientMsg) {
+                            case "ping":
+                                await SendData(webSocket, "\"Pong!\"", clientMsg);
+                                break;
+                            case "shiftHistoryUpdated":
+                                DataController.ShiftHistoryUpdated += OnShiftHistoryUpdated;
 
-                            void OnShiftHistoryUpdated() {
-                                if (webSocket.State != WebSocketState.Open || !Server.RunServer) return;
-                                SendData(webSocket, "\"Shift history updated\"", "shiftHistoryUpdated").Wait();
-                            }
-                            break;
-                        default:
-                            await SendData(webSocket, $"\"Unknown command: '{clientMsg}'\"", clientMsg);
-                            break;
+                                void OnShiftHistoryUpdated() {
+                                    if (webSocket.State != WebSocketState.Open || !Server.RunServer) return;
+                                    SendData(webSocket, "\"Shift history updated\"", "shiftHistoryUpdated").Wait();
+                                }
+                                break;
+                            default:
+                                await SendData(webSocket, $"\"Unknown command: '{clientMsg}'\"", clientMsg);
+                                break;
+                        }
                     }
-                    
                 }
             } catch (Exception e) {
                 if (Server.RunServer) Log($"WebSocket Error: {e.Message}", true, LogSeverity.Error);
             } 
+        }
+
+        private static Task SendUpdatesOnInterval(WebSocket webSocket, string clientMsg, CancellationToken token) {
+            return Task.Run(async () => {
+                try {
+                    while (webSocket.State == WebSocketState.Open && Server.RunServer && !token.IsCancellationRequested) {
+                        string lastResponseMsg = "";
+                        string responseMsg;
+                        switch (clientMsg) {
+                            case "playerLocation":
+                                if (!Main.Player.IsValid()) goto default;
+                                Location location = new Location(Main.Player.Position);
+
+                                responseMsg = JsonConvert.SerializeObject(location);
+
+                                if (responseMsg != lastResponseMsg) {
+                                    lastResponseMsg = responseMsg;
+                                    await SendData(webSocket, responseMsg, clientMsg, token);
+                                }
+                                break;
+                            case "time":
+                                responseMsg = $"\"{Rage.World.TimeOfDay}\"";
+
+                                if (responseMsg != lastResponseMsg) {
+                                    lastResponseMsg = responseMsg;
+                                    await SendData(webSocket, responseMsg, clientMsg, token);
+                                }
+                                break;
+                            default:
+                                await SendData(webSocket, $"\"Unknown interval command: '{clientMsg}'\"", clientMsg, token);
+                                return;
+                        }
+
+                        await Task.Delay(SetupController.GetConfig().webSocketUpdateInterval, token);
+                    }
+                } catch (OperationCanceledException) {
+                } catch (WebSocketException wse) when (wse.InnerException?.Message.Contains("nonexistent network connection") ?? false) {
+                    Log("WebSocket lost", true, LogSeverity.Warning);
+                } catch (Exception e) {
+                    string innerMessage = e.InnerException != null ? $"Inner: {e.InnerException.Message}" : "";
+                    Log($"WebSocket Error on interval: {e.Message}{innerMessage}", true, LogSeverity.Error);
+                }
+            });
         }
 
         private static async Task SendData(WebSocket webSocket, string data, string clientMsg, CancellationToken token = default) {

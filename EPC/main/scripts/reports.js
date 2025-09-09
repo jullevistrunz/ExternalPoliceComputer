@@ -484,12 +484,14 @@ async function onCreatePageTypeSelectorButtonClick(type) {
 
   const config = await getConfig()
   const language = await getLanguage()
-  const location = await (await fetch('/playerLocation')).json()
+  const location = await (await fetch('/data/playerLocation')).json()
   const officerInformation = await (
     await fetch('/data/officerInformationData')
   ).json()
 
-  const inGameDateArr = (await (await fetch('/currentTime')).text()).split(':')
+  const inGameDateArr = (await (await fetch('/data/currentTime')).text()).split(
+    ':'
+  )
   const inGameDate = new Date()
   inGameDate.setHours(inGameDateArr[0])
   inGameDate.setMinutes(inGameDateArr[1])

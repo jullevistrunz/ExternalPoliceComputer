@@ -5,7 +5,7 @@ namespace ExternalPoliceComputer.Setup {
         public int port = 8080;
         public int maxNumberOfNearbyPedsOrVehicles = 15;
         public int databaseLimitMultiplier = 10;
-        public int updateInterval = 1000;
+        public int webSocketUpdateInterval = 1000;
         public bool updateDomWithLanguageOnLoad = false;
         public bool useInGameTime = true;
         public int initialWindowWidth = 600;
