@@ -41,9 +41,9 @@ namespace ExternalPoliceComputer.ServerAPI {
                 contentType = "text/plain";
                 status = 200;
             } else if (path == "updateOfficerInformationData") {
-                DataController.officerInformationData = JsonConvert.DeserializeObject<OfficerInformationData>(body);
+                DataController.OfficerInformationData = JsonConvert.DeserializeObject<OfficerInformationData>(body);
 
-                Helper.WriteToJsonFile(SetupController.OfficerInformationDataPath, DataController.officerInformationData);
+                Helper.WriteToJsonFile(SetupController.OfficerInformationDataPath, DataController.OfficerInformationData);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";

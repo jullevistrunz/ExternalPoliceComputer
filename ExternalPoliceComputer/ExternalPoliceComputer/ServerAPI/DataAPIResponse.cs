@@ -39,25 +39,11 @@ namespace ExternalPoliceComputer.ServerAPI {
                 contentType = "text/json";
                 status = 200;
             } else if (path == "officerInformation") {
-                Helper.Log(LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName());
-                string agency = Helper.GetAgencyNameFromScriptName(LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName()) ?? LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName();
-                LSPD_First_Response.Engine.Scripting.Entities.Persona persona = LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(Main.Player);
-                string firstName = persona.Forename;
-                string lastName = persona.Surname;
-                string callSign = DependencyCheck.IsIPTCommonAvailable() ? Helper.GetCallSignFromIPTCommon() : null;
-
-                object response = new {
-                    agency,
-                    firstName,
-                    lastName,
-                    callSign
-                };
-
-                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.OfficerInformation));
                 contentType = "text/json";
                 status = 200;
             } else if (path == "officerInformationData") {
-                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.officerInformationData));
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.OfficerInformationData));
                 status = 200;
                 contentType = "text/json";
             } else if (path == "court") {
@@ -85,19 +71,11 @@ namespace ExternalPoliceComputer.ServerAPI {
                 status = 200;
                 contentType = "text/json";
             } else if (path == "playerLocation") {
-                if (!Main.Player.IsValid()) {
-                    buffer = Encoding.UTF8.GetBytes("Invalid Player");
-                    status = 500;
-                    contentType = "text/plain";
-                    return;
-                }
-                Location location = new Location(Main.Player.Position);
-
-                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(location));
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DataController.PlayerLocation));
                 status = 200;
                 contentType = "text/json";
             } else if (path == "currentTime") {
-                buffer = Encoding.UTF8.GetBytes(Rage.World.TimeOfDay.ToString());
+                buffer = Encoding.UTF8.GetBytes(DataController.CurrentTime);
                 status = 200;
                 contentType = "text/plain";
             } 

@@ -4,7 +4,6 @@ using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
 using LSPD_First_Response.Engine.Scripting.Entities;
-using Newtonsoft.Json;
 using Rage;
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,8 @@ namespace ExternalPoliceComputer.Data {
         internal static List<CourtData> courtDatabase = new List<CourtData>();
         public static IReadOnlyList<CourtData> CourtDatabase => courtDatabase;
 
-        internal static OfficerInformationData officerInformationData = new OfficerInformationData();
+        internal static OfficerInformationData OfficerInformationData = new OfficerInformationData();
+        internal static OfficerInformationData OfficerInformation = new OfficerInformationData();
 
         private static ShiftData currentShiftData = new ShiftData();
         internal static ShiftData CurrentShiftData => currentShiftData;
@@ -42,6 +42,19 @@ namespace ExternalPoliceComputer.Data {
 
         internal static List<ArrestReport> arrestReports = new List<ArrestReport>();
         public static IReadOnlyList<ArrestReport> ArrestReports => arrestReports;
+
+        internal static Location PlayerLocation = new Location();
+        internal static string CurrentTime = World.TimeOfDay.ToString();
+
+        internal static void SetDatabases() {
+            SetPedDatabase();
+            SetVehicleDatabase();
+        }
+
+        internal static void SetDynamicData() {
+            updatePlayerLocation();
+            CurrentTime = World.TimeOfDay.ToString();
+        }
 
         private static void PopulatePedDatabase() {
             if (!Main.Player.Exists()) {
@@ -71,7 +84,7 @@ namespace ExternalPoliceComputer.Data {
             }
         }
 
-        private static List<EPCPedData> GetPedDatabase() {
+        private static void SetPedDatabase() {
             if (pedDatabase.Count > SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles * SetupController.GetConfig().databaseLimitMultiplier) {
                 List<EPCPedData> keysToRemove = pedDatabase.Take(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles).ToList();
                 foreach (EPCPedData key in keysToRemove) {
@@ -80,10 +93,9 @@ namespace ExternalPoliceComputer.Data {
                 }
             }
             PopulatePedDatabase();
-            return pedDatabase;
         }
 
-        private static List<EPCVehicleData> GetVehicleDatabase() {
+        private static void SetVehicleDatabase() {
             if (vehicleDatabase.Count > SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles * SetupController.GetConfig().databaseLimitMultiplier) {
                 List<EPCVehicleData> keysToRemove = vehicleDatabase.Take(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles).ToList();
                 foreach (EPCVehicleData key in keysToRemove) {
@@ -92,6 +104,13 @@ namespace ExternalPoliceComputer.Data {
                 }
             }
             PopulateVehicleDatabase();
+        }
+
+        private static List<EPCPedData> GetPedDatabase() {
+            return pedDatabase;
+        }
+
+        private static List<EPCVehicleData> GetVehicleDatabase() {
             return vehicleDatabase;
         }
 
@@ -280,6 +299,28 @@ namespace ExternalPoliceComputer.Data {
                 }
             }
             AddReportToCurrentShift(report.Id);
+        }
+
+        private static OfficerInformationData GetOfficerInformation() {
+            LSPD_First_Response.Engine.Scripting.Entities.Persona persona = LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(Main.Player);
+
+            OfficerInformationData result = new OfficerInformationData {
+                agency = Helper.GetAgencyNameFromScriptName(LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName()) ?? LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName(),
+                firstName = persona.Forename,
+                lastName = persona.Surname,
+                callSign = DependencyCheck.IsIPTCommonAvailable() ? Helper.GetCallSignFromIPTCommon() : null
+            };
+
+            return result;
+        }
+
+        internal static void SetOfficerInformation() {
+            OfficerInformation = GetOfficerInformation();
+        }
+
+        private static void updatePlayerLocation() {
+            if (!Main.Player.IsValid()) return;
+            PlayerLocation = new Location(Main.Player.Position);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace ExternalPoliceComputer.Setup {
         public int maxNumberOfNearbyPedsOrVehicles = 15;
         public int databaseLimitMultiplier = 10;
         public int webSocketUpdateInterval = 1000;
+        public int databaseUpdateInterval = 15000;
         public bool updateDomWithLanguageOnLoad = false;
         public bool useInGameTime = true;
         public int initialWindowWidth = 600;

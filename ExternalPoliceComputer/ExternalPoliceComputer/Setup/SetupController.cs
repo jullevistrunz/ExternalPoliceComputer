@@ -2,6 +2,7 @@
 using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Utility;
 using Newtonsoft.Json;
+using Rage;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -80,7 +81,7 @@ namespace ExternalPoliceComputer.Setup {
                 File.WriteAllText(ArrestReportsPath, "[]");
             }
 
-            DataController.officerInformationData = Helper.ReadFromJsonFile<OfficerInformationData>(OfficerInformationDataPath);
+            DataController.OfficerInformationData = Helper.ReadFromJsonFile<OfficerInformationData>(OfficerInformationDataPath);
 
             DataController.courtDatabase = Helper.ReadFromJsonFile<List<CourtData>>(CourtDataPath) ?? new List<CourtData>();
 
@@ -94,6 +95,21 @@ namespace ExternalPoliceComputer.Setup {
 
             DataController.LoadPedDatabaseFromFile();
             DataController.LoadVehicleDatabaseFromFile();
+            DataController.SetOfficerInformation();
+
+            GameFiber.StartNew(() => {
+                while (Server.RunServer) {
+                    DataController.SetDatabases();
+                    GameFiber.Wait(GetConfig().databaseUpdateInterval);
+                }
+            }, "data-update-interval");
+
+            GameFiber.StartNew(() => {
+                while (Server.RunServer) {
+                    DataController.SetDynamicData();
+                    GameFiber.Wait(GetConfig().webSocketUpdateInterval);
+                }
+            }, "dynamic-data-update-interval");
 
             if (!File.Exists(ConfigPath)) {
                 Helper.WriteToJsonFile(ConfigPath, new Config());

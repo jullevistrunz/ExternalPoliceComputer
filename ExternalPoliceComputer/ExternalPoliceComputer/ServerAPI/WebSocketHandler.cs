@@ -85,10 +85,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                         string responseMsg;
                         switch (clientMsg) {
                             case "playerLocation":
-                                if (!Main.Player.IsValid()) goto default;
-                                Location location = new Location(Main.Player.Position);
-
-                                responseMsg = JsonConvert.SerializeObject(location);
+                                responseMsg = JsonConvert.SerializeObject(DataController.PlayerLocation);
 
                                 if (responseMsg != lastResponseMsg) {
                                     lastResponseMsg = responseMsg;
@@ -96,7 +93,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                                 }
                                 break;
                             case "time":
-                                responseMsg = $"\"{Rage.World.TimeOfDay}\"";
+                                responseMsg = $"\"{DataController.CurrentTime}\"";
 
                                 if (responseMsg != lastResponseMsg) {
                                     lastResponseMsg = responseMsg;
