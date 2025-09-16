@@ -97,6 +97,14 @@ namespace ExternalPoliceComputer.Setup {
             DataController.LoadVehicleDatabaseFromFile();
             DataController.SetOfficerInformation();
 
+            if (!File.Exists(ConfigPath)) {
+                Helper.WriteToJsonFile(ConfigPath, new Config());
+            }
+
+            if (!File.Exists(LanguagePath)) {
+                Helper.WriteToJsonFile(LanguagePath, new Language());
+            }
+
             GameFiber.StartNew(() => {
                 while (Server.RunServer) {
                     DataController.SetDatabases();
@@ -110,14 +118,6 @@ namespace ExternalPoliceComputer.Setup {
                     GameFiber.Wait(GetConfig().webSocketUpdateInterval);
                 }
             }, "dynamic-data-update-interval");
-
-            if (!File.Exists(ConfigPath)) {
-                Helper.WriteToJsonFile(ConfigPath, new Config());
-            }
-
-            if (!File.Exists(LanguagePath)) {
-                Helper.WriteToJsonFile(LanguagePath, new Language());
-            }
 
             string[] imgDefaultsDir = Directory.GetFiles(ImgDefaultsDirPath).Select(item => item.Split('\\')[item.Split('\\').Length - 1]).ToArray();
             if (!Directory.Exists(ImgDirPath)) Directory.CreateDirectory(ImgDirPath);
