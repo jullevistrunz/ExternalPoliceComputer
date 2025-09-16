@@ -17,7 +17,7 @@ A Police Computer Plugin for LSPDFR.
 - In Steam go to Steam <a>&rarr;</a> Settings <a>&rarr;</a> In Game
 - Make sure _Enable the Steam Overlay while in-game_ is enabled
 - Set _Overlay shortcut key(s)_ to whatever key you want to use to open ExternalPoliceComputer
-- Set _Web browser home page_ to `http://127.0.0.1`
+- Set _Web browser home page_ to `http://127.0.0.1:8080` (or the url provided by EPC)
 
 ## UI Usage
 
