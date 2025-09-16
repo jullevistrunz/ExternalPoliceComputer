@@ -69,7 +69,7 @@ namespace ExternalPoliceComputer.Data {
             HuntingPermitStatus = CDFPedData.HuntingPermit.Status.ToString();
             HuntingPermitExpiration = CDFPedData.HuntingPermit.ExpirationDate?.ToString("s");
             if (CDFPedData.HasRealPed && Holder.IsValid()) {
-                IsInGang = Holder.RelationshipGroup.Name.ToLower().Contains("gang");
+                IsInGang = Holder?.RelationshipGroup.Name?.ToLower().Contains("gang") ?? false;
             }
             AdvisoryText = CDFPedData.AdvisoryText;
             WarrantText = IsWanted ? GetRandomWarrantCharge().name : null;
