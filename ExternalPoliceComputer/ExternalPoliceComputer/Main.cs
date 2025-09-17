@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using static ExternalPoliceComputer.Setup.SetupController;
 using static ExternalPoliceComputer.Utility.Helper;
+using static System.Net.WebRequestMethods;
 
 namespace ExternalPoliceComputer {
     internal class Main : Plugin {
@@ -42,13 +43,13 @@ namespace ExternalPoliceComputer {
                     }
 
                     if (!DependencyCheck.IsCIAPIAvailable()) {
-                        Game.DisplayNotification(GetLanguage().inGame.errorMissingCIAPI);
+                        Game.DisplayNotification("ExternalPoliceComputer failed to load.Couldn't find CalloutInterfaceAPI");
                         Log("Loading aborted. Couldn't find CalloutInterfaceAPI.", true, LogSeverity.Error);
                         return;
                     }
 
                     if (!DependencyCheck.IsCDFAvailable()) {
-                        Game.DisplayNotification(GetLanguage().inGame.errorMissingCDF);
+                        Game.DisplayNotification("ExternalPoliceComputer failed to load. Couldn't find CommonDataFramework.");
                         Log("Loading aborted. Couldn't find CommonDataFramework.", true, LogSeverity.Error);
                         return;
                     }
@@ -57,7 +58,7 @@ namespace ExternalPoliceComputer {
                         GameFiber.WaitUntil(CommonDataFramework.API.CDFFunctions.IsPluginReady, 30000);
                         if (!CommonDataFramework.API.CDFFunctions.IsPluginReady()) {
                             Server.Stop();
-                            Game.DisplayNotification(GetLanguage().inGame.errorCDFLoadingAborted);
+                            Game.DisplayNotification("ExternalPoliceComputer failed to load. CommonDataFramework didn't load (blame Marcel).");
                             Log("Loading aborted. CommonDataFramework didn't load.", true, LogSeverity.Error);
                             return;
                         }

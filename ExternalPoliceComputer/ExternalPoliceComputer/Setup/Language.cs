@@ -13,10 +13,7 @@ namespace ExternalPoliceComputer.Setup {
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
-            public string errorMissingCIAPI = "ExternalPoliceComputer failed to load. Couldn't find CalloutInterfaceAPI.";
-            public string errorMissingCDF = "ExternalPoliceComputer failed to load. Couldn't find CommonDataFramework.";
             public string unloaded = "ExternalPoliceComputer has been unloaded.";
-            public string errorCDFLoadingAborted = "ExternalPoliceComputer failed to load. CommonDataFramework didn't load (blame Marcel).";
             public string listeningOnIpAddress = "EPC can be accessed on: ";
         }
 
