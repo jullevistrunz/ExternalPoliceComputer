@@ -204,9 +204,10 @@
 .overlay .windows .window.maximized {
   top: 0;
   left: 0;
-  width: 100%;
+  width: calc(100% - 2px);
   height: calc(100% - var(--tb-height));
   resize: none;
+  border-radius: 0;
 }
 
 .overlay .windows .window.minimized {

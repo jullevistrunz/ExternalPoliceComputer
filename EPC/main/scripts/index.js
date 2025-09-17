@@ -339,7 +339,7 @@ async function openWindow(name) {
     } else {
       lastSize = [windowElement.style.width, windowElement.style.height]
       lastOffset = [windowElement.style.left, windowElement.style.top]
-      windowElement.style.width = '100%'
+      windowElement.style.width = 'calc(100% - 2px)'
       windowElement.style.height = `calc(100% - var(--tb-height))`
       windowElement.style.left = '0'
       windowElement.style.top = '0'
