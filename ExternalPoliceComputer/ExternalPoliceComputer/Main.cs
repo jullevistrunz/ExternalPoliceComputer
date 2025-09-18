@@ -64,6 +64,7 @@ namespace ExternalPoliceComputer {
                         }
 
                         SetupDirectory();
+                        GetLanguage(); // load language file into cache to prevent server thread issues
 
                         Thread serverThread = new Thread(Server.Start) {
                             IsBackground = true
