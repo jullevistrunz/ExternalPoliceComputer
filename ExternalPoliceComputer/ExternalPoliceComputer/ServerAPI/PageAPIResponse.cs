@@ -25,7 +25,11 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = File.ReadAllBytes($"{EPCPath}/main/pages/shiftHistory.html");
                 status = 200;
                 contentType = "text/html";
-            }
+            } else if (path == "court") {
+                buffer = File.ReadAllBytes($"{EPCPath}/main/pages/court.html");
+                status = 200;
+                contentType = "text/html";
+            } 
         }
     }
 }

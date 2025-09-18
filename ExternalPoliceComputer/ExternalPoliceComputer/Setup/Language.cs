@@ -10,6 +10,7 @@ namespace ExternalPoliceComputer.Setup {
         public Reports reports = new Reports();
         public Units units = new Units();
         public ShiftHistory shiftHistory = new ShiftHistory();
+        public Court court = new Court();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
@@ -33,6 +34,7 @@ namespace ExternalPoliceComputer.Setup {
                     public string vehicleSearch = "Vehicle Lookup";
                     public string reports = "Reports";
                     public string shiftHistory = "Shift History";
+                    public string court = "Court Cases";
                 }
 
                 public class Taskbar {
@@ -351,6 +353,15 @@ namespace ExternalPoliceComputer.Setup {
             
             public class Static {
                 public string title = "Shift History";
+            }
+        }
+
+        public class Court {
+            public string empty = "No court cases found.";
+            public Static @static = new Static();
+
+            public class Static {
+                public string title = "Court Cases";
             }
         }
     }

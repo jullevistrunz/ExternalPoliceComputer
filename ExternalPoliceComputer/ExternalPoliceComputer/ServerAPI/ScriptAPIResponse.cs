@@ -37,6 +37,10 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = File.ReadAllBytes($"{EPCPath}/main/scripts/shiftHistory.js");
                 status = 200;
                 contentType = "application/js";
+            } else if (path == "court") {
+                buffer = File.ReadAllBytes($"{EPCPath}/main/scripts/court.js");
+                status = 200;
+                contentType = "application/js";
             }
         }
     }
