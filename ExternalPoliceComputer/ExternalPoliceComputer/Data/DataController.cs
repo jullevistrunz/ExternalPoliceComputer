@@ -257,9 +257,10 @@ namespace ExternalPoliceComputer.Data {
                 foreach (CitationReport.Charge charge in citationReport.Charges) {
                     courtData.AddCharge(
                         new CourtData.Charge(
-                            charge.name, 
-                            Helper.GetRandomInt(charge.minFine, charge.maxFine), 
-                            0
+                            charge.name,
+                            Helper.GetRandomInt(charge.minFine, charge.maxFine),
+                            0,
+                            charge.isArrestable
                             )
                         );
                 }
@@ -273,7 +274,7 @@ namespace ExternalPoliceComputer.Data {
                     citationReports[index] = citationReport;
                 } else {
                     citationReports.Add(citationReport);
-                    if (Main.usePR) PRHelper.GiveCitation(citationReport);
+                    if (Main.usePR) PRHelper.GiveCitation(courtData);
                 }
             } else if (report is ArrestReport arrestReport) {
                 if (!string.IsNullOrEmpty(arrestReport.OffenderPedName.ToLower())) {

@@ -24,11 +24,19 @@ namespace ExternalPoliceComputer.Data {
                 Time = time;
             }
 
+            internal Charge(string name, int fine, int? time, bool isArrestable) {
+                Name = name;
+                Fine = fine;
+                Time = time;
+                IsArrestable = isArrestable;
+            }
+
             public Charge() { }
 
             public string Name;
             public int Fine;
             public int? Time;
+            public bool? IsArrestable;
         }
 
         public void AddCharge(Charge charge) {
