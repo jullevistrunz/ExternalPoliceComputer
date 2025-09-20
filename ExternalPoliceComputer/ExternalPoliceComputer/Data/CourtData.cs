@@ -2,9 +2,10 @@
 
 namespace ExternalPoliceComputer.Data {
     public class CourtData {
-        internal CourtData(string pedName, string number, int shortYear) {
+        internal CourtData(string pedName, string number, string reportId, int shortYear) {
             PedName = pedName;
             Number = number;
+            ReportId = reportId;
             ShortYear = shortYear;
         }
 
@@ -12,6 +13,7 @@ namespace ExternalPoliceComputer.Data {
 
         public string PedName;
         public string Number;
+        public string ReportId;
         public int ShortYear;
         public List<Charge> Charges = new List<Charge>();
 

@@ -249,7 +249,8 @@ namespace ExternalPoliceComputer.Data {
 
                 CourtData courtData = new CourtData(
                     citationReport.OffenderPedName,
-                    courtCaseNumber, 
+                    courtCaseNumber,
+                    citationReport.Id,
                     int.Parse(DateTime.Now.ToString("yy"))
                     );
 
@@ -299,6 +300,7 @@ namespace ExternalPoliceComputer.Data {
                 CourtData courtData = new CourtData(
                     arrestReport.OffenderPedName,
                     courtCaseNumber,
+                    arrestReport.Id,
                     int.Parse(DateTime.Now.ToString("yy"))
                     );
 
