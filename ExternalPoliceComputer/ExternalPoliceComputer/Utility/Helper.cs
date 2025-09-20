@@ -122,9 +122,8 @@ namespace ExternalPoliceComputer.Utility {
             return number;
         }
 
-        internal static int GetRandomInt(int min, int max) {
-            Random random = new Random();
-            return random.Next(min, max);
-        }
+
+        private static readonly Random random = new Random();
+        internal static int GetRandomInt(int min, int max) => random.Next(min, max + 1);
     }
 }
