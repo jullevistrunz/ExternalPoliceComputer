@@ -8,4 +8,8 @@
   if (courtCases.length < 1) {
     document.querySelector('.list').innerHTML = language.court.empty
   }
+
+  for (const courtCase of courtCases.reverse()) {
+    
+  }
 })()

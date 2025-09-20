@@ -226,8 +226,6 @@ namespace ExternalPoliceComputer.Data {
 
         internal static void AddReport(Report report) {
             if (report is CitationReport citationReport) {
-                int index = citationReports.FindIndex(x => x.Id == citationReport.Id);
-
                 if (!string.IsNullOrEmpty(citationReport.OffenderPedName)) {
                     int pedIndex = pedDatabase.FindIndex(pedData => pedData.Name.ToLower() == citationReport.OffenderPedName.ToLower());
                     if (pedIndex != -1) {
@@ -245,6 +243,31 @@ namespace ExternalPoliceComputer.Data {
                     if (vehicleDataToAdd != null) KeepVehicleInDatabase(vehicleDataToAdd);
                 }
 
+                string courtCaseNumber = citationReport.CourtCaseNumber ?? Helper.GetCourtCaseNumber();
+
+                citationReport.CourtCaseNumber = courtCaseNumber;
+
+                CourtData courtData = new CourtData(
+                    citationReport.OffenderPedName,
+                    courtCaseNumber, 
+                    int.Parse(DateTime.Now.ToString("yy"))
+                    );
+
+                foreach (CitationReport.Charge charge in citationReport.Charges) {
+                    courtData.AddCharge(
+                        new CourtData.Charge(
+                            charge.name, 
+                            Helper.GetRandomInt(charge.minFine, charge.maxFine), 
+                            0
+                            )
+                        );
+                }
+
+                if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
+                    courtDatabase.Add(courtData);
+                }
+
+                int index = citationReports.FindIndex(x => x.Id == citationReport.Id);
                 if (index != -1) {
                     citationReports[index] = citationReport;
                 } else {
@@ -252,8 +275,6 @@ namespace ExternalPoliceComputer.Data {
                     if (Main.usePR) PRHelper.GiveCitation(citationReport);
                 }
             } else if (report is ArrestReport arrestReport) {
-                int index = arrestReports.FindIndex(x => x.Id == arrestReport.Id);
-
                 if (!string.IsNullOrEmpty(arrestReport.OffenderPedName.ToLower())) {
                     int pedIndex = pedDatabase.FindIndex(pedData => pedData.Name.ToLower() == arrestReport.OffenderPedName.ToLower());
                     if (pedIndex != -1) {
@@ -271,6 +292,41 @@ namespace ExternalPoliceComputer.Data {
                     if (vehicleDataToAdd != null) KeepVehicleInDatabase(vehicleDataToAdd);
                 }
 
+                string courtCaseNumber = arrestReport.CourtCaseNumber ?? Helper.GetCourtCaseNumber();
+
+                arrestReport.CourtCaseNumber = courtCaseNumber;
+
+                CourtData courtData = new CourtData(
+                    arrestReport.OffenderPedName,
+                    courtCaseNumber,
+                    int.Parse(DateTime.Now.ToString("yy"))
+                    );
+
+                foreach (ArrestReport.Charge charge in arrestReport.Charges) {
+                    int? time;
+                    if (charge.maxDays == null) {
+                        if (Helper.GetRandomInt(0, 1) == 0) {
+                            time = Helper.GetRandomInt(charge.minDays, charge.minDays * 2);
+                        } else {
+                            time = null;
+                        }
+                    } else {
+                        time = Helper.GetRandomInt(charge.minDays, (int)charge.maxDays);
+                    }
+                    courtData.AddCharge(
+                        new CourtData.Charge(
+                            charge.name,
+                            Helper.GetRandomInt(charge.minFine, charge.maxFine),
+                            time
+                            )
+                        );
+                }
+
+                if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
+                    courtDatabase.Add(courtData);
+                }
+
+                int index = arrestReports.FindIndex(x => x.Id == arrestReport.Id);
                 if (index != -1) {
                     arrestReports[index] = arrestReport;
                 } else {

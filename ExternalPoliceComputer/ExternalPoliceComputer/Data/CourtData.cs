@@ -2,17 +2,35 @@
 
 namespace ExternalPoliceComputer.Data {
     public class CourtData {
-        public string pedName;
-        public string number;
-        public List<Charge> charges = new List<Charge>();
-
-        public class Charge {
-            public string name;
-            public int fine;
-            public int time; // days in jail/prison
+        internal CourtData(string pedName, string number, int shortYear) {
+            PedName = pedName;
+            Number = number;
+            ShortYear = shortYear;
         }
 
-        public int totalFine;
-        public int totalTime; // days in jail/prison
+        public CourtData() { }
+
+        public string PedName;
+        public string Number;
+        public int ShortYear;
+        public List<Charge> Charges = new List<Charge>();
+
+        public class Charge {
+            internal Charge(string name, int fine, int? time) {
+                Name = name;
+                Fine = fine;
+                Time = time;
+            }
+
+            public Charge() { }
+
+            public string Name;
+            public int Fine;
+            public int? Time;
+        }
+
+        public void AddCharge(Charge charge) {
+            Charges.Add(charge);
+        }
     }
 }

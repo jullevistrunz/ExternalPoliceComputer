@@ -6,6 +6,7 @@ namespace ExternalPoliceComputer.Data.Reports {
         public List<Charge> Charges;
         public string OffenderPedName;
         public string OffenderVehicleLicensePlate;
+        public string CourtCaseNumber;
 
         public class Charge : ArrestGroup.Charge {
             public bool addedByReportInEdit = false;

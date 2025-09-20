@@ -422,6 +422,7 @@ async function renderReports(reports, type) {
               await getCitationArrestSection(type, isList, report.Charges)
             )
           }
+          reportInformationEl.dataset.courtCaseNumber = report.CourtCaseNumber
           break
       }
 
@@ -1412,7 +1413,12 @@ async function saveReport(type) {
     ),
     Status: el.querySelector('.statusInput .selected').dataset.status,
     Notes: el.querySelector('#notesSectionTextarea').value.trim(),
-    ShortYear: new Date().getFullYear().toString().slice(-2),
+    ShortYear: new Date(
+      el.querySelector('#generalInformationSectionDateInput').value.trim()
+    )
+      .getFullYear()
+      .toString()
+      .slice(-2),
   }
 
   if (!isValidDate(generalInformation.TimeStamp)) {
@@ -1520,6 +1526,8 @@ async function saveReport(type) {
         )
       }
 
+      report.CourtCaseNumber = el.dataset.courtCaseNumber ?? null
+
       response = await (
         await fetch('/post/createCitationReport', {
           method: 'POST',
@@ -1560,6 +1568,8 @@ async function saveReport(type) {
           'error'
         )
       }
+
+      report.CourtCaseNumber = el.dataset.courtCaseNumber ?? null
 
       response = await (
         await fetch('/post/createArrestReport', {
