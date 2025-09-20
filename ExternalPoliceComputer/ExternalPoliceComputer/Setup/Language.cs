@@ -358,6 +358,14 @@ namespace ExternalPoliceComputer.Setup {
 
         public class Court {
             public string empty = "No court cases found.";
+            public string charges = "Charges";
+            public string number = "Case Number";
+            public string pedName = "Offender Name";
+            public string report = "Report";
+            public string totalFine = "Total Fine";
+            public string fine = "Fine";
+            public string totalIncarceration = "Total Incarceration";
+            public string incarceration = "Incarceration";
             public Static @static = new Static();
 
             public class Static {

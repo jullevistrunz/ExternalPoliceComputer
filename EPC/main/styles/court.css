@@ -22,3 +22,13 @@ body {
   border-radius: 6px;
   background-color: var(--color-surface);
 }
+
+.chargesWrapper .inputWrapper > div label {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+.chargesWrapper .inputWrapper > div input {
+  color: var(--color-text-primary-half) !important;
+  font-weight: 400 !important;
+}
