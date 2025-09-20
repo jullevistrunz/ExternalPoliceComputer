@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace ExternalPoliceComputer.Utility {
     internal class CitationArrestHelper {
         private static Random random = new Random();

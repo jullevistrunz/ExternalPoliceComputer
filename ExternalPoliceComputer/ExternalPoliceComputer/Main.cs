@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using static ExternalPoliceComputer.Setup.SetupController;
 using static ExternalPoliceComputer.Utility.Helper;
-using static System.Net.WebRequestMethods;
 
 namespace ExternalPoliceComputer {
     internal class Main : Plugin {

@@ -1,5 +1,4 @@
 ﻿using ExternalPoliceComputer.Data;
-using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using PolicingRedefined.Interaction.Assets.PedAttributes;
 using Rage;

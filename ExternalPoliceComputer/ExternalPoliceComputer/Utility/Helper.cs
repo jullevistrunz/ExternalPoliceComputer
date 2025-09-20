@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using Rage;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;

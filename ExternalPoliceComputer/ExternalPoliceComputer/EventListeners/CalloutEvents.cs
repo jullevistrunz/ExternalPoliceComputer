@@ -2,8 +2,6 @@
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
 using Rage;
-using System;
-using System.IO;
 
 namespace ExternalPoliceComputer.EventListeners {
     internal class CalloutEvents {
