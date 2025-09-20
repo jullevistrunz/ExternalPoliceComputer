@@ -32,3 +32,7 @@ body {
   color: var(--color-text-primary-half) !important;
   font-weight: 400 !important;
 }
+
+.chargesWrapper .searchResponseSectionTitle {
+  font-size: 16px !important;
+}
