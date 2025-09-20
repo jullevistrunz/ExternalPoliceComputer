@@ -29,9 +29,11 @@
 
     let totalFine = 0
     let totalTime = 0
+    let lifeSentences = 0
     for (const charge of courtCase.Charges) {
       totalFine += charge.Fine
       totalTime += charge.Time
+      if (charge.Time === null) lifeSentences++
 
       const chargeWrapper = document.createElement('div')
       const chargeLabel = document.createElement('label')
@@ -104,7 +106,7 @@
     totalTimeLabel.innerHTML = language.court.totalIncarceration
     totalTimeWrapper.appendChild(totalTimeLabel)
     const totalTimeInput = document.createElement('input')
-    totalTimeInput.value = await convertDaysToYMD(totalTime)
+    totalTimeInput.value = await getTotalTimeString(totalTime, lifeSentences)
     totalTimeInput.type = 'text'
     totalTimeInput.disabled = true
     totalTimeWrapper.appendChild(totalTimeInput)
@@ -123,9 +125,20 @@ async function getChargeDetailsString(fine, time) {
   const language = await getLanguage()
 
   let fineString = `${language.court.fine}: ${await getCurrencyString(fine)}`
-  let timeString = `${language.court.incarceration}: ${await convertDaysToYMD(
-    time
-  )}`
+  let timeString = `${language.court.incarceration}: ${
+    time === null ? language.units.life : await convertDaysToYMD(time)
+  }`
 
-  return time > 0 ? `${fineString} | ${timeString}` : fineString
+  return time > 0 || time === null
+    ? `${fineString} | ${timeString}`
+    : fineString
+}
+
+async function getTotalTimeString(time, lifeSentences) {
+  const language = await getLanguage()
+
+  const timeString = await convertDaysToYMD(time)
+  if (lifeSentences < 1) return timeString
+  if (lifeSentences == 1) return `${language.units.life} + ${timeString}`
+  return `${lifeSentences}x ${language.units.life} + ${timeString}`
 }
