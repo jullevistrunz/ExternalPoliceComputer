@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-language="title">Vehicle Lookup</title>
+    <link rel="stylesheet" href="/style/root.css" />
+    <link rel="stylesheet" href="/style/vehicleSearch.css" />
+  </head>
+  <body>
+    <div class="searchInputWrapper">
+      <input
+        type="text"
+        id="vehicleSearchInput"
+        data-language-placeholder="searchInput"
+        placeholder="Search vehicle by license plate or VIN"
+        autocomplete="off"
+      />
+      <button data-language="search">Search Vehicle</button>
+    </div>
+    <div class="searchResponseWrapper hidden">
+      <div class="searchResponseSectionTitle" data-language="basicInfoTitle">
+        Basic Information
+      </div>
+      <div class="inputWrapper grid basicInfo">
+        <div>
+          <label for="licensePlateInput" data-language="labels.licensePlate"
+            >License Plate</label
+          >
+          <input
+            type="text"
+            id="licensePlateInput"
+            disabled
+            data-property="LicensePlate"
+          />
+        </div>
+        <div>
+          <label
+            for="modelDisplayNameInput"
+            data-language="labels.modelDisplayName"
+            >Model</label
+          >
+          <input
+            type="text"
+            id="modelDisplayNameInput"
+            disabled
+            data-property="ModelDisplayName"
+          />
+        </div>
+        <div>
+          <label for="ownerInput" data-language="labels.owner">Owner</label>
+          <input type="text" id="ownerInput" disabled data-property="Owner" />
+        </div>
+        <div>
+          <label for="isStolenInput" data-language="labels.isStolen"
+            >Stolen</label
+          >
+          <input
+            type="text"
+            id="isStolenInput"
+            disabled
+            data-property="IsStolen"
+          />
+        </div>
+        <div>
+          <label data-language="labels.color">Color</label>
+          <div data-property="Color"></div>
+        </div>
+      </div>
+      <div class="searchResponseSectionTitle" data-language="documentsTitle">
+        Documents
+      </div>
+      <div class="inputWrapper grid basicInfo">
+        <div>
+          <label
+            for="registrationStatusInput"
+            data-language="labels.registrationStatus"
+            >Registration Status</label
+          >
+          <input
+            type="text"
+            id="registrationStatusInput"
+            disabled
+            data-property="RegistrationStatus"
+          />
+        </div>
+        <div>
+          <label
+            for="registrationExpirationInput"
+            data-language="labels.registrationExpiration"
+            >Registration Expiration</label
+          >
+          <input
+            type="text"
+            id="registrationExpirationInput"
+            disabled
+            data-property="RegistrationExpiration"
+          />
+        </div>
+        <div>
+          <label
+            for="insuranceStatusInput"
+            data-language="labels.insuranceStatus"
+            >Insurance Status</label
+          >
+          <input
+            type="text"
+            id="insuranceStatusInput"
+            disabled
+            data-property="InsuranceStatus"
+          />
+        </div>
+        <div>
+          <label
+            for="insuranceExpirationInput"
+            data-language="labels.insuranceExpiration"
+            >Insurance Expiration</label
+          >
+          <input
+            type="text"
+            id="insuranceExpirationInput"
+            disabled
+            data-property="InsuranceExpiration"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="/script/root.js"></script>
+  <script src="/script/vehicleSearch.js"></script>
+</html>

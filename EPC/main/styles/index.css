@@ -1,0 +1,443 @@
+:root {
+  --tb-height: 45px;
+}
+
+.desktop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--tb-height));
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  /* background-image: url('https://raw.githubusercontent.com/jullevistrunz/ExternalPoliceComputer/c4a0727a0482094d972eb1f5bab6bd3e43b38749/plugins/Backgrounds/Police.1.4.2/police.png'); */
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 20px;
+}
+
+.desktop .desktopItem {
+  width: 140px;
+  text-align: center;
+  transition: none;
+  transition: background-color var(--transition-time-short) ease;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 5px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  box-sizing: unset;
+}
+
+.desktop .desktopItem:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.desktop .desktopItem:focus {
+  outline: none;
+  border-color: var(--color-border);
+}
+
+.desktop .desktopItem .icon {
+  width: 62px;
+  height: 62px;
+  margin-bottom: 5px;
+  fill: var(--color-accent-dimmed);
+}
+
+.desktop .desktopItem .icon.stroke {
+  fill: none;
+  stroke: var(--color-accent-dimmed);
+}
+
+.desktop .desktopItem .title {
+  text-shadow: 1px 1px 2px var(--color-shadow);
+  word-wrap: break-word;
+  display: block;
+}
+
+.taskbar {
+  --border-width: 1px;
+  height: calc(var(--tb-height) - var(--border-width));
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border-top: var(--border-width) solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 4;
+}
+
+.taskbar > * {
+  white-space: nowrap;
+}
+
+.taskbar .time {
+  text-align: right;
+  padding-right: 5px;
+}
+
+.taskbar .location {
+  padding-left: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.taskbar .location svg {
+  width: 25px;
+  height: 25px;
+  fill: var(--color-accent);
+}
+
+.taskbar .location svg.stroke {
+  fill: none;
+  stroke: var(--color-accent);
+}
+
+.taskbar .icons {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  transition: var(--transition-time-long) ease;
+}
+
+.taskbar .icons button {
+  outline: none;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 5px;
+  padding: unset;
+  cursor: pointer;
+  transition: background-color var(--transition-time-short) ease;
+  transition: opacity var(--transition-time-long) ease;
+}
+
+.taskbar .icons button:hover,
+.taskbar .icons button:focus,
+.taskbar .icons button.focused {
+  background-color: var(--color-surface-elevated);
+}
+
+.taskbar .icons button::after {
+  transition: var(--transition-time-long) ease-in-out;
+}
+
+.taskbar .icons button.open::after {
+  content: '';
+  position: absolute;
+  transform: translateY(17px);
+  width: 7px;
+  height: 3px;
+  border-radius: 10px;
+  background-color: var(--color-border);
+}
+
+.taskbar .icons button.focused::after {
+  content: '';
+  position: absolute;
+  transform: translateY(17px);
+  width: 15px;
+  height: 3px;
+  border-radius: 10px;
+  background-color: var(--color-accent-secondary);
+}
+
+.taskbar .icons button > * {
+  width: 25px;
+  height: 25px;
+  fill: var(--color-accent);
+}
+
+.taskbar .icons button svg.stroke {
+  fill: none;
+  stroke: var(--color-accent);
+}
+
+.overlay .windows {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay .windows .window {
+  --window-header-height: 30px;
+  --window-control-width: 40px;
+  pointer-events: all;
+  position: fixed;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  resize: both;
+  overflow: hidden;
+  border-radius: 5px;
+  box-shadow: 0 0 8px var(--color-shadow);
+  min-height: 150px;
+  transition: var(--transition-time-long) ease-in-out;
+}
+
+.overlay .windows .window.maximized {
+  top: 0;
+  left: 0;
+  width: calc(100% - 2px);
+  height: calc(100% - var(--tb-height));
+  resize: none;
+  border-radius: 0;
+}
+
+.overlay .windows .window.minimized {
+  transform: translateY(100%) scale(0);
+}
+
+.overlay .windows .window .windowHeader {
+  height: var(--window-header-height);
+  display: flex;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-dimmed);
+  backdrop-filter: var(--liquid-ass);
+  -webkit-backdrop-filter: var(--liquid-ass);
+}
+
+.overlay .windows .window.maximized .windowHeader {
+  background-color: var(--color-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.overlay .windows .window .windowHeader .iconTitleWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.overlay .windows .window .windowHeader .icon {
+  width: 25px;
+  height: 25px;
+  fill: var(--color-accent);
+  margin-left: 10px;
+}
+
+.overlay .windows .window .windowHeader .icon svg.stroke {
+  fill: none;
+  stroke: var(--color-accent);
+}
+
+.overlay .windows .window .windowHeader .title {
+  pointer-events: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  padding-left: 10px;
+  text-wrap: nowrap;
+}
+
+.overlay .windows .window .windowHeader .windowControls {
+  display: flex;
+  width: calc(var(--window-control-width) * 3);
+}
+
+.overlay .windows .window .windowHeader .closeButton,
+.overlay .windows .window .windowHeader .minimizeButton,
+.overlay .windows .window .windowHeader .maximizeButton {
+  width: var(--window-control-width);
+  height: var(--window-header-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  fill: var(--color-text-primary);
+  transition: background-color var(--transition-time-short) ease;
+}
+
+.overlay .windows .window .windowHeader .closeButton svg,
+.overlay .windows .window .windowHeader .minimizeButton svg,
+.overlay .windows .window .windowHeader .maximizeButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.overlay .windows .window .windowHeader .minimizeButton:hover,
+.overlay .windows .window .windowHeader .maximizeButton:hover {
+  background-color: var(--color-text-primary-half);
+}
+
+.overlay .windows .window .windowHeader .closeButton:hover {
+  background-color: var(--color-error);
+}
+
+.overlay .windows .window iframe {
+  width: 100%;
+  height: calc(100% - var(--window-header-height));
+  border: none;
+}
+
+.overlay .settings {
+  position: fixed;
+  width: 500px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--tb-height) + 10px);
+  background-color: var(--color-surface-dimmed);
+  backdrop-filter: var(--liquid-ass);
+  -webkit-backdrop-filter: var(--liquid-ass);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 0 8px var(--color-shadow);
+  transition: transform var(--transition-time-long) ease-in-out;
+  pointer-events: all;
+  color: var(--color-text-primary);
+}
+
+.overlay .settings.hide {
+  transform: translateY(600px) translateX(-50%);
+}
+
+.overlay .settings .version {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 10px;
+}
+
+.overlay .settings .officerInformation {
+  margin: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.overlay .settings .officerInformation .title {
+  width: 100%;
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.overlay .settings .currentShift {
+  margin: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.overlay .settings .currentShift .timeWrapper {
+  display: flex;
+}
+
+.overlay .settings .currentShift .timeWrapper div {
+  flex: 1 1 0;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+}
+
+.overlay .notifications {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overlay .notifications .notification {
+  width: 250px;
+  backdrop-filter: var(--liquid-ass);
+  -webkit-backdrop-filter: var(--liquid-ass);
+  border-radius: 5px;
+  padding: 10px;
+  color: var(--color-text-primary);
+  fill: var(--color-text-primary);
+  box-shadow: 0 2px 4px var(--color-shadow);
+  animation: notification-fly-in var(--transition-time-long) ease-in-out
+    forwards;
+}
+
+@keyframes notification-fly-in {
+  from {
+    transform: translateX(calc(100% + 10px));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes notification-fly-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(calc(100% + 10px));
+    opacity: 0;
+  }
+}
+
+.overlay .notifications .notification .iconTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-right: 20px;
+}
+
+.overlay .notifications .notification .iconTitleWrapper .icon,
+.overlay .notifications .notification .iconTitleWrapper .icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.overlay .notifications .notification .iconTitleWrapper .title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.overlay .notifications .notification .timerBar {
+  height: 4px;
+  background-color: var(--color-info);
+  border-radius: 2px;
+  width: 100%;
+}
+
+.overlay .notifications .notification .close {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  cursor: pointer;
+  fill: var(--color-text-primary);
+  transition: background-color var(--transition-time-short) ease;
+  border-radius: 0 5px 0 5px;
+  pointer-events: all;
+}

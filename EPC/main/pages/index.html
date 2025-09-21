@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-language="title">ExternalPoliceComputer</title>
+    <link rel="icon" href="/favicon" />
+    <link rel="stylesheet" href="/style/root.css" />
+    <link rel="stylesheet" href="/style/index.css" />
+  </head>
+  <body>
+    <div class="taskbar">
+      <div class="location"></div>
+      <div class="icons">
+        <button
+          class="settings"
+          onclick="document.querySelector('.overlay .settings').classList.toggle('hide'); this.blur()"
+          title="Control Panel"
+          data-language-title="taskbar.settings"
+        >
+          <img src="/favicon" />
+        </button>
+      </div>
+      <div class="time"></div>
+    </div>
+    <div class="desktop">
+      <button class="desktopItem" data-name="pedSearch">
+        <div class="icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 35.5 35.5"
+          >
+            <g>
+              <path
+                d="M33,8.812h-4.16V5.938c0-1.381-1.117-2.5-2.5-2.5h-1.93c-1.381,0-2.5,1.119-2.5,2.5v2.875h-8.32V5.938
+		c0-1.381-1.118-2.5-2.5-2.5H9.16c-1.381,0-2.5,1.119-2.5,2.5v2.875H2.5c-1.381,0-2.5,1.119-2.5,2.5v18.25
+		c0,1.381,1.119,2.5,2.5,2.5H33c1.381,0,2.5-1.119,2.5-2.5v-18.25C35.5,9.934,34.381,8.812,33,8.812z M16.551,26.362
+		c0,0.519-0.42,0.937-0.938,0.937H4.369c-0.521,0-0.938-0.418-0.938-0.938v-1.434c0-0.41,0.269-0.771,0.655-0.895l3.959-1.236
+		C7.191,21.776,6.67,20.164,6.67,18.65c0-2.285,1.304-3.762,3.318-3.762c2.018,0,3.32,1.477,3.32,3.762
+		c0,1.512-0.52,3.126-1.377,4.146l3.959,1.236c0.391,0.12,0.658,0.482,0.658,0.895v1.435H16.551z M32.068,27.312H18.625v-1.969
+		h13.443V27.312L32.068,27.312z M32.068,23.83H18.625v-1.969h13.443V23.83L32.068,23.83z M32.068,20.349H18.625v-1.97h13.443V20.349
+		L32.068,20.349z M32.068,16.866H18.625v-1.968h13.443V16.866L32.068,16.866z"
+              />
+            </g>
+          </svg>
+        </div>
+        <div class="title" data-language="desktop.pedSearch">Ped Lookup</div>
+      </button>
+      <button class="desktopItem" data-name="vehicleSearch">
+        <div class="icon">
+          <svg
+            viewBox="-4 0 32 32"
+            xmlns="http://www.w3.org/2000/svg"
+            style="transform: scale(1.1)"
+          >
+            <path
+              d="M19.938 7.188l3.563 7.156c0.063 0.094 0.094 0.219 0.125 0.313 0.219 0.563 0.375 1.344 0.375 1.844v3.406c0 1.063-0.719 1.938-1.719 2.188v2c0 0.969-0.781 1.719-1.719 1.719-0.969 0-1.719-0.75-1.719-1.719v-1.938h-13.688v1.938c0 0.969-0.75 1.719-1.719 1.719-0.938 0-1.719-0.75-1.719-1.719v-2c-1-0.25-1.719-1.125-1.719-2.188v-3.406c0-0.5 0.156-1.281 0.375-1.844 0.031-0.094 0.063-0.219 0.125-0.313l3.563-7.156c0.281-0.531 1.031-1.031 1.656-1.031h12.563c0.625 0 1.375 0.5 1.656 1.031zM5.531 9.344l-1.906 4.344c-0.094 0.156-0.094 0.344-0.094 0.469h16.938c0-0.125 0-0.313-0.094-0.469l-1.906-4.344c-0.25-0.563-1-1.063-1.594-1.063h-9.75c-0.594 0-1.344 0.5-1.594 1.063zM4.688 19.906c1 0 1.781-0.813 1.781-1.844 0-1-0.781-1.781-1.781-1.781s-1.844 0.781-1.844 1.781c0 1.031 0.844 1.844 1.844 1.844zM19.313 19.906c1 0 1.844-0.813 1.844-1.844 0-1-0.844-1.781-1.844-1.781s-1.781 0.781-1.781 1.781c0 1.031 0.781 1.844 1.781 1.844z"
+            ></path>
+          </svg>
+        </div>
+        <div class="title" data-language="desktop.vehicleSearch">
+          Vehicle Lookup
+        </div>
+      </button>
+      <button class="desktopItem" data-name="reports">
+        <div class="icon">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="18" width="8" height="2" />
+            <rect x="10" y="13" width="12" height="2" />
+            <rect x="10" y="23" width="5" height="2" />
+            <path
+              d="M25,5H22V4a2,2,0,0,0-2-2H12a2,2,0,0,0-2,2V5H7A2,2,0,0,0,5,7V28a2,2,0,0,0,2,2H25a2,2,0,0,0,2-2V7A2,2,0,0,0,25,5ZM12,4h8V8H12ZM25,28H7V7h3v3H22V7h3Z"
+            />
+          </svg>
+        </div>
+        <div class="title" data-language="desktop.reports">Reports</div>
+      </button>
+      <button class="desktopItem" data-name="shiftHistory">
+        <div class="icon stroke">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.0156 10H6.99999M3.0156 10V6M3.0156 10L6.34315 6.34315C9.46734 3.21895 14.5327 3.21895 17.6569 6.34315C20.781 9.46734 20.781 14.5327 17.6569 17.6569C14.5327 20.781 9.46734 20.781 6.34315 17.6569C5.55928 16.873 4.97209 15.9669 4.58158 15M12 9V13L15 14.5"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <div class="title" data-language="desktop.shiftHistory">
+          Shift History
+        </div>
+      </button>
+      <button class="desktopItem" data-name="court">
+        <div class="icon">
+          <svg viewBox="-2 0 19 19" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M9.316 14.722a.477.477 0 0 1-.475.475H1.433a.477.477 0 0 1-.475-.475v-.863a.477.477 0 0 1 .475-.475h7.408a.476.476 0 0 1 .475.475zm-2.767-2.587a.552.552 0 0 1-.392-.163L2.96 8.776a.554.554 0 0 1 .784-.784L6.94 11.19a.554.554 0 0 1-.392.946zm7.33.992L9.435 8.682l1.085-1.084-3.173-3.173-2.97 2.97 3.173 3.172 1.102-1.101 4.445 4.445a.554.554 0 1 0 .784-.784zm-2.33-5.993a.552.552 0 0 1-.391-.162L7.96 3.775a.554.554 0 1 1 .784-.784l3.196 3.197a.554.554 0 0 1-.391.946z"
+            />
+          </svg>
+        </div>
+        <div class="title" data-language="desktop.court">Court Cases</div>
+      </button>
+    </div>
+    <div class="overlay">
+      <div class="windows"></div>
+      <div class="settings hide">
+        <div class="officerInformation">
+          <div class="title" data-language="settings.officerInformation.title">
+            Officer Information
+          </div>
+          <div class="inputWrapper">
+            <div class="firstName">
+              <label
+                data-language="settings.officerInformation.firstName"
+                for="officerInformationFirstNameInput"
+                >First Name</label
+              >
+              <input type="text" id="officerInformationFirstNameInput" />
+            </div>
+            <div class="lastName">
+              <label
+                data-language="settings.officerInformation.lastName"
+                for="officerInformationLastNameInput"
+                >Last Name</label
+              >
+              <input type="text" id="officerInformationLastNameInput" />
+            </div>
+            <div class="badgeNumber">
+              <label
+                data-language="settings.officerInformation.badgeNumber"
+                for="officerInformationBadgeNumberInput"
+                >Badge Number</label
+              >
+              <input type="number" id="officerInformationBadgeNumberInput" />
+            </div>
+            <div class="rank">
+              <label
+                data-language="settings.officerInformation.rank"
+                for="officerInformationRankInput"
+                >Rank</label
+              >
+              <input type="text" id="officerInformationRankInput" />
+            </div>
+            <div class="callSign">
+              <label
+                data-language="settings.officerInformation.callSign"
+                for="officerInformationCallSignInput"
+                >Call Sign</label
+              >
+              <input type="text" id="officerInformationCallSignInput" />
+            </div>
+            <div class="agency">
+              <label
+                data-language="settings.officerInformation.agency"
+                for="officerInformationDepartmentInput"
+                >Department</label
+              >
+              <input type="text" id="officerInformationDepartmentInput" />
+            </div>
+          </div>
+          <div class="buttonWrapper">
+            <button
+              class="autoFill"
+              data-language="settings.officerInformation.autoFill"
+            >
+              Auto Fill
+            </button>
+            <button
+              class="save"
+              data-language="settings.officerInformation.save"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+        <div class="currentShift">
+          <div class="timeWrapper">
+            <div class="startTime"></div>
+            <div class="duration"></div>
+          </div>
+          <div class="buttonWrapper">
+            <button
+              class="startShift"
+              data-language="settings.currentShift.startShift"
+            >
+              Start Shift
+            </button>
+            <button
+              class="endShift"
+              data-language="settings.currentShift.endShift"
+            >
+              End Shift
+            </button>
+          </div>
+        </div>
+        <div class="version"></div>
+      </div>
+      <div class="notifications"></div>
+    </div>
+    <div class="iconAccess hidden">
+      <div class="vehicleSearch">
+        <svg viewBox="-4 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M19.938 7.188l3.563 7.156c0.063 0.094 0.094 0.219 0.125 0.313 0.219 0.563 0.375 1.344 0.375 1.844v3.406c0 1.063-0.719 1.938-1.719 2.188v2c0 0.969-0.781 1.719-1.719 1.719-0.969 0-1.719-0.75-1.719-1.719v-1.938h-13.688v1.938c0 0.969-0.75 1.719-1.719 1.719-0.938 0-1.719-0.75-1.719-1.719v-2c-1-0.25-1.719-1.125-1.719-2.188v-3.406c0-0.5 0.156-1.281 0.375-1.844 0.031-0.094 0.063-0.219 0.125-0.313l3.563-7.156c0.281-0.531 1.031-1.031 1.656-1.031h12.563c0.625 0 1.375 0.5 1.656 1.031zM5.531 9.344l-1.906 4.344c-0.094 0.156-0.094 0.344-0.094 0.469h16.938c0-0.125 0-0.313-0.094-0.469l-1.906-4.344c-0.25-0.563-1-1.063-1.594-1.063h-9.75c-0.594 0-1.344 0.5-1.594 1.063zM4.688 19.906c1 0 1.781-0.813 1.781-1.844 0-1-0.781-1.781-1.781-1.781s-1.844 0.781-1.844 1.781c0 1.031 0.844 1.844 1.844 1.844zM19.313 19.906c1 0 1.844-0.813 1.844-1.844 0-1-0.844-1.781-1.844-1.781s-1.781 0.781-1.781 1.781c0 1.031 0.781 1.844 1.781 1.844z"
+          ></path>
+        </svg>
+      </div>
+      <div class="pedSearch">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 35.5 35.5"
+        >
+          <g>
+            <path
+              d="M33,8.812h-4.16V5.938c0-1.381-1.117-2.5-2.5-2.5h-1.93c-1.381,0-2.5,1.119-2.5,2.5v2.875h-8.32V5.938
+		c0-1.381-1.118-2.5-2.5-2.5H9.16c-1.381,0-2.5,1.119-2.5,2.5v2.875H2.5c-1.381,0-2.5,1.119-2.5,2.5v18.25
+		c0,1.381,1.119,2.5,2.5,2.5H33c1.381,0,2.5-1.119,2.5-2.5v-18.25C35.5,9.934,34.381,8.812,33,8.812z M16.551,26.362
+		c0,0.519-0.42,0.937-0.938,0.937H4.369c-0.521,0-0.938-0.418-0.938-0.938v-1.434c0-0.41,0.269-0.771,0.655-0.895l3.959-1.236
+		C7.191,21.776,6.67,20.164,6.67,18.65c0-2.285,1.304-3.762,3.318-3.762c2.018,0,3.32,1.477,3.32,3.762
+		c0,1.512-0.52,3.126-1.377,4.146l3.959,1.236c0.391,0.12,0.658,0.482,0.658,0.895v1.435H16.551z M32.068,27.312H18.625v-1.969
+		h13.443V27.312L32.068,27.312z M32.068,23.83H18.625v-1.969h13.443V23.83L32.068,23.83z M32.068,20.349H18.625v-1.97h13.443V20.349
+		L32.068,20.349z M32.068,16.866H18.625v-1.968h13.443V16.866L32.068,16.866z"
+            />
+          </g>
+        </svg>
+      </div>
+      <div class="EPC">
+        <img src="/favicon" />
+      </div>
+      <div class="location">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 64 64"
+        >
+          <path
+            d="M32,0C18.746,0,8,10.746,8,24c0,5.219,1.711,10.008,4.555,13.93c0.051,0.094,0.059,0.199,0.117,0.289l16,24
+	C29.414,63.332,30.664,64,32,64s2.586-0.668,3.328-1.781l16-24c0.059-0.09,0.066-0.195,0.117-0.289C54.289,34.008,56,29.219,56,24
+	C56,10.746,45.254,0,32,0z M32,32c-4.418,0-8-3.582-8-8s3.582-8,8-8s8,3.582,8,8S36.418,32,32,32z"
+          />
+        </svg>
+      </div>
+      <div class="minimizeWindow">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 800 800"
+          xml:space="preserve"
+        >
+          <rect x="25" y="360" width="750" height="80" rx="40" />
+        </svg>
+      </div>
+      <div class="maximizeWindow">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 800 800"
+          xml:space="preserve"
+        >
+          <path
+            d="M670 25C727.99 25 775 72.0101 775 130V670C775 727.99 727.99 775 670 775H130C72.0101 775 25 727.99 25 670V130C25 72.0101 72.0101 25 130 25H670ZM165 105C131.863 105 105 131.863 105 165V635C105 668.137 131.863 695 165 695H635C668.137 695 695 668.137 695 635V165C695 131.863 668.137 105 635 105H165Z"
+          />
+        </svg>
+      </div>
+      <div class="restoreWindow">
+        <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M520 175C577.99 175 625 222.01 625 280V670C625 727.99 577.99 775 520 775H130C72.0101 775 25 727.99 25 670V280C25 222.01 72.0101 175 130 175H520ZM175 255C136.34 255 105 286.34 105 325V625C105 663.66 136.34 695 175 695H475C513.66 695 545 663.66 545 625V325C545 286.34 513.66 255 475 255H175Z"
+          />
+          <path
+            d="M598 25C695.754 25 775 104.246 775 202V545C775 594.375 740.92 635.789 695 647.005V247C695 168.576 631.424 105 553 105H152.994C164.21 59.0799 205.625 25 255 25H598Z"
+          />
+        </svg>
+      </div>
+      <div class="closeWindow">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 800 800"
+          xml:space="preserve"
+        >
+          <rect
+            x="98"
+            y="646.008"
+            width="775"
+            height="80"
+            rx="40"
+            transform="rotate(-45 98 646.008)"
+          />
+          <rect
+            x="646.008"
+            y="702.576"
+            width="775"
+            height="80"
+            rx="40"
+            transform="rotate(-135 646.008 702.576)"
+          />
+        </svg>
+      </div>
+      <div class="notificationIcons">
+        <div class="warning">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M9.82664 2.22902C10.7938 0.590326 13.2063 0.590325 14.1735 2.22902L23.6599 18.3024C24.6578 19.9933 23.3638 22 21.4865 22H2.51362C0.63634 22 -0.657696 19.9933 0.340215 18.3024L9.82664 2.22902ZM10.0586 7.05547C10.0268 6.48227 10.483 6 11.0571 6H12.9429C13.517 6 13.9732 6.48227 13.9414 7.05547L13.5525 14.0555C13.523 14.5854 13.0847 15 12.554 15H11.446C10.9153 15 10.477 14.5854 10.4475 14.0555L10.0586 7.05547ZM14 18C14 19.1046 13.1046 20 12 20C10.8954 20 10 19.1046 10 18C10 16.8954 10.8954 16 12 16C13.1046 16 14 16.8954 14 18Z"
+            />
+          </svg>
+        </div>
+        <div class="info">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM10.25 11C10.25 10.4477 10.6977 10 11.25 10H12.75C13.3023 10 13.75 10.4477 13.75 11V18C13.75 18.5523 13.3023 19 12.75 19H11.25C10.6977 19 10.25 18.5523 10.25 18V11ZM14 7C14 5.89543 13.1046 5 12 5C10.8954 5 10 5.89543 10 7C10 8.10457 10.8954 9 12 9C13.1046 9 14 8.10457 14 7Z"
+            />
+          </svg>
+        </div>
+        <div class="error">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM7.75736 7.05025C8.14788 6.65973 8.78105 6.65973 9.17157 7.05025L12 9.87868L14.8284 7.05025C15.219 6.65973 15.8521 6.65973 16.2426 7.05025L16.9497 7.75736C17.3403 8.14788 17.3403 8.78105 16.9497 9.17157L14.1213 12L16.9497 14.8284C17.3403 15.219 17.3403 15.8521 16.9497 16.2426L16.2426 16.9497C15.8521 17.3403 15.219 17.3403 14.8284 16.9497L12 14.1213L9.17157 16.9497C8.78105 17.3403 8.14788 17.3403 7.75736 16.9497L7.05025 16.2426C6.65973 15.8521 6.65973 15.219 7.05025 14.8284L9.87868 12L7.05025 9.17157C6.65973 8.78105 6.65973 8.14788 7.05025 7.75736L7.75736 7.05025Z"
+            />
+          </svg>
+        </div>
+        <div class="question">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM10.3027 13.3942C10.2316 13.7147 10.5038 14 10.8479 14H13.0406C13.2979 14 13.5151 13.8351 13.6064 13.6061C13.697 13.3789 14.0117 12.9674 14.254 12.7518C14.4827 12.5112 14.7213 12.2848 14.9563 12.0618C15.8824 11.183 16.754 10.356 16.754 8.91047C16.754 6.40301 14.582 5 12.2707 5C10.5038 5 8.06416 5.80604 7.58396 8.50363C7.48716 9.04737 7.94773 9.5 8.50002 9.5H9.91229C10.4388 9.5 10.8312 9.07642 11.0121 8.582C11.1863 8.10604 11.5379 7.7551 12.2707 7.7551C13.6066 7.7551 13.6064 9.22371 12.8346 10.1843C12.5434 10.5467 12.2023 10.8677 11.8648 11.1853C11.1798 11.8298 10.5098 12.4602 10.3027 13.3942ZM13.9999 17C13.9999 18.1046 13.1045 19 11.9999 19C10.8954 19 9.99994 18.1046 9.99994 17C9.99994 15.8954 10.8954 15 11.9999 15C13.1045 15 13.9999 15.8954 13.9999 17Z"
+            />
+          </svg>
+        </div>
+        <div class="checkMark">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM18.4158 9.70405C18.8055 9.31268 18.8041 8.67952 18.4127 8.28984L17.7041 7.58426C17.3127 7.19458 16.6796 7.19594 16.2899 7.58731L10.5183 13.3838L7.19723 10.1089C6.80398 9.72117 6.17083 9.7256 5.78305 10.1189L5.08092 10.8309C4.69314 11.2241 4.69758 11.8573 5.09083 12.2451L9.82912 16.9174C10.221 17.3039 10.8515 17.301 11.2399 16.911L18.4158 9.70405Z"
+            />
+          </svg>
+        </div>
+        <div class="minus">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM6.5 10.5C5.94772 10.5 5.5 10.9477 5.5 11.5V12.5C5.5 13.0523 5.94772 13.5 6.5 13.5H17.5C18.0523 13.5 18.5 13.0523 18.5 12.5V11.5C18.5 10.9477 18.0523 10.5 17.5 10.5H6.5Z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div class="reports">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="18" width="8" height="2" />
+          <rect x="10" y="13" width="12" height="2" />
+          <rect x="10" y="23" width="5" height="2" />
+          <path
+            d="M25,5H22V4a2,2,0,0,0-2-2H12a2,2,0,0,0-2,2V5H7A2,2,0,0,0,5,7V28a2,2,0,0,0,2,2H25a2,2,0,0,0,2-2V7A2,2,0,0,0,25,5ZM12,4h8V8H12ZM25,28H7V7h3v3H22V7h3Z"
+          />
+        </svg>
+      </div>
+      <div class="trash">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M8 1.5V2.5H3C2.44772 2.5 2 2.94772 2 3.5V4.5C2 5.05228 2.44772 5.5 3 5.5H21C21.5523 5.5 22 5.05228 22 4.5V3.5C22 2.94772 21.5523 2.5 21 2.5H16V1.5C16 0.947715 15.5523 0.5 15 0.5H9C8.44772 0.5 8 0.947715 8 1.5Z"
+          />
+          <path
+            d="M3.9231 7.5H20.0767L19.1344 20.2216C19.0183 21.7882 17.7135 23 16.1426 23H7.85724C6.28636 23 4.98148 21.7882 4.86544 20.2216L3.9231 7.5Z"
+          />
+        </svg>
+      </div>
+      <div class="shiftHistory">
+        <svg
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke"
+        >
+          <path
+            d="M3.0156 10H6.99999M3.0156 10V6M3.0156 10L6.34315 6.34315C9.46734 3.21895 14.5327 3.21895 17.6569 6.34315C20.781 9.46734 20.781 14.5327 17.6569 17.6569C14.5327 20.781 9.46734 20.781 6.34315 17.6569C5.55928 16.873 4.97209 15.9669 4.58158 15M12 9V13L15 14.5"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+      <div class="court">
+        <svg viewBox="-2 0 19 19" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M9.316 14.722a.477.477 0 0 1-.475.475H1.433a.477.477 0 0 1-.475-.475v-.863a.477.477 0 0 1 .475-.475h7.408a.476.476 0 0 1 .475.475zm-2.767-2.587a.552.552 0 0 1-.392-.163L2.96 8.776a.554.554 0 0 1 .784-.784L6.94 11.19a.554.554 0 0 1-.392.946zm7.33.992L9.435 8.682l1.085-1.084-3.173-3.173-2.97 2.97 3.173 3.172 1.102-1.101 4.445 4.445a.554.554 0 1 0 .784-.784zm-2.33-5.993a.552.552 0 0 1-.391-.162L7.96 3.775a.554.554 0 1 1 .784-.784l3.196 3.197a.554.554 0 0 1-.391.946z"
+          />
+        </svg>
+      </div>
+    </div>
+  </body>
+  <script src="/script/root.js"></script>
+  <script src="/script/index.js"></script>
+</html>

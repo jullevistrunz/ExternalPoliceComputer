@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-language="title">Reports</title>
+    <link rel="stylesheet" href="/style/root.css" />
+    <link rel="stylesheet" href="/style/reports.css" />
+  </head>
+  <body>
+    <div class="listPage">
+      <div class="buttonWrapper">
+        <button class="createButton" data-language="listPage.createButton">
+          Create New Report
+        </button>
+      </div>
+      <div class="listWrapper">
+        <div class="typeSelector">
+          <button
+            data-language="listPage.reportType.incident"
+            data-type="incident"
+          >
+            Incident Reports
+          </button>
+          <button
+            data-language="listPage.reportType.citation"
+            data-type="citation"
+          >
+            Citation Reports
+          </button>
+          <button data-language="listPage.reportType.arrest" data-type="arrest">
+            Arrest Reports
+          </button>
+        </div>
+        <div class="reportsList"></div>
+        <div class="reportInformation hidden"></div>
+      </div>
+    </div>
+    <div class="createPage hidden">
+      <div class="buttonWrapper">
+        <button class="cancelButton" data-language="createPage.cancelButton">
+          Cancel
+        </button>
+        <button class="saveButton" data-language="createPage.saveButton">
+          Save Report
+        </button>
+      </div>
+      <div class="listWrapper">
+        <div class="typeSelector">
+          <button
+            data-type="incident"
+            data-language="createPage.reportType.incident"
+          >
+            Incident Report
+          </button>
+          <button
+            data-type="citation"
+            data-language="createPage.reportType.citation"
+          >
+            Citation Report
+          </button>
+          <button
+            data-type="arrest"
+            data-language="createPage.reportType.arrest"
+          >
+            Arrest Report
+          </button>
+        </div>
+        <div class="reportInformation"></div>
+      </div>
+    </div>
+  </body>
+  <script src="/script/root.js"></script>
+  <script src="/script/reports.js"></script>
+</html>
