@@ -99,7 +99,7 @@ namespace ExternalPoliceComputer.Data {
             if (vehicleDatabase.Count > SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles * SetupController.GetConfig().databaseLimitMultiplier) {
                 List<EPCVehicleData> keysToRemove = vehicleDatabase.Take(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles).ToList();
                 foreach (EPCVehicleData key in keysToRemove) {
-                    if (vehicleDatabase.Any(x => x.LicensePlate == key.LicensePlate)) continue;
+                    if (keepInVehicleDatabase.Any(x => x.LicensePlate == key.LicensePlate)) continue;
                     vehicleDatabase.Remove(key);
                 }
             }
