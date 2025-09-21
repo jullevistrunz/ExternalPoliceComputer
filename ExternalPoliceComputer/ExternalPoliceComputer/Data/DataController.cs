@@ -277,7 +277,7 @@ namespace ExternalPoliceComputer.Data {
                     if (Main.usePR) PRHelper.GiveCitation(courtData);
                 }
             } else if (report is ArrestReport arrestReport) {
-                if (!string.IsNullOrEmpty(arrestReport.OffenderPedName.ToLower())) {
+                if (!string.IsNullOrEmpty(arrestReport.OffenderPedName)) {
                     int pedIndex = pedDatabase.FindIndex(pedData => pedData.Name.ToLower() == arrestReport.OffenderPedName.ToLower());
                     if (pedIndex != -1) {
                         EPCPedData pedDataToAdd = pedDatabase[pedIndex];
