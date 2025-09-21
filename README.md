@@ -1,4 +1,4 @@
-# [ExternalPoliceComputer 2.0.0.3](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
+# [ExternalPoliceComputer 2.0.0.4](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
 
 A Police Computer Plugin for LSPDFR.
 
@@ -67,4 +67,4 @@ If you need support, have a suggestion or bug report, want to see what's coming 
 
 ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
 
-~~The following files / folders are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE):~~
+The following files / folders are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE): `EPC/arrestOptions.json`, `EPC/citationOptions.json`, `EPC/language.json`, `EPC/config.json`
