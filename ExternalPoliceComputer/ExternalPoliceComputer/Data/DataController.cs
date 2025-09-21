@@ -52,7 +52,7 @@ namespace ExternalPoliceComputer.Data {
         }
 
         internal static void SetDynamicData() {
-            updatePlayerLocation();
+            UpdatePlayerLocation();
             CurrentTime = World.TimeOfDay.ToString();
         }
 
@@ -377,7 +377,7 @@ namespace ExternalPoliceComputer.Data {
             OfficerInformation = GetOfficerInformation();
         }
 
-        private static void updatePlayerLocation() {
+        private static void UpdatePlayerLocation() {
             if (!Main.Player.IsValid()) return;
             PlayerLocation = new Location(Main.Player.Position);
         }
