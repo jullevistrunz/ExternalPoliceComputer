@@ -37,19 +37,25 @@ namespace ExternalPoliceComputer {
 
                     if (!DependencyCheck.IsNewtonsoftJsonAvailable()) {
                         Game.DisplayNotification("ExternalPoliceComputer failed to load. Couldn't find Newtonsoft.Json.");
-                        Log("Loading aborted. Couldn't find Newtonsoft.Json.", true, LogSeverity.Error);
+                        Game.LogTrivial("ExternalPoliceComputer: [Error] Loading aborted. Couldn't find Newtonsoft.Json.");
                         return;
                     }
 
                     if (!DependencyCheck.IsCIAPIAvailable()) {
                         Game.DisplayNotification("ExternalPoliceComputer failed to load.Couldn't find CalloutInterfaceAPI");
-                        Log("Loading aborted. Couldn't find CalloutInterfaceAPI.", true, LogSeverity.Error);
+                        Game.LogTrivial("ExternalPoliceComputer: [Error] Loading aborted. Couldn't find CalloutInterfaceAPI.");
                         return;
                     }
 
                     if (!DependencyCheck.IsCDFAvailable()) {
                         Game.DisplayNotification("ExternalPoliceComputer failed to load. Couldn't find CommonDataFramework.");
-                        Log("Loading aborted. Couldn't find CommonDataFramework.", true, LogSeverity.Error);
+                        Game.LogTrivial("ExternalPoliceComputer: [Error] Loading aborted. Couldn't find CommonDataFramework.");
+                        return;
+                    }
+
+                    if (!UrlAclExists($"http://+:{GetConfig().port}/") && !AddUrlAcl($"http://+:{GetConfig().port}/")) {
+                        Game.DisplayNotification("ExternalPoliceComputer failed to load. Failed to add URL ACL.");
+                        Game.LogTrivial("ExternalPoliceComputer: [Error] Loading aborted. Failed to add URL ACL.");
                         return;
                     }
 

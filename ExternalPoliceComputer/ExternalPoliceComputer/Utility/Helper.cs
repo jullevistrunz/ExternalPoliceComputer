@@ -3,6 +3,7 @@ using ExternalPoliceComputer.Setup;
 using Newtonsoft.Json;
 using Rage;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -124,5 +125,34 @@ namespace ExternalPoliceComputer.Utility {
 
         private static readonly Random random = new Random();
         internal static int GetRandomInt(int min, int max) => random.Next(min, max + 1);
+
+        internal static bool UrlAclExists(string url) {
+            Process process = new Process();
+            process.StartInfo.FileName = "netsh";
+            process.StartInfo.Arguments = "http show urlacl";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+
+            process.Start();
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            return output.Contains(url);
+        }
+
+        public static bool AddUrlAcl(string url) {
+            Process process = new Process();
+            process.StartInfo.FileName = "netsh";
+            process.StartInfo.Arguments = $"http add urlacl url={url} user={System.Security.Principal.WindowsIdentity.GetCurrent().Name}";
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.Verb = "runas";
+
+            process.Start();
+            process.WaitForExit();
+
+            return process.ExitCode == 0;
+        }
     }
 }
