@@ -1402,23 +1402,16 @@ async function saveReport(type) {
   const language = await getLanguage()
 
   const el = document.querySelector('.createPage .reportInformation')
+  const date = parseLocaleDateAndTime(
+    el.querySelector('#generalInformationSectionDateInput').value.trim(),
+    el.querySelector('#generalInformationSectionTimeInput').value.trim()
+  )
   const generalInformation = {
     Id: el.querySelector('#generalInformationSectionReportIdInput').value,
-    TimeStamp: new Date(
-      `${el
-        .querySelector('#generalInformationSectionDateInput')
-        .value.trim()} ${el
-        .querySelector('#generalInformationSectionTimeInput')
-        .value.trim()}`
-    ),
+    TimeStamp: date,
     Status: el.querySelector('.statusInput .selected').dataset.status,
     Notes: el.querySelector('#notesSectionTextarea').value.trim(),
-    ShortYear: new Date(
-      el.querySelector('#generalInformationSectionDateInput').value.trim()
-    )
-      .getFullYear()
-      .toString()
-      .slice(-2),
+    ShortYear: date.getFullYear().toString().slice(-2),
   }
 
   if (!isValidDate(generalInformation.TimeStamp)) {
@@ -1605,4 +1598,47 @@ async function saveReport(type) {
 
 function isValidDate(date) {
   return date instanceof Date && !isNaN(date) && !isNaN(date.getTime())
+}
+
+function parseLocaleDateAndTime(dateString, timeString) {
+  const sampleDate = new Date(2001, 2, 4) // March 4, 2001 (avoid ambiguity)
+  const parts = new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(sampleDate)
+
+  const order = parts
+    .filter(
+      (part) =>
+        part.type === 'day' || part.type === 'month' || part.type === 'year'
+    )
+    .map((part) => part.type)
+
+  const dateNumbers = dateString.match(/\d+/g).map(Number)
+
+  let dateComponents = {}
+  order.forEach((type, i) => {
+    dateComponents[type] = dateNumbers[i]
+  })
+
+  const timeMatch = timeString.match(/(\d+):(\d+)(?::(\d+))?\s*([AP]M)?/i)
+  let hour = Number(timeMatch[1])
+  let minute = Number(timeMatch[2])
+  let second = timeMatch[3] ? Number(timeMatch[3]) : 0
+  const ampm = timeMatch[4]
+
+  if (ampm) {
+    if (/PM/i.test(ampm) && hour < 12) hour += 12
+    if (/AM/i.test(ampm) && hour === 12) hour = 0
+  }
+
+  return new Date(
+    dateComponents.year,
+    dateComponents.month - 1,
+    dateComponents.day,
+    hour,
+    minute,
+    second
+  )
 }
