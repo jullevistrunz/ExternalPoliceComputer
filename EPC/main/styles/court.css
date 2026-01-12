@@ -21,6 +21,8 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background-color: var(--color-surface);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .chargesWrapper .inputWrapper > div label {
@@ -35,4 +37,5 @@ body {
 
 .chargesWrapper .searchResponseSectionTitle {
   font-size: 16px !important;
+  margin-top: 16px !important;
 }

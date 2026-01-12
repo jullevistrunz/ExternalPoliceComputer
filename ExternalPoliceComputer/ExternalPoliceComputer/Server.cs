@@ -17,7 +17,13 @@ namespace ExternalPoliceComputer {
             RunServer = true;
             listener = new HttpListener();
             listener.Prefixes.Add($"http://+:{Setup.SetupController.GetConfig().port}/");
-            listener.Start();
+            try {
+                listener.Start();
+            } catch {
+                Log("Failed to start server. Please restart your game.", true, LogSeverity.Error);
+                RunServer = false;
+                return;
+            }
             string fullIp = $"http://{GetLocalIPAddress()}:{Setup.SetupController.GetConfig().port}";
             string fullName = $"http://{Environment.MachineName}:{Setup.SetupController.GetConfig().port}";
             Game.DisplayNotification($"{Setup.SetupController.GetLanguage().inGame.listeningOnIpAddress}{fullIp}");

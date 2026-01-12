@@ -266,6 +266,9 @@ namespace ExternalPoliceComputer.Data {
                 }
 
                 if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
+                    if (courtDatabase.Count > SetupController.GetConfig().courtDatabaseMaxEntries) {
+                        courtDatabase.RemoveAt(0);
+                    }
                     courtDatabase.Add(courtData);
                 }
 
@@ -326,6 +329,9 @@ namespace ExternalPoliceComputer.Data {
                 }
 
                 if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
+                    if (courtDatabase.Count > SetupController.GetConfig().courtDatabaseMaxEntries) {
+                        courtDatabase.RemoveAt(0);
+                    }
                     courtDatabase.Add(courtData);
                 }
 

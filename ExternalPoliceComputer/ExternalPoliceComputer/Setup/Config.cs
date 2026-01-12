@@ -26,5 +26,6 @@ namespace ExternalPoliceComputer.Setup {
         public int courtCaseNumberIndexPad = 6;
 
         public bool displayCurrencySymbolBeforeNumber = true;
+        public int courtDatabaseMaxEntries = 100;
     }
 }
