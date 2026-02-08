@@ -97,25 +97,24 @@ async function getGeneralInformationSection(
     status.appendChild(statusInput)
   }
 
+  const dateMatch = generalInformation.timeStamp
+    .toISOString()
+    .match(/\d{4}-\d\d-\d\d/)
+  const timeMatch = generalInformation.timeStamp
+    .toISOString()
+    .match(/\d\d:\d\d:\d\d/)
+
   const date = document.createElement('div')
   date.classList.add('date')
   const dateLabel = document.createElement('label')
   dateLabel.innerHTML = language.reports.sections.generalInformation.date
   dateLabel.htmlFor = 'generalInformationSectionDateInput'
   const dateInput = document.createElement('input')
-  dateInput.type = 'text'
-  dateInput.value = generalInformation.date || ''
+  dateInput.type = 'date'
+  dateInput.value = dateMatch?.[0] || null
   dateInput.id = 'generalInformationSectionDateInput'
   dateInput.autocomplete = 'off'
   dateInput.disabled = isList
-  dateInput.addEventListener('blur', function () {
-    if (dateInput.value && !isValidDate(new Date(dateInput.value))) {
-      topWindow.showNotification(
-        language.reports.notifications.invalidDate,
-        'warning'
-      )
-    }
-  })
   date.appendChild(dateLabel)
   date.appendChild(dateInput)
 
@@ -125,22 +124,12 @@ async function getGeneralInformationSection(
   timeLabel.innerHTML = language.reports.sections.generalInformation.time
   timeLabel.htmlFor = 'generalInformationSectionTimeInput'
   const timeInput = document.createElement('input')
-  timeInput.type = 'text'
-  timeInput.value = generalInformation.time || ''
+  timeInput.type = 'time'
+  timeInput.step = 1
+  timeInput.value = timeMatch?.[0] || ''
   timeInput.id = 'generalInformationSectionTimeInput'
   timeInput.autocomplete = 'off'
   timeInput.disabled = isList
-  timeInput.addEventListener('blur', function () {
-    if (
-      timeInput.value &&
-      !isValidDate(new Date(`${new Date().toDateString()} ${timeInput.value}`))
-    ) {
-      topWindow.showNotification(
-        language.reports.notifications.invalidTime,
-        'warning'
-      )
-    }
-  })
   time.appendChild(timeLabel)
   time.appendChild(timeInput)
 

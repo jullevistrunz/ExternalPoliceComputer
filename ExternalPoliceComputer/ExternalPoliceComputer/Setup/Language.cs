@@ -207,7 +207,7 @@ namespace ExternalPoliceComputer.Setup {
                 public CreatePage createPage = new CreatePage();
 
                 public class ListPage {
-                    public string createButton = "Create New Reports";
+                    public string createButton = "Create New Report";
                     public ReportType reportType = new ReportType();
 
                     public class ReportType {
