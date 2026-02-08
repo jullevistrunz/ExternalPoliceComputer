@@ -25,6 +25,16 @@ body {
   grid-template-columns: 1fr 1fr;
 }
 
+.searchResponseWrapper:first-child {
+  border-right: 1px solid var(--color-border);
+  margin-right: 0px !important;
+  padding-right: 10px;
+}
+
+.inputWrapper {
+  margin: 0 !important;
+}
+
 .chargesWrapper .inputWrapper > div label {
   color: var(--color-text-primary) !important;
   font-weight: 600 !important;
