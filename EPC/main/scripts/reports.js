@@ -11,14 +11,7 @@ document
 
 async function onCreateButtonClick() {
   const language = await getLanguage()
-  for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
-    if (iframe.contentWindow.reportIsOnCreatePage()) {
-      topWindow.showNotification(
-        language.reports.notifications.createPageAlreadyOpen
-      )
-      return
-    }
-  }
+  if (await checkForReportOnCreatePage()) return
 
   document.title = language.reports.newReportTitle
   reportIsOnCreatePageBool = true

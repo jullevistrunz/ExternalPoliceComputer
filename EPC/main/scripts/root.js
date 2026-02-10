@@ -177,9 +177,12 @@ function showNotification(message, icon = 'info', duration = 4000) {
         .trim()
         .slice(0, -'ms'.length)
     )
-    setTimeout(() => {
-      if (wrapperEl) wrapperEl.remove()
-    }, CSSRootTransitionTimeLong + duration + 500)
+    setTimeout(
+      () => {
+        if (wrapperEl) wrapperEl.remove()
+      },
+      CSSRootTransitionTimeLong + duration + 500
+    )
   }
 }
 
@@ -222,7 +225,21 @@ async function openInVehicleSearch(vehicleLicensePlate) {
   }
 }
 
-async function openPedInReport(type, pedName = '') {
+async function checkForReportOnCreatePage() {
+  for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
+    if (iframe.contentWindow.reportIsOnCreatePage()) {
+      const language = await getLanguage()
+      topWindow.showNotification(
+        language.reports.notifications.createPageAlreadyOpen
+      )
+      return true
+    }
+  }
+}
+
+async function openPedAsOffenderInReport(type, pedName = '') {
+  if (await checkForReportOnCreatePage()) return
+
   await topWindow.openWindow('reports')
   const iframe = topDoc
     .querySelector('.overlay .windows')
