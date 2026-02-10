@@ -16,6 +16,7 @@ namespace ExternalPoliceComputer.Setup {
             public string loaded = "ExternalPoliceComputer has been loaded.";
             public string unloaded = "ExternalPoliceComputer has been unloaded.";
             public string listeningOnIpAddress = "EPC can be accessed on: ";
+            public string serverFail = "Failed to start server. Please restart your game.";
         }
 
         public class Index {

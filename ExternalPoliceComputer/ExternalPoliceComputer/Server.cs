@@ -20,7 +20,9 @@ namespace ExternalPoliceComputer {
             try {
                 listener.Start();
             } catch {
-                Log("Failed to start server. Please restart your game.", true, LogSeverity.Error);
+                Log("Listening on Server failed", true, LogSeverity.Error);
+                Game.DisplayNotification(Setup.SetupController.GetLanguage().inGame.serverFail);
+                listener?.Close();
                 RunServer = false;
                 return;
             }
@@ -67,8 +69,10 @@ namespace ExternalPoliceComputer {
 
         internal static async void Stop() {
             RunServer = false;
-            await WebSocketHandler.CloseAllWebSockets();
-            listener?.Stop();
+            try {
+                await WebSocketHandler.CloseAllWebSockets();
+                listener?.Stop();
+            } catch {}
         }
 
         internal static APIResponse GetAPIResponse(HttpListenerRequest req) {
