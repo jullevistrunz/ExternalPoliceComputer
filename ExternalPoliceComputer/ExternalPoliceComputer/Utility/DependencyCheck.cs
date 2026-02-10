@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 
-namespace ExternalPoliceComputer {
+namespace ExternalPoliceComputer.Utility {
     internal class DependencyCheck {
         internal static bool IsCIAPIAvailable() {
             return File.Exists("CalloutInterfaceAPI.dll");

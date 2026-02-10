@@ -90,7 +90,9 @@
     <Compile Include="Data\Reports\IncidentReport.cs" />
     <Compile Include="Data\Reports\Report.cs" />
     <Compile Include="Data\ShiftData.cs" />
-    <Compile Include="DependencyCheck.cs" />
+    <Compile Include="Plugins\PluginController.cs" />
+    <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Utility\DependencyCheck.cs" />
     <Compile Include="EventListeners\CalloutEvents.cs" />
     <Compile Include="EventListeners\LSPDFREvents.cs" />
     <Compile Include="EventListeners\PREvents.cs" />
