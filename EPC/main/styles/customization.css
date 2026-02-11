@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: 100vh;
+  background-color: var(--color-background);
+}
+
+.sidebar {
+  background-color: var(--color-surface-dimmed);
+  border-right: 1px solid var(--color-border);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sidebar button {
+  border-radius: 3px;
+  width: 100%;
+}
+
+.main {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  margin: 10px;
+}
+
+.main .plugin {
+  width: 250px;
+  height: min-content;
+  border-radius: 5px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 7.5px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-time-short) ease;
+}
+
+.main .plugin.selected {
+  border-color: var(--color-accent-secondary);
+}
+
+.main .plugin:hover {
+  border-color: var(--color-accent);
+}
+
+.main .plugin .name {
+  font-size: 16px;
+  margin-bottom: 2.5px;
+  padding-bottom: 2.5px;
+  border-bottom: 1px solid var(--color-border);
+  transition: var(--transition-time-short) ease;
+}
+
+.main .plugin:hover .name {
+  color: var(--color-accent);
+}
+
+.main .plugin.selected .name {
+  color: var(--color-accent-secondary);
+}

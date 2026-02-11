@@ -11,6 +11,7 @@ namespace ExternalPoliceComputer.Setup {
         public Units units = new Units();
         public ShiftHistory shiftHistory = new ShiftHistory();
         public Court court = new Court();
+        public Customization customization = new Customization();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
@@ -43,6 +44,7 @@ namespace ExternalPoliceComputer.Setup {
                 }
 
                 public class Settings {
+                    public string customization = "Open Customization";
                     public OfficerInformation officerInformation = new OfficerInformation();
                     public CurrentShift currentShift = new CurrentShift();
 
@@ -371,6 +373,26 @@ namespace ExternalPoliceComputer.Setup {
 
             public class Static {
                 public string title = "Court Cases";
+            }
+        }
+
+        public class Customization {
+            public Static @static = new Static();
+            public Plugins plugins = new Plugins();
+
+            public class Static {
+                public string title = "Customization";
+                public Sidebar sidebar = new Sidebar();
+
+                public class Sidebar {
+                    public string plugins = "Plugins";
+                    public string config = "Config";
+                }
+            }
+
+            public class Plugins {
+                public string version = "Version";
+                public string author = "Author";
             }
         }
     }

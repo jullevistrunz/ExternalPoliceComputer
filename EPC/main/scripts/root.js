@@ -352,3 +352,12 @@ async function updateDomWithLanguage(page) {
       .forEach((el) => (el.title = value))
   })
 }
+
+function getActivePlugins() {
+  const activePlugins = localStorage.getItem('activePlugins')
+  if (!activePlugins) {
+    localStorage.setItem('activePlugins', '[]')
+    return []
+  }
+  return JSON.parse(activePlugins)
+}
