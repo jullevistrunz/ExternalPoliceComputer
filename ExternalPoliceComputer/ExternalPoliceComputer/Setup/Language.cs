@@ -393,6 +393,7 @@ namespace ExternalPoliceComputer.Setup {
             public class Plugins {
                 public string version = "Version";
                 public string author = "Author";
+                public string noPlugins = "No plugins found.";
             }
         }
     }

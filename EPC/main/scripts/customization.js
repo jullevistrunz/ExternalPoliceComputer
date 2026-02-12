@@ -28,6 +28,11 @@ async function renderPluginsPage() {
   const language = await getLanguage()
   const EPCVersionArr = (await (await fetch('/version')).text()).split('.')
 
+  if (pluginInfo.length < 1) {
+    document.querySelector('.main').innerHTML =
+      language.customization.plugins.noPlugins
+  }
+
   for (const plugin of pluginInfo) {
     const pluginElement = document.createElement('div')
     pluginElement.classList.add('plugin')

@@ -26,6 +26,9 @@ body {
   align-content: flex-start;
   gap: 10px;
   margin: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 .main .plugin {
@@ -35,9 +38,6 @@ body {
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   padding: 7.5px;
-  color: var(--color-text-primary);
-  font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
   transition: var(--transition-time-short) ease;
 }
