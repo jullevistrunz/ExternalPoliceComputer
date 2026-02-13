@@ -12,6 +12,8 @@ namespace ExternalPoliceComputer.ServerAPI {
             string[] pathArr = path.Split('/'); // 0 - plugin-id, 1 - type, 2 - file name
             if (pathArr.Length != 3) return;
 
+            pathArr[0] = pathArr[0].Replace("%20", " ");
+
             if (pathArr[1] == "page") {
                 if (pathArr[2].EndsWith(".html")) pathArr[2] = pathArr[2].Substring(0, pathArr[2].Length - ".html".Length);
 

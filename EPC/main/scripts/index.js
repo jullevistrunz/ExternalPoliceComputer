@@ -18,12 +18,14 @@
       for (const pluginScript of plugin.scripts) {
         const script = document.createElement('script')
         script.src = `/plugin/${plugin.id}/script/${pluginScript}`
+        script.dataset.pluginId = plugin.id
         document.body.appendChild(script)
       }
       for (const pluginStyle of plugin.styles) {
         const link = document.createElement('link')
         link.rel = 'stylesheet'
         link.href = `/plugin/${plugin.id}/style/${pluginStyle}`
+        link.dataset.pluginId = plugin.id
         document.head.appendChild(link)
       }
     }
@@ -195,9 +197,11 @@ for (const desktopItem of desktopItems) {
   })
 }
 
-async function openWindow(name) {
+async function openWindow(name, pluginId = null) {
   const config = await getConfig()
-  const url = `/page/${name}.html`
+  const url = pluginId
+    ? `/plugin/${pluginId}/page/${name}.html`
+    : `/page/${name}.html`
   const size = [config.initialWindowWidth, config.initialWindowHeight]
   const windowDimensions = [window.innerWidth, window.innerHeight]
   const offset = [
@@ -305,6 +309,8 @@ async function openWindow(name) {
       iconTitleWrapper.offsetWidth + windowControls.offsetWidth
     }px`
     windowElement.style.scale = '1'
+
+    document.dispatchEvent(new Event(`windowLoaded:${name}`))
 
     new MutationObserver(() => {
       title.innerHTML = iframe.contentDocument.title
