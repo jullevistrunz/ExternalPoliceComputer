@@ -9,6 +9,7 @@ namespace ExternalPoliceComputer.Setup {
         public int databaseUpdateInterval = 15000;
         public bool updateDomWithLanguageOnLoad = false;
         public bool useInGameTime = false;
+        public bool showSecondsInTaskbarClock = false;
         public int initialWindowWidth = 600;
         public int initialWindowHeight = 400;
         public float hasPriorCitationsProbability = 0.8f;

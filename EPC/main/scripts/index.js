@@ -48,8 +48,16 @@ timeWS.onmessage = async (event) => {
   const realDate = new Date()
   document.querySelector('.taskbar .time').innerHTML = `${
     config.useInGameTime
-      ? inGameDate.toLocaleTimeString()
-      : realDate.toLocaleTimeString()
+      ? inGameDate.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: config.showSecondsInTaskbarClock ? '2-digit' : undefined,
+        })
+      : realDate.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: config.showSecondsInTaskbarClock ? '2-digit' : undefined,
+        })
   }<br>${realDate.toLocaleDateString()}`
 
   currentShift =
