@@ -13,6 +13,7 @@ namespace ExternalPoliceComputer.ServerAPI {
             if (pathArr.Length != 3) return;
 
             pathArr[0] = pathArr[0].Replace("%20", " ");
+            pathArr[2] = pathArr[2].Replace("%20", " ");
 
             if (pathArr[1] == "page") {
                 if (pathArr[2].EndsWith(".html")) pathArr[2] = pathArr[2].Substring(0, pathArr[2].Length - ".html".Length);
