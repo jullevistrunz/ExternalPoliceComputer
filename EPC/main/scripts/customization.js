@@ -24,6 +24,9 @@ document
   .addEventListener('click', () => renderConfigPage())
 
 async function renderPluginsPage() {
+  const pluginsWrapper = document.createElement('div')
+  pluginsWrapper.classList.add('pluginsWrapper')
+
   const pluginInfo = await (await fetch('/pluginInfo')).json()
   const language = await getLanguage()
   const EPCVersionArr = (await (await fetch('/version')).text()).split('.')
@@ -79,8 +82,9 @@ async function renderPluginsPage() {
     author.innerHTML = `<span style="color: var(--color-text-primary-half)">${language.customization.plugins.author}</span>: ${plugin.author}`
     pluginElement.appendChild(author)
 
-    document.querySelector('.main').appendChild(pluginElement)
+    pluginsWrapper.appendChild(pluginElement)
   }
+  document.querySelector('.main').appendChild(pluginsWrapper)
 }
 
 function togglePluginActivation(pluginId) {
@@ -93,6 +97,86 @@ function togglePluginActivation(pluginId) {
   localStorage.setItem('activePlugins', JSON.stringify(activePlugins))
 }
 
-function renderConfigPage() {}
+async function renderConfigPage() {
+  const language = await getLanguage()
+  const config = await getConfig()
+
+  const buttonWrapper = document.createElement('div')
+  buttonWrapper.classList.add('buttonWrapper')
+  const saveButton = document.createElement('button')
+  saveButton.innerHTML = language.customization.save
+  saveButton.addEventListener('click', async () => {
+    const inputs = document.querySelectorAll('.configWrapper input')
+    const newConfig = {}
+    inputs.forEach((input) => {
+      const key = input.previousSibling.innerHTML
+      let value
+      if (input.type === 'checkbox') {
+        value = input.checked
+      } else if (input.type === 'number') {
+        value = parseFloat(input.value)
+      } else {
+        value = input.value
+      }
+      newConfig[key] = value
+    })
+
+    await fetch('/post/updateConfig', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newConfig),
+    })
+
+    localStorage.removeItem('config')
+    document.querySelector('.main').innerHTML = ''
+    renderConfigPage()
+  })
+
+  const resetButton = document.createElement('button')
+  resetButton.innerHTML = language.customization.reset
+  resetButton.addEventListener('click', () => {
+    document.querySelector('.main').innerHTML = ''
+    renderConfigPage()
+  })
+
+  buttonWrapper.appendChild(resetButton)
+  buttonWrapper.appendChild(saveButton)
+  document.querySelector('.main').appendChild(buttonWrapper)
+
+  const configWrapper = document.createElement('div')
+  configWrapper.classList.add('configWrapper')
+
+  for (const [key, value] of Object.entries(config)) {
+    let type = 'text'
+    if (typeof value === 'boolean') {
+      type = 'checkbox'
+    } else if (typeof value === 'number') {
+      type = 'number'
+    }
+
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('configItem')
+
+    const label = document.createElement('label')
+    label.innerHTML = key
+    label.htmlFor = `config-${key}`
+    wrapper.appendChild(label)
+
+    const inputElement = document.createElement('input')
+    if (type === 'checkbox') {
+      inputElement.checked = value
+    } else {
+      inputElement.value = value
+    }
+    inputElement.type = type
+    inputElement.id = `config-${key}`
+    wrapper.appendChild(inputElement)
+
+    configWrapper.appendChild(wrapper)
+  }
+  document.querySelector('.main').appendChild(configWrapper)
+}
 
 document.querySelector('.sidebar .plugins').click()

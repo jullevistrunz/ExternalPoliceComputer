@@ -160,6 +160,10 @@ namespace ExternalPoliceComputer.Setup {
             return cachedConfig;
         }
 
+        internal static void ResetConfig() {
+            cachedConfig = null;
+        }
+
         private static Language cachedLanguage;
         internal static Language GetLanguage() {
             if (cachedLanguage == null) {

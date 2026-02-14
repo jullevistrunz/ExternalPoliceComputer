@@ -377,6 +377,8 @@ namespace ExternalPoliceComputer.Setup {
         }
 
         public class Customization {
+            public string save = "Save";
+            public string reset = "Reset";
             public Static @static = new Static();
             public Plugins plugins = new Plugins();
 
