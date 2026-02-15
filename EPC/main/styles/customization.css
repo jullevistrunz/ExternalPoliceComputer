@@ -1,0 +1,101 @@
+body {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: 100vh;
+  background-color: var(--color-background);
+  overflow: hidden;
+}
+
+.sidebar {
+  background-color: var(--color-surface-dimmed);
+  border-right: 1px solid var(--color-border);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: auto;
+}
+
+.sidebar button {
+  border-radius: 3px;
+  width: 100%;
+}
+
+.main {
+  margin: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  overflow: auto;
+}
+
+.pluginsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+}
+
+.pluginsWrapper .plugin {
+  width: 250px;
+  height: min-content;
+  border-radius: 5px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 7.5px;
+  cursor: pointer;
+  transition: var(--transition-time-short) ease;
+}
+
+.pluginsWrapper .plugin.selected {
+  border-color: var(--color-accent-secondary);
+}
+
+.pluginsWrapper .plugin:hover {
+  border-color: var(--color-accent);
+}
+
+.pluginsWrapper .plugin .name {
+  font-size: 16px;
+  margin-bottom: 2.5px;
+  padding-bottom: 2.5px;
+  border-bottom: 1px solid var(--color-border);
+  transition: var(--transition-time-short) ease;
+}
+
+.pluginsWrapper .plugin:hover .name {
+  color: var(--color-accent);
+}
+
+.pluginsWrapper .plugin.selected .name {
+  color: var(--color-accent-secondary);
+}
+
+.configWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.configWrapper .configItem:not(:last-child) {
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.configWrapper .configItem {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+
+.configWrapper .configItem label::after {
+  content: ':';
+}
+
+.configWrapper .configItem input:not([type='checkbox']) {
+  border-radius: 3px;
+  width: 100%;
+}

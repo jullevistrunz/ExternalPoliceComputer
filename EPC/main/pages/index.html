@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,7 +14,12 @@
       <div class="icons">
         <button
           class="settings"
-          onclick="document.querySelector('.overlay .settings').classList.toggle('hide'); this.blur()"
+          onclick="
+            document
+              .querySelector('.overlay .settings')
+              .classList.toggle('hide')
+            this.blur()
+          "
           title="Control Panel"
           data-language-title="taskbar.settings"
         >
@@ -194,7 +199,16 @@
             </button>
           </div>
         </div>
-        <div class="version"></div>
+        <div class="versionCustomizationWrapper">
+          <div class="version"></div>
+          <div
+            class="customization"
+            data-language="settings.customization"
+            onclick="window.open('/page/customization', '_blank')"
+          >
+            Open Customization
+          </div>
+        </div>
       </div>
       <div class="notifications"></div>
     </div>
@@ -400,4 +414,5 @@
   </body>
   <script src="/script/root.js"></script>
   <script src="/script/index.js"></script>
+  <script src="/script/pluginAPI.js"></script>
 </html>

@@ -1,4 +1,4 @@
-# [ExternalPoliceComputer 2.0.0.6](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
+# [ExternalPoliceComputer 2.0.1.0](https://www.lcpdfr.com/downloads/gta5mods/scripts/45400-externalpolicecomputer/)
 
 A Police Computer Plugin for LSPDFR.
 
@@ -25,6 +25,7 @@ A Police Computer Plugin for LSPDFR.
 
 - In the center of the taskbar you'll find an EPC icon, clicking it will open the _Control Panel_
 - Here you can enter information about yourself (Officer Information) and start or end your shift
+- You can also open the [customization page](#customization) from here
 
 ### Reports
 
@@ -58,6 +59,74 @@ A Police Computer Plugin for LSPDFR.
 
 - Here you can find all your prior shifts
 - Reports created during a shift are linked
+
+## Customization
+
+On the customization page you can activate plugins and change your config.
+
+## Plugins
+
+Plugins allow you to expand EPC's functionality by injecting JavaScript and CSS.
+
+### Using a plugin
+
+Place the plugin folder inside `EPC/plugins`. The plugin can be activated on the customization page.
+
+### Creating a plugin
+
+#### Plugin folder structure
+
+```
+Plugin Name
+    │   info.json
+    │
+    ├───pages
+    │       page.html
+    │
+    ├───scripts
+    │       script 1.js
+    │       script 2.js
+    │
+    └───styles
+            style 1.css
+            style 2.css
+```
+
+You can add multiple pages, scripts and styles.
+
+HTML files in pages are served at `/plugin/<pluginId>/page/<fileName>`.
+JS files in scripts are served at `/plugin/<pluginId>/script/<fileName>`.
+CSS files in styles are served at `/plugin/<pluginId>/style/<fileName>`.
+In JavaScript you can get the pluginId like this: `const pluginId = document.currentScript.dataset.pluginId`.
+Scripts and styles are loaded onto the index page when activated using the customization page.
+
+#### info.json example
+
+```json
+{
+  "name": "Plugin Name",
+  "description": "An EPC plugin",
+  "author": "Palü",
+  "version": "2.0.1" // EPC version the plugin was developed for
+}
+```
+
+#### Plugin API
+
+If you're making a plugin for EPC, that includes JavaScript, you can use some functions provided in `EPC/main/scripts/pluginAPI.js`. To get IntelliSense in VSCode, simply open the file in another tab. All functions are children of `API`.
+
+#### Example plugin to create a new page
+
+```js
+const pageSVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1 1" xml:space="preserve"><!-- some valid svg stuff --></svg>'
+
+API.createNewPage('test', 'Test Page', pageSVG, initTestPage) // requires test.html in pages folder
+
+function initTestPage(contentWindow) {
+  contentWindow.document.body.innerHTML = 'Test page loaded'
+}
+```
 
 ## Discord Server
 

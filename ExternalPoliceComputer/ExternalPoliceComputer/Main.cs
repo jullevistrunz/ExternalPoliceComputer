@@ -2,6 +2,7 @@
 using Rage;
 using System.IO;
 using System.Threading;
+using ExternalPoliceComputer.Utility;
 using static ExternalPoliceComputer.Setup.SetupController;
 using static ExternalPoliceComputer.Utility.Helper;
 

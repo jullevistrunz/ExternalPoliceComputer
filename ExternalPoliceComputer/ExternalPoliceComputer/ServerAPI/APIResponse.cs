@@ -1,4 +1,5 @@
-﻿using ExternalPoliceComputer.Setup;
+﻿using ExternalPoliceComputer.Plugins;
+using ExternalPoliceComputer.Setup;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net;
@@ -43,6 +44,10 @@ namespace ExternalPoliceComputer.ServerAPI {
                 contentType = "text/json";
             } else if (path == "/arrestOptions") {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(SetupController.GetArrestOptions()));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "/pluginInfo") {
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(PluginController.GetPlugins()));
                 status = 200;
                 contentType = "text/json";
             }

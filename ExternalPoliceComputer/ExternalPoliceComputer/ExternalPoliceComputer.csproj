@@ -56,7 +56,7 @@
       <HintPath>..\..\References\LSPD First Response.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PolicingRedefined, Version=0.0.9.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -90,7 +90,9 @@
     <Compile Include="Data\Reports\IncidentReport.cs" />
     <Compile Include="Data\Reports\Report.cs" />
     <Compile Include="Data\ShiftData.cs" />
-    <Compile Include="DependencyCheck.cs" />
+    <Compile Include="Plugins\PluginController.cs" />
+    <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Utility\DependencyCheck.cs" />
     <Compile Include="EventListeners\CalloutEvents.cs" />
     <Compile Include="EventListeners\LSPDFREvents.cs" />
     <Compile Include="EventListeners\PREvents.cs" />

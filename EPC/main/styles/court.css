@@ -21,6 +21,18 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background-color: var(--color-surface);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.searchResponseWrapper:first-child {
+  border-right: 1px solid var(--color-border);
+  margin-right: 0px !important;
+  padding-right: 10px;
+}
+
+.inputWrapper {
+  margin: 0 !important;
 }
 
 .chargesWrapper .inputWrapper > div label {
@@ -35,4 +47,5 @@ body {
 
 .chargesWrapper .searchResponseSectionTitle {
   font-size: 16px !important;
+  margin-top: 16px !important;
 }

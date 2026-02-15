@@ -11,11 +11,13 @@ namespace ExternalPoliceComputer.Setup {
         public Units units = new Units();
         public ShiftHistory shiftHistory = new ShiftHistory();
         public Court court = new Court();
+        public Customization customization = new Customization();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
             public string unloaded = "ExternalPoliceComputer has been unloaded.";
             public string listeningOnIpAddress = "EPC can be accessed on: ";
+            public string serverFail = "Failed to start server. Please restart your game.";
         }
 
         public class Index {
@@ -42,6 +44,7 @@ namespace ExternalPoliceComputer.Setup {
                 }
 
                 public class Settings {
+                    public string customization = "Open Customization";
                     public OfficerInformation officerInformation = new OfficerInformation();
                     public CurrentShift currentShift = new CurrentShift();
 
@@ -207,7 +210,7 @@ namespace ExternalPoliceComputer.Setup {
                 public CreatePage createPage = new CreatePage();
 
                 public class ListPage {
-                    public string createButton = "Create New Reports";
+                    public string createButton = "Create New Report";
                     public ReportType reportType = new ReportType();
 
                     public class ReportType {
@@ -370,6 +373,29 @@ namespace ExternalPoliceComputer.Setup {
 
             public class Static {
                 public string title = "Court Cases";
+            }
+        }
+
+        public class Customization {
+            public string save = "Save";
+            public string reset = "Reset";
+            public Static @static = new Static();
+            public Plugins plugins = new Plugins();
+
+            public class Static {
+                public string title = "Customization";
+                public Sidebar sidebar = new Sidebar();
+
+                public class Sidebar {
+                    public string plugins = "Plugins";
+                    public string config = "Config";
+                }
+            }
+
+            public class Plugins {
+                public string version = "Version";
+                public string author = "Author";
+                public string noPlugins = "No plugins found.";
             }
         }
     }

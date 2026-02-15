@@ -60,6 +60,19 @@ body {
   border-top: 2px solid var(--color-border);
 }
 
+.createPage
+  .reportInformation
+  .section
+  .date
+  input::-webkit-calendar-picker-indicator,
+.createPage
+  .reportInformation
+  .section
+  .time
+  input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 .inputWrapper .status .statusInput:has(button) {
   margin-top: 2px;
   display: flex;

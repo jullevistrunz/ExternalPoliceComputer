@@ -110,7 +110,7 @@ async function performSearch(query) {
       case 'Arrests':
         el.parentElement.classList.add('clickable')
         el.parentElement.onclick = () =>
-          openPedInReport(
+          openPedAsOffenderInReport(
             key == 'Citations' ? 'citation' : 'arrest',
             response.Name
           )

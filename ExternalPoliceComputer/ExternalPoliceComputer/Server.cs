@@ -17,7 +17,15 @@ namespace ExternalPoliceComputer {
             RunServer = true;
             listener = new HttpListener();
             listener.Prefixes.Add($"http://+:{Setup.SetupController.GetConfig().port}/");
-            listener.Start();
+            try {
+                listener.Start();
+            } catch {
+                Log("Listening on Server failed", true, LogSeverity.Error);
+                Game.DisplayNotification(Setup.SetupController.GetLanguage().inGame.serverFail);
+                listener?.Close();
+                RunServer = false;
+                return;
+            }
             string fullIp = $"http://{GetLocalIPAddress()}:{Setup.SetupController.GetConfig().port}";
             string fullName = $"http://{Environment.MachineName}:{Setup.SetupController.GetConfig().port}";
             Game.DisplayNotification($"{Setup.SetupController.GetLanguage().inGame.listeningOnIpAddress}{fullIp}");
@@ -61,8 +69,10 @@ namespace ExternalPoliceComputer {
 
         internal static async void Stop() {
             RunServer = false;
-            await WebSocketHandler.CloseAllWebSockets();
-            listener?.Stop();
+            try {
+                await WebSocketHandler.CloseAllWebSockets();
+                listener?.Stop();
+            } catch {}
         }
 
         internal static APIResponse GetAPIResponse(HttpListenerRequest req) {

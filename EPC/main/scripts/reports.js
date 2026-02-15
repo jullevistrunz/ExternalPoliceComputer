@@ -11,14 +11,7 @@ document
 
 async function onCreateButtonClick() {
   const language = await getLanguage()
-  for (const iframe of topDoc.querySelectorAll('.overlay .window iframe')) {
-    if (iframe.contentWindow.reportIsOnCreatePage()) {
-      topWindow.showNotification(
-        language.reports.notifications.createPageAlreadyOpen
-      )
-      return
-    }
-  }
+  if (await checkForReportOnCreatePage()) return
 
   document.title = language.reports.newReportTitle
   reportIsOnCreatePageBool = true
@@ -293,7 +286,7 @@ async function renderReports(reports, type) {
       if (viewButton.classList.contains('loading')) return
       showLoadingOnButton(viewButton)
 
-      await renderReportInformation(true)
+      await renderReportInformation(report, type, true)
 
       hideLoadingOnButton(viewButton)
     })
@@ -335,101 +328,10 @@ async function renderReports(reports, type) {
         .querySelector('.createPage .typeSelector')
         .classList.add('hidden')
 
-      await renderReportInformation(false)
+      await renderReportInformation(report, type, false)
 
       hideLoadingOnButton(editButton)
     })
-
-    async function renderReportInformation(isList) {
-      const reportInformationEl = document.querySelector(
-        `.${isList ? 'listPage' : 'createPage'} .listWrapper .reportInformation`
-      )
-
-      if (isList) {
-        document
-          .querySelector('.listPage .listWrapper .reportsList')
-          .classList.add('hidden')
-        reportInformationEl.classList.remove('hidden')
-      } else {
-        document.querySelector('.listPage').classList.add('hidden')
-        document.querySelector('.createPage').classList.remove('hidden')
-      }
-
-      reportInformationEl.innerHTML = ''
-
-      const generalInformation = {
-        reportId: report.Id,
-        status: report.Status,
-        date: new Date(report.TimeStamp).toLocaleDateString(),
-        time: new Date(report.TimeStamp).toLocaleTimeString(),
-      }
-
-      const officerInformation = report.OfficerInformation
-
-      const location = report.Location
-
-      reportInformationEl.appendChild(
-        await getGeneralInformationSection(generalInformation, isList)
-      )
-      reportInformationEl.appendChild(
-        await getOfficerInformationSection(officerInformation, isList)
-      )
-      reportInformationEl.appendChild(
-        await getLocationSection(location, isList)
-      )
-
-      switch (type) {
-        case 'incident':
-          if (report.OffenderPedsNames.length > 0) {
-            reportInformationEl.appendChild(
-              await getMultipleNameInputsSection(
-                language.reports.sections.incident.titleOffenders,
-                language.reports.sections.incident.labelOffenders,
-                language.reports.sections.incident.addOffender,
-                language.reports.sections.incident.removeOffender,
-                isList,
-                report.OffenderPedsNames
-              )
-            )
-          }
-          if (report.WitnessPedsNames.length > 0) {
-            reportInformationEl.appendChild(
-              await getMultipleNameInputsSection(
-                language.reports.sections.incident.titleWitnesses,
-                language.reports.sections.incident.labelWitnesses,
-                language.reports.sections.incident.addWitness,
-                language.reports.sections.incident.removeWitness,
-                isList,
-                report.WitnessPedsNames
-              )
-            )
-          }
-          break
-        case 'citation':
-        case 'arrest':
-          reportInformationEl.appendChild(
-            await getOffenderSection(
-              {
-                pedName: report.OffenderPedName,
-                vehicleLicensePlate: report.OffenderVehicleLicensePlate,
-              },
-              isList,
-              false
-            )
-          )
-          if (report.Charges.length > 0) {
-            reportInformationEl.appendChild(
-              await getCitationArrestSection(type, isList, report.Charges)
-            )
-          }
-          reportInformationEl.dataset.courtCaseNumber = report.CourtCaseNumber
-          break
-      }
-
-      reportInformationEl.appendChild(
-        await getNotesSection(report.Notes, isList)
-      )
-    }
 
     buttonWrapper.appendChild(viewButton)
     buttonWrapper.appendChild(editButton)
@@ -439,6 +341,98 @@ async function renderReports(reports, type) {
 
     document.querySelector('.listPage .reportsList').appendChild(listElement)
   }
+}
+
+async function renderReportInformation(report, type, isList) {
+  const language = await getLanguage()
+
+  const reportInformationEl = document.querySelector(
+    `.${isList ? 'listPage' : 'createPage'} .listWrapper .reportInformation`
+  )
+
+  if (isList) {
+    document
+      .querySelector('.listPage .listWrapper .reportsList')
+      .classList.add('hidden')
+    reportInformationEl.classList.remove('hidden')
+  } else {
+    document.querySelector('.listPage').classList.add('hidden')
+    document.querySelector('.createPage').classList.remove('hidden')
+  }
+
+  reportInformationEl.innerHTML = ''
+
+  const timeStamp = new Date(report.TimeStamp)
+  timeStamp.setMinutes(timeStamp.getMinutes() - timeStamp.getTimezoneOffset())
+
+  const generalInformation = {
+    reportId: report.Id,
+    status: report.Status,
+    timeStamp: timeStamp,
+  }
+
+  const officerInformation = report.OfficerInformation
+
+  const location = report.Location
+
+  reportInformationEl.appendChild(
+    await getGeneralInformationSection(generalInformation, isList)
+  )
+  reportInformationEl.appendChild(
+    await getOfficerInformationSection(officerInformation, isList)
+  )
+  reportInformationEl.appendChild(await getLocationSection(location, isList))
+
+  switch (type) {
+    case 'incident':
+      if (!isList || report.OffenderPedsNames.length > 0) {
+        reportInformationEl.appendChild(
+          await getMultipleNameInputsSection(
+            language.reports.sections.incident.titleOffenders,
+            language.reports.sections.incident.labelOffenders,
+            language.reports.sections.incident.addOffender,
+            language.reports.sections.incident.removeOffender,
+            isList,
+            report.OffenderPedsNames
+          )
+        )
+      }
+      if (!isList || report.WitnessPedsNames.length > 0) {
+        reportInformationEl.appendChild(
+          await getMultipleNameInputsSection(
+            language.reports.sections.incident.titleWitnesses,
+            language.reports.sections.incident.labelWitnesses,
+            language.reports.sections.incident.addWitness,
+            language.reports.sections.incident.removeWitness,
+            isList,
+            report.WitnessPedsNames
+          )
+        )
+      }
+      break
+    case 'citation':
+    case 'arrest':
+      reportInformationEl.appendChild(
+        await getOffenderSection(
+          {
+            pedName: report.OffenderPedName,
+            vehicleLicensePlate: report.OffenderVehicleLicensePlate,
+          },
+          isList,
+          report.canEditCitationArrest
+        )
+      )
+      if (report.canEditCitationArrest || report.Charges.length > 0) {
+        reportInformationEl.appendChild(
+          await getCitationArrestSection(type, isList, report.Charges)
+        )
+      }
+      if (report.CourtCaseNumber)
+        reportInformationEl.dataset.courtCaseNumber = report.CourtCaseNumber
+      break
+  }
+
+  reportInformationEl.appendChild(await getNotesSection(report.Notes, isList))
 }
 
 document
@@ -484,7 +478,6 @@ async function onCreatePageTypeSelectorButtonClick(type) {
   document.querySelector('.createPage .reportInformation').innerHTML = ''
 
   const config = await getConfig()
-  const language = await getLanguage()
   const location = await (await fetch('/data/playerLocation')).json()
   const officerInformation = await (
     await fetch('/data/officerInformationData')
@@ -500,62 +493,17 @@ async function onCreatePageTypeSelectorButtonClick(type) {
 
   const reportId = await generateReportId(button.dataset.type)
 
-  const generalInformation = {
-    time: config.useInGameTime
-      ? inGameDate.toLocaleTimeString()
-      : new Date().toLocaleTimeString(),
-    date: new Date().toLocaleDateString(),
-    reportId: reportId,
-    status: type == 'citation' || type == 'arrest' ? 0 : 1,
+  const fakeReport = {
+    Id: reportId,
+    Status: type == 'citation' || type == 'arrest' ? 0 : 1,
+    TimeStamp: config.useInGameTime ? inGameDate : new Date(),
+    OfficerInformation: officerInformation,
+    Location: location,
+    Notes: '',
+    canEditCitationArrest: true,
   }
 
-  document
-    .querySelector('.createPage .reportInformation')
-    .appendChild(await getGeneralInformationSection(generalInformation))
-  document
-    .querySelector('.createPage .reportInformation')
-    .appendChild(await getOfficerInformationSection(officerInformation))
-  document
-    .querySelector('.createPage .reportInformation')
-    .appendChild(await getLocationSection(location))
-
-  switch (type) {
-    case 'incident':
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(
-          await getMultipleNameInputsSection(
-            language.reports.sections.incident.titleOffenders,
-            language.reports.sections.incident.labelOffenders,
-            language.reports.sections.incident.addOffender,
-            language.reports.sections.incident.removeOffender
-          )
-        )
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(
-          await getMultipleNameInputsSection(
-            language.reports.sections.incident.titleWitnesses,
-            language.reports.sections.incident.labelWitnesses,
-            language.reports.sections.incident.addWitness,
-            language.reports.sections.incident.removeWitness
-          )
-        )
-      break
-    case 'citation':
-    case 'arrest':
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(await getOffenderSection())
-      document
-        .querySelector('.createPage .reportInformation')
-        .appendChild(await getCitationArrestSection(type))
-      break
-  }
-
-  document
-    .querySelector('.createPage .reportInformation')
-    .appendChild(await getNotesSection())
+  await renderReportInformation(fakeReport, button.dataset.type, false)
 }
 
 const pageLoadedEvent = new Event('pageLoaded')
@@ -587,824 +535,12 @@ async function generateReportId(type) {
   return id
 }
 
-async function getLocationSection(location, isList = false) {
-  const language = await getLanguage()
-
-  const title = document.createElement('div')
-  if (isList) {
-    title.classList.add('searchResponseSectionTitle')
-  } else {
-    title.classList.add('title')
-  }
-  title.innerHTML = language.reports.sections.location.title
-
-  const postal = document.createElement('div')
-  postal.classList.add('postal')
-  const postalLabel = document.createElement('label')
-  postalLabel.innerHTML = language.reports.sections.location.postal
-  postalLabel.htmlFor = 'locationSectionPostalInput'
-  const postalInput = document.createElement('input')
-  postalInput.type = 'text'
-  postalInput.value = location.Postal || ''
-  postalInput.id = 'locationSectionPostalInput'
-  postalInput.autocomplete = 'off'
-  postalInput.disabled = isList
-  postal.appendChild(postalLabel)
-  postal.appendChild(postalInput)
-
-  const street = document.createElement('div')
-  street.classList.add('street')
-  const streetLabel = document.createElement('label')
-  streetLabel.innerHTML = language.reports.sections.location.street
-  streetLabel.htmlFor = 'locationSectionStreetInput'
-  const streetInput = document.createElement('input')
-  streetInput.type = 'text'
-  streetInput.value = location.Street || ''
-  streetInput.id = 'locationSectionStreetInput'
-  streetInput.autocomplete = 'off'
-  streetInput.disabled = isList
-  street.appendChild(streetLabel)
-  street.appendChild(streetInput)
-
-  const area = document.createElement('div')
-  area.classList.add('area')
-  const areaLabel = document.createElement('label')
-  areaLabel.innerHTML = language.reports.sections.location.area
-  areaLabel.htmlFor = 'locationSectionAreaInput'
-  const areaInput = document.createElement('input')
-  areaInput.type = 'text'
-  areaInput.value = location.Area || ''
-  areaInput.id = 'locationSectionAreaInput'
-  areaInput.autocomplete = 'off'
-  areaInput.disabled = isList
-  area.appendChild(areaLabel)
-  area.appendChild(areaInput)
-
-  const county = document.createElement('div')
-  county.classList.add('county')
-  const countyLabel = document.createElement('label')
-  countyLabel.innerHTML = language.reports.sections.location.county
-  countyLabel.htmlFor = 'locationSectionCountyInput'
-  const countyInput = document.createElement('input')
-  countyInput.type = 'text'
-  countyInput.value = language.values[location.County] || location.County || ''
-  countyInput.id = 'locationSectionCountyInput'
-  countyInput.autocomplete = 'off'
-  countyInput.disabled = isList
-  county.appendChild(countyLabel)
-  county.appendChild(countyInput)
-
-  const inputWrapper = document.createElement('div')
-  inputWrapper.classList.add('inputWrapper')
-  inputWrapper.classList.add('grid')
-
-  inputWrapper.appendChild(postal)
-  inputWrapper.appendChild(street)
-  inputWrapper.appendChild(area)
-  inputWrapper.appendChild(county)
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  sectionWrapper.appendChild(title)
-  sectionWrapper.appendChild(inputWrapper)
-
-  return sectionWrapper
-}
-
-async function getOfficerInformationSection(
-  officerInformation,
-  isList = false
-) {
-  const language = await getLanguage()
-
-  const title = document.createElement('div')
-  if (isList) {
-    title.classList.add('searchResponseSectionTitle')
-  } else {
-    title.classList.add('title')
-  }
-  title.innerHTML = language.reports.sections.officerInformation.title
-
-  const firstName = document.createElement('div')
-  firstName.classList.add('firstName')
-  const firstNameLabel = document.createElement('label')
-  firstNameLabel.innerHTML =
-    language.reports.sections.officerInformation.firstName
-  firstNameLabel.htmlFor = 'officerInformationSectionFirstNameInput'
-  const firstNameInput = document.createElement('input')
-  firstNameInput.type = 'text'
-  firstNameInput.value = officerInformation.firstName || ''
-  firstNameInput.id = 'officerInformationSectionFirstNameInput'
-  firstNameInput.autocomplete = 'off'
-  firstNameInput.disabled = isList
-  firstName.appendChild(firstNameLabel)
-  firstName.appendChild(firstNameInput)
-
-  const lastName = document.createElement('div')
-  lastName.classList.add('lastName')
-  const lastNameLabel = document.createElement('label')
-  lastNameLabel.innerHTML =
-    language.reports.sections.officerInformation.lastName
-  lastNameLabel.htmlFor = 'officerInformationSectionLastNameInput'
-  const lastNameInput = document.createElement('input')
-  lastNameInput.type = 'text'
-  lastNameInput.value = officerInformation.lastName || ''
-  lastNameInput.id = 'officerInformationSectionLastNameInput'
-  lastNameInput.autocomplete = 'off'
-  lastNameInput.disabled = isList
-  lastName.appendChild(lastNameLabel)
-  lastName.appendChild(lastNameInput)
-
-  const badgeNumber = document.createElement('div')
-  badgeNumber.classList.add('badgeNumber')
-  const badgeNumberLabel = document.createElement('label')
-  badgeNumberLabel.innerHTML =
-    language.reports.sections.officerInformation.badgeNumber
-  badgeNumberLabel.htmlFor = 'officerInformationSectionBadgeNumberInput'
-  const badgeNumberInput = document.createElement('input')
-  badgeNumberInput.type = 'number'
-  badgeNumberInput.value = officerInformation.badgeNumber || ''
-  badgeNumberInput.id = 'officerInformationSectionBadgeNumberInput'
-  badgeNumberInput.autocomplete = 'off'
-  badgeNumberInput.disabled = isList
-  badgeNumber.appendChild(badgeNumberLabel)
-  badgeNumber.appendChild(badgeNumberInput)
-
-  const rank = document.createElement('div')
-  rank.classList.add('rank')
-  const rankLabel = document.createElement('label')
-  rankLabel.innerHTML = language.reports.sections.officerInformation.rank
-  rankLabel.htmlFor = 'officerInformationSectionRankInput'
-  const rankInput = document.createElement('input')
-  rankInput.type = 'text'
-  rankInput.value = officerInformation.rank || ''
-  rankInput.id = 'officerInformationSectionRankInput'
-  rankInput.autocomplete = 'off'
-  rankInput.disabled = isList
-  rank.appendChild(rankLabel)
-  rank.appendChild(rankInput)
-
-  const callSign = document.createElement('div')
-  callSign.classList.add('callSign')
-  const callSignLabel = document.createElement('label')
-  callSignLabel.innerHTML =
-    language.reports.sections.officerInformation.callSign
-  callSignLabel.htmlFor = 'officerInformationSectionCallSignInput'
-  const callSignInput = document.createElement('input')
-  callSignInput.type = 'text'
-  callSignInput.value = officerInformation.callSign || ''
-  callSignInput.id = 'officerInformationSectionCallSignInput'
-  callSignInput.autocomplete = 'off'
-  callSignInput.disabled = isList
-  callSign.appendChild(callSignLabel)
-  callSign.appendChild(callSignInput)
-
-  const agency = document.createElement('div')
-  agency.classList.add('agency')
-  const agencyLabel = document.createElement('label')
-  agencyLabel.innerHTML = language.reports.sections.officerInformation.agency
-  agencyLabel.htmlFor = 'officerInformationSectionAgencyInput'
-  const agencyInput = document.createElement('input')
-  agencyInput.type = 'text'
-  agencyInput.value = officerInformation.agency || ''
-  agencyInput.id = 'officerInformationSectionAgencyInput'
-  agencyInput.autocomplete = 'off'
-  agencyInput.disabled = isList
-  agency.appendChild(agencyLabel)
-  agency.appendChild(agencyInput)
-
-  const inputWrapper = document.createElement('div')
-  inputWrapper.classList.add('inputWrapper')
-  inputWrapper.classList.add('grid')
-
-  inputWrapper.appendChild(firstName)
-  inputWrapper.appendChild(lastName)
-  inputWrapper.appendChild(badgeNumber)
-  inputWrapper.appendChild(rank)
-  inputWrapper.appendChild(callSign)
-  inputWrapper.appendChild(agency)
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  sectionWrapper.appendChild(title)
-  sectionWrapper.appendChild(inputWrapper)
-
-  return sectionWrapper
-}
-
-async function getGeneralInformationSection(
-  generalInformation,
-  isList = false
-) {
-  const language = await getLanguage()
-
-  const title = document.createElement('div')
-  if (isList) {
-    title.classList.add('searchResponseSectionTitle')
-  } else {
-    title.classList.add('title')
-  }
-  title.innerHTML = language.reports.sections.generalInformation.title
-
-  const reportId = document.createElement('div')
-  reportId.classList.add('reportId')
-  const reportIdLabel = document.createElement('label')
-  reportIdLabel.innerHTML =
-    language.reports.sections.generalInformation.reportId
-  reportIdLabel.htmlFor = 'generalInformationSectionReportIdInput'
-  const reportIdInput = document.createElement('input')
-  reportIdInput.type = 'text'
-  reportIdInput.value = generalInformation.reportId
-  reportIdInput.id = 'generalInformationSectionReportIdInput'
-  reportIdInput.disabled = true
-  reportId.appendChild(reportIdLabel)
-  reportId.appendChild(reportIdInput)
-
-  const status = document.createElement('div')
-  status.classList.add('status')
-  const statusLabel = document.createElement('label')
-  statusLabel.htmlFor = 'generalInformationSectionStatusInput'
-  statusLabel.innerHTML = language.reports.sections.generalInformation.status
-  status.appendChild(statusLabel)
-
-  if (isList) {
-    const statusInput = document.createElement('input')
-    statusInput.type = 'text'
-    statusInput.value = language.reports.statusMap[generalInformation.status]
-    statusInput.id = 'generalInformationSectionStatusInput'
-    statusInput.disabled = true
-    statusInput.style.color = `var(--color-${
-      statusColorMap[generalInformation.status]
-    })`
-    status.appendChild(statusInput)
-  } else {
-    const statusInput = document.createElement('div')
-    statusInput.classList.add('statusInput')
-    const statusClosed = document.createElement('button')
-    statusClosed.innerHTML = language.reports.statusMap[0]
-    statusClosed.classList.add('closed')
-    statusClosed.dataset.status = 0
-    if (generalInformation.status == 0) {
-      statusClosed.classList.add('selected')
-    }
-    statusClosed.addEventListener('click', function () {
-      statusClosed.blur()
-      statusInput
-        .querySelectorAll('button')
-        .forEach((btn) => btn.classList.remove('selected'))
-      statusClosed.classList.add('selected')
-    })
-
-    const statusOpen = document.createElement('button')
-    statusOpen.innerHTML = language.reports.statusMap[1]
-    statusOpen.classList.add('open')
-    statusOpen.dataset.status = 1
-    if (generalInformation.status == 1) {
-      statusOpen.classList.add('selected')
-    }
-    statusOpen.addEventListener('click', function () {
-      statusOpen.blur()
-      statusInput
-        .querySelectorAll('button')
-        .forEach((btn) => btn.classList.remove('selected'))
-      statusOpen.classList.add('selected')
-    })
-
-    const statusCanceled = document.createElement('button')
-    statusCanceled.innerHTML = language.reports.statusMap[2]
-    statusCanceled.classList.add('canceled')
-    statusCanceled.dataset.status = 2
-    if (generalInformation.status == 2) {
-      statusCanceled.classList.add('selected')
-    }
-    statusCanceled.addEventListener('click', function () {
-      statusCanceled.blur()
-      statusInput
-        .querySelectorAll('button')
-        .forEach((btn) => btn.classList.remove('selected'))
-      statusCanceled.classList.add('selected')
-    })
-
-    statusInput.appendChild(statusClosed)
-    statusInput.appendChild(statusOpen)
-    statusInput.appendChild(statusCanceled)
-    status.appendChild(statusInput)
-  }
-
-  const date = document.createElement('div')
-  date.classList.add('date')
-  const dateLabel = document.createElement('label')
-  dateLabel.innerHTML = language.reports.sections.generalInformation.date
-  dateLabel.htmlFor = 'generalInformationSectionDateInput'
-  const dateInput = document.createElement('input')
-  dateInput.type = 'text'
-  dateInput.value = generalInformation.date || ''
-  dateInput.id = 'generalInformationSectionDateInput'
-  dateInput.autocomplete = 'off'
-  dateInput.disabled = isList
-  dateInput.addEventListener('blur', function () {
-    if (dateInput.value && !isValidDate(new Date(dateInput.value))) {
-      topWindow.showNotification(
-        language.reports.notifications.invalidDate,
-        'warning'
-      )
-    }
-  })
-  date.appendChild(dateLabel)
-  date.appendChild(dateInput)
-
-  const time = document.createElement('div')
-  time.classList.add('time')
-  const timeLabel = document.createElement('label')
-  timeLabel.innerHTML = language.reports.sections.generalInformation.time
-  timeLabel.htmlFor = 'generalInformationSectionTimeInput'
-  const timeInput = document.createElement('input')
-  timeInput.type = 'text'
-  timeInput.value = generalInformation.time || ''
-  timeInput.id = 'generalInformationSectionTimeInput'
-  timeInput.autocomplete = 'off'
-  timeInput.disabled = isList
-  timeInput.addEventListener('blur', function () {
-    if (
-      timeInput.value &&
-      !isValidDate(new Date(`${new Date().toDateString()} ${timeInput.value}`))
-    ) {
-      topWindow.showNotification(
-        language.reports.notifications.invalidTime,
-        'warning'
-      )
-    }
-  })
-  time.appendChild(timeLabel)
-  time.appendChild(timeInput)
-
-  const inputWrapper = document.createElement('div')
-  inputWrapper.classList.add('inputWrapper')
-  inputWrapper.classList.add('grid')
-
-  inputWrapper.appendChild(reportId)
-  inputWrapper.appendChild(status)
-  inputWrapper.appendChild(date)
-  inputWrapper.appendChild(time)
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  sectionWrapper.appendChild(title)
-  sectionWrapper.appendChild(inputWrapper)
-
-  return sectionWrapper
-}
-
-async function getNotesSection(notes, isList = false) {
-  const language = await getLanguage()
-
-  const title = document.createElement('div')
-  if (isList) {
-    title.classList.add('searchResponseSectionTitle')
-  } else {
-    title.classList.add('title')
-  }
-  title.innerHTML = language.reports.sections.notes
-  title.style.borderBottom = 'none'
-  title.style.paddingBottom = '0'
-
-  const notesTextarea = document.createElement('textarea')
-  notesTextarea.classList.add('notesTextarea')
-  notesTextarea.value = notes || ''
-  notesTextarea.id = 'notesSectionTextarea'
-  notesTextarea.disabled = isList
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  sectionWrapper.appendChild(title)
-  sectionWrapper.appendChild(notesTextarea)
-
-  return sectionWrapper
-}
-
-async function getMultipleNameInputsSection(
-  title,
-  label,
-  plusButtonText,
-  removeButtonText,
-  isList = false,
-  list = []
-) {
-  const titleEl = document.createElement('div')
-  if (isList) {
-    titleEl.classList.add('searchResponseSectionTitle')
-  } else {
-    titleEl.classList.add('title')
-  }
-  titleEl.innerHTML = title
-
-  const inputWrapper = document.createElement('div')
-  inputWrapper.classList.add('inputWrapper')
-  inputWrapper.classList.add('grid')
-
-  if (isList) {
-    for (const i in list) {
-      const input = document.createElement('div')
-      if (isList && list[i]) {
-        input.classList.add('clickable')
-        input.addEventListener('click', function () {
-          openInPedSearch(list[i])
-        })
-      }
-      const inputLabel = document.createElement('label')
-      inputLabel.innerHTML = `${label} ${parseInt(i) + 1}`
-      inputLabel.htmlFor = `multipleNameInputsSection${title}Input${
-        parseInt(i) + 1
-      }`
-      const inputInput = document.createElement('input')
-      inputInput.type = 'text'
-      inputInput.value = list[i] || ''
-      inputInput.id = `multipleNameInputsSection${title}Input${parseInt(i) + 1}`
-      inputInput.autocomplete = 'off'
-      inputInput.disabled = isList
-      input.appendChild(inputLabel)
-      input.appendChild(inputInput)
-
-      inputWrapper.appendChild(input)
-    }
-  } else {
-    const input1 = document.createElement('div')
-    const input1Label = document.createElement('label')
-    input1Label.innerHTML = `${label} 1`
-    input1Label.htmlFor = `multipleNameInputsSection${title}Input1`
-    const input1Input = document.createElement('input')
-    input1Input.type = 'text'
-    input1Input.id = `multipleNameInputsSection${title}Input1`
-    input1Input.autocomplete = 'off'
-    input1Input.disabled = isList
-    input1Input.addEventListener('blur', function () {
-      checkForValidPedName(input1Input)
-    })
-    input1.appendChild(input1Label)
-    input1.appendChild(input1Input)
-
-    const buttonWrapper = document.createElement('div')
-    buttonWrapper.classList.add('buttonWrapper')
-
-    const plusButton = document.createElement('button')
-    plusButton.classList.add('plusButton')
-    plusButton.innerHTML = plusButtonText
-
-    const removeButton = document.createElement('button')
-
-    plusButton.addEventListener('click', function () {
-      plusButton.blur()
-      const newInput = document.createElement('div')
-      const newInputLabel = document.createElement('label')
-      newInputLabel.innerHTML = `${label} ${
-        inputWrapper.querySelectorAll('div:has(input)').length + 1
-      }`
-      newInputLabel.htmlFor = `multipleNameInputsSection${title}Input${
-        inputWrapper.querySelectorAll('div:has(input)').length + 1
-      }`
-      const newInputInput = document.createElement('input')
-      newInputInput.type = 'text'
-      newInputInput.id = `multipleNameInputsSection${title}Input${
-        inputWrapper.querySelectorAll('div:has(input)').length + 1
-      }`
-      newInputInput.autocomplete = 'off'
-      newInputInput.addEventListener('blur', function () {
-        checkForValidPedName(newInputInput)
-      })
-      newInput.appendChild(newInputLabel)
-      newInput.appendChild(newInputInput)
-
-      inputWrapper.insertBefore(newInput, buttonWrapper)
-
-      const length = inputWrapper.querySelectorAll('div:has(input)').length
-      removeButton.disabled = length < 2
-      newInputInput.focus()
-    })
-
-    removeButton.classList.add('removeButton')
-    removeButton.innerHTML = removeButtonText
-    removeButton.disabled = true
-    removeButton.addEventListener('click', function () {
-      const length = inputWrapper.querySelectorAll('div:has(input)').length
-      inputWrapper.querySelectorAll('div:has(input)')[length - 1].remove()
-
-      removeButton.disabled = length < 3
-      removeButton.blur()
-    })
-
-    inputWrapper.appendChild(input1)
-    buttonWrapper.appendChild(plusButton)
-    buttonWrapper.appendChild(removeButton)
-    inputWrapper.appendChild(buttonWrapper)
-  }
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  sectionWrapper.dataset.title = title
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  sectionWrapper.appendChild(titleEl)
-  sectionWrapper.appendChild(inputWrapper)
-
-  return sectionWrapper
-}
-
-async function getOffenderSection(
-  offenderInformation = { pedName: null, vehicleLicensePlate: null },
-  isList = false,
-  canBeEdited = true
-) {
-  const language = await getLanguage()
-
-  const title = document.createElement('div')
-  if (isList) {
-    title.classList.add('searchResponseSectionTitle')
-  } else {
-    title.classList.add('title')
-  }
-  title.innerHTML = language.reports.sections.offender.title
-
-  const pedName = document.createElement('div')
-  pedName.classList.add('pedName')
-  if (isList && offenderInformation.pedName) {
-    pedName.classList.add('clickable')
-    pedName.addEventListener('click', function () {
-      openInPedSearch(offenderInformation.pedName)
-    })
-  }
-  const pedNameLabel = document.createElement('label')
-  pedNameLabel.innerHTML = language.reports.sections.offender.pedName
-  pedNameLabel.htmlFor = 'offenderSectionPedNameInput'
-  const pedNameInput = document.createElement('input')
-  pedNameInput.type = 'text'
-  pedNameInput.value = offenderInformation.pedName || ''
-  pedNameInput.id = 'offenderSectionPedNameInput'
-  pedNameInput.autocomplete = 'off'
-  pedNameInput.disabled = isList || !canBeEdited
-  pedNameInput.addEventListener('blur', function () {
-    checkForValidPedName(pedNameInput)
-  })
-  pedName.appendChild(pedNameLabel)
-  pedName.appendChild(pedNameInput)
-
-  const vehicleLicensePlate = document.createElement('div')
-  vehicleLicensePlate.classList.add('vehicleLicensePlate')
-  if (isList && offenderInformation.vehicleLicensePlate) {
-    vehicleLicensePlate.classList.add('clickable')
-    vehicleLicensePlate.addEventListener('click', function () {
-      openInVehicleSearch(offenderInformation.vehicleLicensePlate)
-    })
-  }
-  const vehicleLicensePlateLabel = document.createElement('label')
-  vehicleLicensePlateLabel.innerHTML =
-    language.reports.sections.offender.vehicleLicensePlate
-  vehicleLicensePlateLabel.htmlFor = 'offenderSectionVehicleLicensePlateInput'
-  const vehicleLicensePlateInput = document.createElement('input')
-  vehicleLicensePlateInput.type = 'text'
-  vehicleLicensePlateInput.value = offenderInformation.vehicleLicensePlate || ''
-  vehicleLicensePlateInput.id = 'offenderSectionVehicleLicensePlateInput'
-  vehicleLicensePlateInput.autocomplete = 'off'
-  vehicleLicensePlateInput.disabled = isList || !canBeEdited
-  vehicleLicensePlateInput.addEventListener('blur', function () {
-    checkForValidVehicleLicensePlate(vehicleLicensePlateInput)
-  })
-  vehicleLicensePlate.appendChild(vehicleLicensePlateLabel)
-  vehicleLicensePlate.appendChild(vehicleLicensePlateInput)
-
-  pedName.appendChild(pedNameLabel)
-  pedName.appendChild(pedNameInput)
-
-  const inputWrapper = document.createElement('div')
-  inputWrapper.classList.add('inputWrapper')
-  inputWrapper.classList.add('grid')
-
-  inputWrapper.appendChild(pedName)
-  inputWrapper.appendChild(vehicleLicensePlate)
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  sectionWrapper.appendChild(title)
-  sectionWrapper.appendChild(inputWrapper)
-
-  return sectionWrapper
-}
-
-async function checkForValidPedName(inputEl) {
-  const name = inputEl.value.trim()
-  if (!name) return
-  const response = await (
-    await fetch('/data/specificPed', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: name,
-    })
-  ).json()
-  if (!response) {
-    const language = await getLanguage()
-    topWindow.showNotification(
-      language.reports.notifications.invalidPedName,
-      'warning'
-    )
-  }
-}
-
-async function checkForValidVehicleLicensePlate(inputEl) {
-  const name = inputEl.value.trim()
-  if (!name) return
-  const response = await (
-    await fetch('/data/specificVehicle', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: name,
-    })
-  ).json()
-  if (!response) {
-    const language = await getLanguage()
-    topWindow.showNotification(
-      language.reports.notifications.invalidVehicleLicensePlate,
-      'warning'
-    )
-  }
-}
-
-async function getCitationArrestSection(type, isList = false, list = []) {
-  const language = await getLanguage()
-  const options =
-    type == 'citation' ? await getCitationOptions() : await getArrestOptions()
-
-  const title = document.createElement('div')
-  if (isList) {
-    title.classList.add('searchResponseSectionTitle')
-  } else {
-    title.classList.add('title')
-  }
-  title.innerHTML = language.reports.sections[type].title
-  title.style.borderBottom = 'none'
-  title.style.paddingBottom = '0'
-
-  const sectionWrapper = document.createElement('div')
-  sectionWrapper.classList.add('section')
-  sectionWrapper.classList.add(`${type}Section`)
-  if (isList) sectionWrapper.classList.add('searchResponseWrapper')
-
-  const additionalWrapper = document.createElement('div')
-
-  const optionsWrapper = document.createElement('div')
-  optionsWrapper.classList.add('optionsWrapper')
-
-  const optionsList = document.createElement('div')
-  optionsList.classList.add('optionsList')
-
-  const optionsSearchInput = document.createElement('input')
-  optionsSearchInput.type = 'text'
-  optionsSearchInput.placeholder =
-    language.reports.sections[type].searchChargesPlaceholder
-  optionsSearchInput.autocomplete = 'off'
-  optionsSearchInput.id = `${type}OptionsSearchInput`
-  optionsSearchInput.addEventListener('input', async function () {
-    await performSearch(optionsSearchInput.value.trim())
-  })
-  optionsWrapper.appendChild(optionsSearchInput)
-
-  performSearch()
-  async function performSearch(search) {
-    optionsWrapper.querySelectorAll('details').forEach((el) => el.remove())
-    for (const group of options) {
-      const details = document.createElement('details')
-      if (search) details.open = true
-
-      const summary = document.createElement('summary')
-      summary.innerHTML = group.name
-      details.appendChild(summary)
-      summary.addEventListener('click', function () {
-        optionsWrapper.querySelectorAll('details').forEach((el) => {
-          if (el != details) el.open = false
-        })
-      })
-
-      for (const charge of group.charges) {
-        if (
-          search &&
-          !charge.name.toLowerCase().includes(search.toLowerCase())
-        ) {
-          continue
-        }
-        const button = document.createElement('button')
-        button.innerHTML = charge.name
-        button.addEventListener('click', async function () {
-          button.blur()
-          await addChargeToOptionsList(charge)
-        })
-
-        const chargeDetailsOnButton = document.createElement('span')
-        chargeDetailsOnButton.classList.add('chargeDetailsOnButton')
-        chargeDetailsOnButton.innerHTML = await getChargeDetailsString(
-          type,
-          charge
-        )
-
-        button.appendChild(chargeDetailsOnButton)
-        details.appendChild(button)
-      }
-      if (search && details.children.length < 2) continue
-      optionsWrapper.appendChild(details)
-    }
-  }
-
-  async function addChargeToOptionsList(charge) {
-    const chargeWrapper = document.createElement('div')
-    chargeWrapper.classList.add('chargeWrapper')
-    chargeWrapper.dataset.charge = JSON.stringify(charge)
-
-    const chargeName = document.createElement('div')
-    chargeName.classList.add('chargeName')
-    chargeName.innerHTML = charge.name
-
-    const chargeDetails = document.createElement('div')
-    chargeDetails.classList.add('chargeDetails')
-    chargeDetails.innerHTML = await getChargeDetailsString(type, charge)
-
-    const deleteChargeButton = document.createElement('button')
-    deleteChargeButton.classList.add('deleteChargeButton')
-    deleteChargeButton.innerHTML =
-      topDoc.querySelector('.iconAccess .trash').innerHTML
-    deleteChargeButton.addEventListener('click', function () {
-      chargeWrapper.remove()
-    })
-
-    chargeWrapper.appendChild(chargeName)
-    chargeWrapper.appendChild(chargeDetails)
-    if (list.length < 1) chargeWrapper.appendChild(deleteChargeButton)
-
-    optionsList.appendChild(chargeWrapper)
-  }
-
-  if (list.length > 0) {
-    for (const charge of list) {
-      charge.addedByReportInEdit = true
-      await addChargeToOptionsList(charge)
-    }
-  }
-
-  sectionWrapper.appendChild(title)
-  if (list.length < 1) additionalWrapper.appendChild(optionsWrapper)
-  additionalWrapper.appendChild(optionsList)
-  sectionWrapper.appendChild(additionalWrapper)
-
-  return sectionWrapper
-}
-
-async function getChargeDetailsString(type, charge) {
-  const language = await getLanguage()
-
-  let fineString = `${language.reports.sections.fine}: `
-  if (charge.minFine == charge.maxFine) {
-    fineString += await getCurrencyString(charge.minFine)
-  } else {
-    fineString += `${await getCurrencyString(
-      charge.minFine
-    )} - ${await getCurrencyString(charge.maxFine)}`
-  }
-
-  let incarcerationString = `${language.reports.sections.incarceration}: `
-  if (charge.minDays == charge.maxDays) {
-    incarcerationString += await convertDaysToYMD(charge.minDays)
-  } else {
-    incarcerationString += `${await convertDaysToYMD(charge.minDays)} - ${
-      charge.maxDays == null
-        ? language.units.life
-        : await convertDaysToYMD(charge.maxDays)
-    }`
-  }
-
-  if (type == 'citation') {
-    return fineString
-  } else if (type == 'arrest') {
-    return `${fineString} | ${incarcerationString}`
-  }
-}
-
 async function saveReport(type) {
   const language = await getLanguage()
 
   const el = document.querySelector('.createPage .reportInformation')
-  const date = parseLocaleDateAndTime(
-    el.querySelector('#generalInformationSectionDateInput').value.trim(),
-    el.querySelector('#generalInformationSectionTimeInput').value.trim()
+  const date = new Date(
+    `${el.querySelector('#generalInformationSectionDateInput').value}T${el.querySelector('#generalInformationSectionTimeInput').value}`
   )
   const generalInformation = {
     Id: el.querySelector('#generalInformationSectionReportIdInput').value,
@@ -1598,47 +734,4 @@ async function saveReport(type) {
 
 function isValidDate(date) {
   return date instanceof Date && !isNaN(date) && !isNaN(date.getTime())
-}
-
-function parseLocaleDateAndTime(dateString, timeString) {
-  const sampleDate = new Date(2001, 2, 4) // March 4, 2001 (avoid ambiguity)
-  const parts = new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(sampleDate)
-
-  const order = parts
-    .filter(
-      (part) =>
-        part.type === 'day' || part.type === 'month' || part.type === 'year'
-    )
-    .map((part) => part.type)
-
-  const dateNumbers = dateString.match(/\d+/g).map(Number)
-
-  let dateComponents = {}
-  order.forEach((type, i) => {
-    dateComponents[type] = dateNumbers[i]
-  })
-
-  const timeMatch = timeString.match(/(\d+):(\d+)(?::(\d+))?\s*([AP]M)?/i)
-  let hour = Number(timeMatch[1])
-  let minute = Number(timeMatch[2])
-  let second = timeMatch[3] ? Number(timeMatch[3]) : 0
-  const ampm = timeMatch[4]
-
-  if (ampm) {
-    if (/PM/i.test(ampm) && hour < 12) hour += 12
-    if (/AM/i.test(ampm) && hour === 12) hour = 0
-  }
-
-  return new Date(
-    dateComponents.year,
-    dateComponents.month - 1,
-    dateComponents.day,
-    hour,
-    minute,
-    second
-  )
 }

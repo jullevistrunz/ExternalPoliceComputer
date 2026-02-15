@@ -31,6 +31,7 @@ namespace ExternalPoliceComputer.Setup {
         internal static readonly string CitationReportsPath = $"{ReportsDataPath}/citationReports.json";
         internal static readonly string ArrestReportsPath = $"{ReportsDataPath}/arrestReports.json";
         internal static readonly string IpAddressesPath = $"{EPCPath}/ipAddresses.txt";
+        internal static readonly string PluginsPath = $"{EPCPath}/plugins";
 
         internal static void SetupDirectory() {
             if (!Directory.Exists(DataPath)) {
@@ -79,6 +80,10 @@ namespace ExternalPoliceComputer.Setup {
 
             if (!File.Exists(ArrestReportsPath)) {
                 File.WriteAllText(ArrestReportsPath, "[]");
+            }
+
+            if (!Directory.Exists(PluginsPath)) {
+                Directory.CreateDirectory(PluginsPath);
             }
 
             DataController.OfficerInformationData = Helper.ReadFromJsonFile<OfficerInformationData>(OfficerInformationDataPath);
@@ -153,6 +158,10 @@ namespace ExternalPoliceComputer.Setup {
                 Helper.WriteToJsonFile(ConfigPath, cachedConfig);
             }
             return cachedConfig;
+        }
+
+        internal static void ResetConfig() {
+            cachedConfig = null;
         }
 
         private static Language cachedLanguage;

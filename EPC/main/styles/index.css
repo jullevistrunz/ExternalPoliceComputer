@@ -319,10 +319,27 @@
   transform: translateY(600px) translateX(-50%);
 }
 
-.overlay .settings .version {
+.overlay .settings .versionCustomizationWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.overlay .settings .version,
+.overlay .settings .customization {
   font-size: 14px;
   font-weight: 600;
-  margin: 10px;
+}
+
+.overlay .settings .customization {
+  text-align: right;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: var(--transition-time-short) ease;
+}
+
+.overlay .settings .customization:hover {
+  color: var(--color-accent);
 }
 
 .overlay .settings .officerInformation {

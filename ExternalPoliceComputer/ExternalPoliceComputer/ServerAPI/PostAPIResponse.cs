@@ -99,6 +99,16 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
+            } else if (path == "updateConfig") {
+                Config config = JsonConvert.DeserializeObject<Config>(body);
+
+                Helper.WriteToJsonFile(SetupController.ConfigPath, config);
+
+                SetupController.ResetConfig();
+
+                buffer = Encoding.UTF8.GetBytes("OK");
+                contentType = "text/plain";
+                status = 200;
             }
         }
     }

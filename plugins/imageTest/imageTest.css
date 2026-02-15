@@ -1,7 +1,0 @@
-.content {
-  background-image: url('/plugins/imageTest/image.jpg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  image-rendering: optimizeQuality;
-}

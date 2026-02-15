@@ -3,14 +3,33 @@
   const language = await getLanguage()
   if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage('index')
   const version = await (await fetch('/version')).text()
-  document.querySelector(
-    '.overlay .settings .version'
-  ).innerHTML = `${language.index.settings.version}: ${version}`
+  document.querySelector('.overlay .settings .version').innerHTML =
+    `${language.index.settings.version}: ${version}`
 
   const officerInformationData = await (
     await fetch('/data/officerInformationData')
   ).json()
   applyOfficerInformationToDOM(officerInformationData)
+
+  const pluginInfo = await (await fetch('/pluginInfo')).json()
+  const activePlugins = getActivePlugins()
+  for (const plugin of pluginInfo) {
+    if (activePlugins.includes(plugin.id)) {
+      for (const pluginScript of plugin.scripts) {
+        const script = document.createElement('script')
+        script.src = `/plugin/${plugin.id}/script/${pluginScript}`
+        script.dataset.pluginId = plugin.id
+        document.body.appendChild(script)
+      }
+      for (const pluginStyle of plugin.styles) {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = `/plugin/${plugin.id}/style/${pluginStyle}`
+        link.dataset.pluginId = plugin.id
+        document.head.appendChild(link)
+      }
+    }
+  }
 })()
 
 const timeWS = new WebSocket(`ws://${location.host}/ws`)
@@ -29,8 +48,16 @@ timeWS.onmessage = async (event) => {
   const realDate = new Date()
   document.querySelector('.taskbar .time').innerHTML = `${
     config.useInGameTime
-      ? inGameDate.toLocaleTimeString()
-      : realDate.toLocaleTimeString()
+      ? inGameDate.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: config.showSecondsInTaskbarClock ? '2-digit' : undefined,
+        })
+      : realDate.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: config.showSecondsInTaskbarClock ? '2-digit' : undefined,
+        })
   }<br>${realDate.toLocaleDateString()}`
 
   currentShift =
@@ -131,7 +158,8 @@ async function applyCurrentShiftToDOM(currentShift, currentDate) {
     )
     document.querySelector(
       '.overlay .settings .currentShift .duration'
-    ).innerHTML = `${language.index.settings.currentShift.duration}: ${duration}`
+    ).innerHTML =
+      `${language.index.settings.currentShift.duration}: ${duration}`
   } else {
     document.querySelector(
       '.overlay .settings .currentShift .buttonWrapper .startShift'
@@ -160,9 +188,8 @@ locationWS.onopen = () => locationWS.send('interval/playerLocation')
 locationWS.onmessage = async (event) => {
   const location = JSON.parse(event.data).response
   const icon = document.querySelector('.iconAccess .location').innerHTML
-  document.querySelector(
-    '.taskbar .location'
-  ).innerHTML = `${icon} ${location.Postal} ${location.Street},<br>${location.Area}`
+  document.querySelector('.taskbar .location').innerHTML =
+    `${icon} ${location.Postal} ${location.Street},<br>${location.Area}`
 }
 
 locationWS.onclose = async () => {
@@ -178,9 +205,11 @@ for (const desktopItem of desktopItems) {
   })
 }
 
-async function openWindow(name) {
+async function openWindow(name, pluginId = null) {
   const config = await getConfig()
-  const url = `/page/${name}.html`
+  const url = pluginId
+    ? `/plugin/${pluginId}/page/${name}.html`
+    : `/page/${name}.html`
   const size = [config.initialWindowWidth, config.initialWindowHeight]
   const windowDimensions = [window.innerWidth, window.innerHeight]
   const offset = [
@@ -288,6 +317,8 @@ async function openWindow(name) {
       iconTitleWrapper.offsetWidth + windowControls.offsetWidth
     }px`
     windowElement.style.scale = '1'
+
+    document.dispatchEvent(new Event(`windowLoaded:${name}`))
 
     new MutationObserver(() => {
       title.innerHTML = iframe.contentDocument.title
