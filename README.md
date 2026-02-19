@@ -8,9 +8,9 @@ A Police Computer Plugin for LSPDFR.
 
 ## Setup
 
-- When going on duty using LSPDFR, ExternalPoliceComputer will display notifications in-game containing the addresses, used to access EPC
+- When going on duty using LSPDFR, the ExternalPoliceComputer will display notifications in-game containing the addresses used to access EPC
 - If you missed them, ExternalPoliceComputer also generates a file including the addresses: `EPC/ipAddresses.txt`
-- You can access EPC using any browser of your choice (however I recommend a Chromium based browser, e.g. Chrome, Brave, etc.) by entering one of the addresses (if one doesn't work, try the other)
+- You can access EPC using any browser of your choice (however, I recommend a Chromium-based browser, e.g., Chrome, Brave, etc.) by entering one of the addresses (if one doesn't work, try the other)
 
 ### Setup using Steam overlay
 
@@ -23,27 +23,27 @@ A Police Computer Plugin for LSPDFR.
 
 ### Desktop
 
-- In the center of the taskbar you'll find an EPC icon, clicking it will open the _Control Panel_
+- In the center of the taskbar, you'll find an EPC icon. Clicking it will open the _Control Panel_
 - Here you can enter information about yourself (Officer Information) and start or end your shift
 - You can also open the [customization page](#customization) from here
 
 ### Reports
 
-- All reports include a section for general, officer and location information which will be auto filled, but can be changed
+- All reports include a section for general, officer, and location information, which will be auto-filled, but can be changed
 - The report ID can not be changed
-- The status can be used in the reports list to filter; When a report has a status of canceled it is considered delete, however you are still able to access the report
-- Reports created while on duty (shift menu on control panel), will be added to the current shift
-- There also is a notes section that can be used to describe the incident or to give more information on what happened
+- The status can be used in the reports list to filter. When a report has a status of canceled, it is considered deleted; however, you are still able to access the report
+- Reports created while on duty (shift menu on control panel) will be added to the current shift
+- There is also a notes section that can be used to describe the incident or to give more information on what happened
 
 #### Incident reports
 
-- Incident reports can be used for all kind of reporting that don't fit in any of the other categories (there will be more later :))
-- You can, but don't have to, enter the names of offenders and witnesses or victims
+- Incident reports can be used for all kinds of reporting that don't fit in any of the other categories (there will be more later :))
+- You can, but don't have to, enter the names of offenders and witnesses, or victims
 
 #### Citation and arrest reports
 
 - The given charges will be added to the offender, if the offender exists, when creating the report
-- If you're using PolicingRedefined you can give citations to the offender using the ped menu
+- If you're using PolicingRedefined, you can give citations to the offender using the ped menu
 
 ### Ped Lookup
 
@@ -130,10 +130,10 @@ function initTestPage(contentWindow) {
 
 ## Discord Server
 
-If you need support, have a suggestion or bug report, want to see what's coming in new versions, or want to download plugins made by me (or others), you can join https://discord.gg/RW9uy3spVb
+If you need support, have a suggestion or bug report, want to see what's coming in new versions, or would like to download plugins created by me (or others), you can join https://discord.gg/RW9uy3spVb.
 
 ## License
 
 ExternalPoliceComputer is licensed under the [Eclipse Public License - v 2.0](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/LICENSE)
 
-The following files / folders are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE): `EPC/arrestOptions.json`, `EPC/citationOptions.json`, `EPC/language.json`, `EPC/config.json`
+The following files/folders are excluded and licensed under the [MIT License](https://github.com/jullevistrunz/ExternalPoliceComputer/blob/main/MIT%20LICENSE): `EPC/arrestOptions.json`, `EPC/citationOptions.json`, `EPC/language.json`, `EPC/config.json`
