@@ -179,7 +179,7 @@ let _activeRouteNodeEvents = null
     const data = JSON.parse(event.data).response
     destinationCoords = data.Coords
 
-    if (data.AcceptanceState != 1) destinationCoords = null
+    if (data.AcceptanceState != 2) destinationCoords = null
   }
 
   if (config.mapDrawPostalCodeSet) {
