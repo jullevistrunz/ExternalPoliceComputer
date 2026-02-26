@@ -31,9 +31,11 @@ let _activeRouteNodeEvents = null
   const language = await getLanguage()
   if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage('map')
 
-  const playerIconStyle = document.createElement('style')
-  playerIconStyle.textContent = `.playerIcon { transition: all ${config.webSocketUpdateInterval}ms; }`
-  document.head.appendChild(playerIconStyle)
+  if (config.mapSmoothPlayerIcon) {
+    const playerIconStyle = document.createElement('style')
+    playerIconStyle.textContent = `.playerIcon { transition: all ${config.webSocketUpdateInterval}ms; }`
+    document.head.appendChild(playerIconStyle)
+  }
 
   const [minX, minY, maxX, maxY] = IMAGE_BOUNDS
   const leafletBounds = [
