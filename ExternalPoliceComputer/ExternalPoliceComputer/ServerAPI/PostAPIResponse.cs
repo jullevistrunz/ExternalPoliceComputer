@@ -104,8 +104,6 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 Helper.WriteToJsonFile(SetupController.ConfigPath, config);
 
-                SetupController.ResetConfig();
-
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
