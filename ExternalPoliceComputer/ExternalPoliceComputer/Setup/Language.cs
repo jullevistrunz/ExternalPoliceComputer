@@ -12,6 +12,8 @@ namespace ExternalPoliceComputer.Setup {
         public ShiftHistory shiftHistory = new ShiftHistory();
         public Court court = new Court();
         public Customization customization = new Customization();
+        public Map map = new Map();
+        public Callout callout = new Callout();
 
         public class InGame {
             public string loaded = "ExternalPoliceComputer has been loaded.";
@@ -37,6 +39,8 @@ namespace ExternalPoliceComputer.Setup {
                     public string reports = "Reports";
                     public string shiftHistory = "Shift History";
                     public string court = "Court Cases";
+                    public string map = "GPS";
+                    public string callout = "Callout";
                 }
 
                 public class Taskbar {
@@ -90,7 +94,7 @@ namespace ExternalPoliceComputer.Setup {
             }
         }
 
-        public class PedSearch { 
+        public class PedSearch {
             public Static @static = new Static();
             public Notifications notifications = new Notifications();
 
@@ -130,7 +134,7 @@ namespace ExternalPoliceComputer.Setup {
                 }
             }
 
-            public class Notifications { 
+            public class Notifications {
                 public string emptySearchInput = "Please enter a ped's name.";
                 public string pedNotFound = "Couldn't find a ped with that name.";
             }
@@ -347,13 +351,17 @@ namespace ExternalPoliceComputer.Setup {
             public string second = "s";
             public string currencySymbol = "$";
             public string life = "Life";
+            public string meters = "m";
+            public string kilometers = "km";
+            public string feet = "ft";
+            public string miles = "mi";
         }
 
         public class ShiftHistory {
             public string empty = "No shifts found.";
             public string reports = "Reports";
             public Static @static = new Static();
-            
+
             public class Static {
                 public string title = "Shift History";
             }
@@ -396,6 +404,46 @@ namespace ExternalPoliceComputer.Setup {
                 public string version = "Version";
                 public string author = "Author";
                 public string noPlugins = "No plugins found.";
+            }
+        }
+
+        public class Map {
+            public string zoomIn = "Zoom In";
+            public string zoomOut = "Zoom Out";
+            public Static @static = new Static();
+            public RouteInstructions routeInstructions = new RouteInstructions();
+
+            public class Static {
+                public string title = "GPS";
+            }
+
+            public class RouteInstructions {
+                public string turnLeft = "In {distance}, turn left onto {street}.";
+                public string turnRight = "In {distance}, turn right onto {street}.";
+                public string streetChange = "In {distance}, continue onto {street}.";
+                public string arrive = "In {distance}, you will arrive at your destination.";
+                public string defaultStreet = "unknown street";
+            }
+        }
+
+        public class Callout {
+            public string defaultPriority = "Code 2";
+            public Static @static = new Static();
+            public CalloutInfo calloutInfo = new CalloutInfo();
+
+            public class Static {
+                public string title = "Callout";
+                public string address = "Address";
+                public string area = "Area";
+                public string county = "County";
+                public string priority = "Priority";
+            }
+
+            public class CalloutInfo {
+                public string displayedTime = "Incident opened at ";
+                public string unit = "Unit ";
+                public string acceptedTime = " attached at ";
+                public string finishedTime = "Incident closed at ";
             }
         }
     }

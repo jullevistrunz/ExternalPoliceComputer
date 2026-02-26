@@ -81,7 +81,7 @@ async function performSearch(query) {
         el.style.color = getColorForValue(response[key])
         break
       case 'AdvisoryText':
-        el.value = await getLanguageValue(response[key])
+        el.value = removeGTAColorCodesFromString(response[key])
         if (response[key] != undefined) el.style.color = 'var(--color-error)'
         break
       case 'LicenseExpiration':

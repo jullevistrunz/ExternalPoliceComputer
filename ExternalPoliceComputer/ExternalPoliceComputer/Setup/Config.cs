@@ -28,5 +28,12 @@ namespace ExternalPoliceComputer.Setup {
 
         public bool displayCurrencySymbolBeforeNumber = true;
         public int courtDatabaseMaxEntries = 100;
+
+        public int mapPlayerIconSize = 30;
+        public float mapTurnPenaltySecondsPerRadian = 1.0f;
+        public bool mapDrawPostalCodeSet = true;
+        public bool mapUseBurgerUnits = false;
+
+        public bool showAgencyInCalloutInfo = true;
     }
 }

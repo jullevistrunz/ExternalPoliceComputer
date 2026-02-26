@@ -1,4 +1,5 @@
-﻿using ExternalPoliceComputer.Utility;
+﻿using ExternalPoliceComputer.EventListeners;
+using ExternalPoliceComputer.Utility;
 using System.Runtime.CompilerServices;
 
 namespace ExternalPoliceComputer {
@@ -6,7 +7,7 @@ namespace ExternalPoliceComputer {
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void SendMessage(string message) {
-            Helper.Log("A plugin used a deprecated function (SendMessage).", true);
+            CalloutEvents.SendAdditionalMessage(message);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

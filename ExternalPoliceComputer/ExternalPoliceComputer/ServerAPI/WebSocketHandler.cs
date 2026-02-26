@@ -1,6 +1,8 @@
 ﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.EventListeners;
 using ExternalPoliceComputer.Setup;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -8,6 +10,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static ExternalPoliceComputer.Setup.Language.Callout;
 using static ExternalPoliceComputer.Utility.Helper;
 
 namespace ExternalPoliceComputer.ServerAPI {
@@ -61,8 +64,26 @@ namespace ExternalPoliceComputer.ServerAPI {
                                 DataController.ShiftHistoryUpdated += OnShiftHistoryUpdated;
 
                                 void OnShiftHistoryUpdated() {
-                                    if (webSocket.State != WebSocketState.Open || !Server.RunServer) return;
-                                    SendData(webSocket, "\"Shift history updated\"", "shiftHistoryUpdated").Wait();
+                                    if (webSocket.State != WebSocketState.Open || !Server.RunServer) {
+                                        DataController.ShiftHistoryUpdated -= OnShiftHistoryUpdated;
+                                        return;
+                                    }
+                                    SendData(webSocket, "\"Shift history updated\"", clientMsg).Wait();
+                                }
+                                break;
+                            case "calloutEvent":
+                                if (CalloutEvents.CalloutInfo != null) {
+                                    SendData(webSocket, JsonConvert.SerializeObject(CalloutEvents.CalloutInfo), clientMsg).Wait();
+                                }
+
+                                CalloutEvents.OnCalloutEvent += OnCalloutEvent;
+
+                                void OnCalloutEvent(CalloutEvents.CalloutInformation calloutInfo) {
+                                    if (webSocket.State != WebSocketState.Open || !Server.RunServer) {
+                                        CalloutEvents.OnCalloutEvent -= OnCalloutEvent;
+                                        return;
+                                    }
+                                    SendData(webSocket, JsonConvert.SerializeObject(calloutInfo), clientMsg).Wait();
                                 }
                                 break;
                             default:
@@ -93,6 +114,14 @@ namespace ExternalPoliceComputer.ServerAPI {
                                 break;
                             case "time":
                                 responseMsg = $"\"{DataController.CurrentTime}\"";
+
+                                if (responseMsg != lastResponseMsg) {
+                                    lastResponseMsg = responseMsg;
+                                    await SendData(webSocket, responseMsg, clientMsg, token);
+                                }
+                                break;
+                            case "playerCoords":
+                                responseMsg = JsonConvert.SerializeObject(DataController.PlayerCoords);
 
                                 if (responseMsg != lastResponseMsg) {
                                     lastResponseMsg = responseMsg;

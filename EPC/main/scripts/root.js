@@ -361,3 +361,7 @@ function getActivePlugins() {
   }
   return JSON.parse(activePlugins)
 }
+
+function removeGTAColorCodesFromString(str) {
+  return str.replace(/~.~/g, '')
+}
