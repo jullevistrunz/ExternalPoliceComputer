@@ -78,7 +78,7 @@ namespace ExternalPoliceComputer.ServerAPI {
                 status = 200;
                 contentType = "text/plain";
             } else if (path == "activePostalCodeSet") {
-                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(CommonDataFramework.Modules.Postals.PostalCodeController.ActivePostalCodeSet));
+                buffer = Encoding.UTF8.GetBytes(DataController.ActivePostalCodeSet);
                 status = 200;
                 contentType = "text/plain";
             }

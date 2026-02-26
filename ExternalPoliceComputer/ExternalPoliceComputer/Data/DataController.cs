@@ -1,7 +1,6 @@
 ﻿using CommonDataFramework.Modules;
 using CommonDataFramework.Modules.PedDatabase;
 using ExternalPoliceComputer.Data.Reports;
-using ExternalPoliceComputer.EventListeners;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
 using LSPD_First_Response.Engine.Scripting.Entities;
@@ -47,6 +46,8 @@ namespace ExternalPoliceComputer.Data {
         internal static Location PlayerLocation = new Location();
         internal static string CurrentTime = World.TimeOfDay.ToString();
         internal static PlayerCoords PlayerCoords = new PlayerCoords();
+
+        internal static string ActivePostalCodeSet;
 
         internal static void SetDatabases() {
             SetPedDatabase();
