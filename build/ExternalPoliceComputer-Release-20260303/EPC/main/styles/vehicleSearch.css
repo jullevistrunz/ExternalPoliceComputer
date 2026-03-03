@@ -1,0 +1,31 @@
+body {
+  background-color: var(--color-background);
+  margin: 0;
+}
+
+.searchHistoryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 10px;
+}
+
+.searchHistoryList button {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.searchHistoryList button .searchCount {
+  color: var(--color-text-primary-half);
+  font-weight: 400;
+}
+
+.searchResponseWrapper .inputWrapper > div img {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  height: 42px;
+  padding: 5px;
+  background-color: var(--color-border);
+}

@@ -144,6 +144,8 @@ namespace ExternalPoliceComputer.Setup {
                 public string title = "Vehicle Lookup";
                 public string search = "Search Vehicle";
                 public string searchInput = "Search vehicle by license plate or VIN";
+                public string nearbyPlatesTitle = "Nearby Plates";
+                public string refreshNearby = "Refresh Nearby";
                 public string basicInfoTitle = "Basic Information";
                 public string documentsTitle = "Documents";
                 public Labels labels = new Labels();
@@ -164,6 +166,7 @@ namespace ExternalPoliceComputer.Setup {
             public class Notifications {
                 public string emptySearchInput = "Please enter a vehicle's license plate or VIN.";
                 public string vehicleNotFound = "Couldn't find a vehicle with that license plate or VIN.";
+                public string noNearbyVehicles = "No nearby vehicles found.";
             }
         }
 

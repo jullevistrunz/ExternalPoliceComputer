@@ -1,7 +1,7 @@
 body {
   margin: 0;
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 200px 1fr;
   height: 100vh;
   background-color: var(--color-background);
   overflow: hidden;
@@ -10,30 +10,16 @@ body {
 .sidebar {
   background-color: var(--color-surface-dimmed);
   border-right: 1px solid var(--color-border);
-  padding: 10px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   overflow: auto;
 }
 
-.sidebar::before {
-  content: 'LSPD MDT SYSTEMS';
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  letter-spacing: 0.8px;
-  color: var(--color-accent-secondary);
-  border: 1px solid var(--color-border);
-  background: linear-gradient(180deg, #1e314b 0%, #16263b 100%);
-  padding: 8px 10px;
-  border-radius: var(--radius-small);
-}
-
 .sidebar button {
-  border-radius: var(--radius-small);
+  border-radius: 3px;
   width: 100%;
-  text-align: left;
-  padding: 8px 10px;
 }
 
 .main {
@@ -42,11 +28,6 @@ body {
   font-weight: 600;
   color: var(--color-text-primary);
   overflow: auto;
-  line-height: 1.4;
-  background-color: #0d182a80;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-medium);
-  padding: 10px;
 }
 
 .pluginsWrapper {
@@ -59,14 +40,12 @@ body {
 .pluginsWrapper .plugin {
   width: 250px;
   height: min-content;
-  border-radius: var(--radius-medium);
+  border-radius: 5px;
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
-  padding: 10px;
+  padding: 7.5px;
   cursor: pointer;
-  transition:
-    var(--transition-time-short) ease,
-    transform var(--transition-time-short) ease;
+  transition: var(--transition-time-short) ease;
 }
 
 .pluginsWrapper .plugin.selected {
@@ -75,7 +54,6 @@ body {
 
 .pluginsWrapper .plugin:hover {
   border-color: var(--color-accent);
-  transform: translateY(-1px);
 }
 
 .pluginsWrapper .plugin .name {
@@ -118,35 +96,6 @@ body {
 }
 
 .configWrapper .configItem input:not([type='checkbox']) {
+  border-radius: 3px;
   width: 100%;
-}
-
-@media (max-width: 820px) {
-  body {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-  }
-
-  .sidebar {
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .sidebar::before {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .sidebar button {
-    width: auto;
-    min-width: 140px;
-    text-align: center;
-  }
-
-  .main {
-    margin: 8px;
-    padding: 8px;
-  }
 }

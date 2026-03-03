@@ -2,20 +2,12 @@ body {
   background-color: var(--color-background);
   margin: 0;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, #0d1829 0%, #0b1320 100%),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0,
-      transparent 31px,
-      #ffffff08 32px
-    );
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   padding: 10px;
   height: calc(100vh - 20px);
   overflow: auto;
@@ -27,11 +19,10 @@ body {
 .listItem {
   padding: 0 10px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-medium);
+  border-radius: 6px;
   background-color: var(--color-surface);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  box-shadow: var(--shadow-soft);
 }
 
 .searchResponseWrapper:first-child {
@@ -66,10 +57,6 @@ body {
 .courtStatusWrapper > label {
   display: block;
   margin-bottom: 2px;
-  color: var(--color-accent-secondary);
-  font-family: var(--font-family-mono);
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
 }
 
 .courtStatusWrapper .buttonWrapper {
@@ -78,19 +65,4 @@ body {
 
 .courtStatusWrapper .buttonWrapper button {
   min-width: fit-content;
-}
-
-@media (max-width: 900px) {
-  .listItem {
-    grid-template-columns: 1fr;
-  }
-
-  .searchResponseWrapper:first-child {
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    margin-right: 10px !important;
-    padding-right: 0;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-  }
 }

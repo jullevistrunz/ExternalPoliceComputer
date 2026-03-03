@@ -52,7 +52,7 @@ async function loadSearchHistory() {
 
   for (const entry of history) {
     const item = document.createElement('button')
-    item.textContent = entry.ResultName
+    item.innerHTML = `${entry.ResultName} <span class="searchCount">(${entry.SearchCount})</span>`
     item.addEventListener('click', async function () {
       document.querySelector('.searchInputWrapper #pedSearchInput').value =
         entry.ResultName

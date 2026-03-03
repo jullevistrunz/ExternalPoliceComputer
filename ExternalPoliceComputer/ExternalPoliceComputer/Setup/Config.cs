@@ -15,6 +15,7 @@ namespace ExternalPoliceComputer.Setup {
         public float hasPriorCitationsProbability = 0.8f;
         public float hasPriorArrestsProbability = 0.2f;
         public float hasPriorArrestsWithWarrantProbability = 0.8f;
+        public float reEncounterChance = 0.08f;
         public int maxNumberOfPriorCitations = 5;
         public int maxNumberOfPriorArrests = 3;
         public int maxNumberOfPriorArrestsWithWarrant = 8;

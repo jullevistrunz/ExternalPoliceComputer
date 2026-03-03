@@ -16,7 +16,7 @@ namespace ExternalPoliceComputer.Data {
         private static SQLiteConnection connection;
         private static readonly object dbLock = new object();
 
-        private const int CurrentSchemaVersion = 3;
+        private const int CurrentSchemaVersion = 4;
 
         internal static void Initialize() {
             lock (dbLock) {
@@ -68,6 +68,8 @@ namespace ExternalPoliceComputer.Data {
                     Name                    TEXT PRIMARY KEY,
                     FirstName               TEXT,
                     LastName                TEXT,
+                    ModelHash               INTEGER NOT NULL DEFAULT 0,
+                    ModelName               TEXT,
                     Birthday                TEXT,
                     Gender                  TEXT,
                     Address                 TEXT,
@@ -86,7 +88,8 @@ namespace ExternalPoliceComputer.Data {
                     FishingPermitStatus     TEXT,
                     FishingPermitExpiration TEXT,
                     HuntingPermitStatus     TEXT,
-                    HuntingPermitExpiration TEXT
+                    HuntingPermitExpiration TEXT,
+                    IncarceratedUntil       TEXT
                 );
 
                 CREATE TABLE IF NOT EXISTS ped_citations (
@@ -331,6 +334,17 @@ namespace ExternalPoliceComputer.Data {
                 Helper.Log("Database migrated to schema version 3 (court_cases Status column)");
             }
 
+            if (fromVersion < 4) {
+                using (var cmd = new SQLiteCommand(@"
+                    ALTER TABLE peds ADD COLUMN ModelHash INTEGER NOT NULL DEFAULT 0;
+                    ALTER TABLE peds ADD COLUMN ModelName TEXT;
+                    ALTER TABLE peds ADD COLUMN IncarceratedUntil TEXT;
+                ", connection)) {
+                    cmd.ExecuteNonQuery();
+                }
+                Helper.Log("Database migrated to schema version 4 (ped model + incarceration columns)");
+            }
+
             SetSchemaVersion(CurrentSchemaVersion);
         }
 
@@ -366,6 +380,8 @@ namespace ExternalPoliceComputer.Data {
                 Name = reader["Name"] as string,
                 FirstName = reader["FirstName"] as string,
                 LastName = reader["LastName"] as string,
+                ModelHash = reader["ModelHash"] is DBNull ? 0 : Convert.ToUInt32(reader["ModelHash"]),
+                ModelName = reader["ModelName"] as string,
                 Birthday = reader["Birthday"] as string,
                 Gender = reader["Gender"] as string,
                 Address = reader["Address"] as string,
@@ -384,7 +400,8 @@ namespace ExternalPoliceComputer.Data {
                 FishingPermitStatus = reader["FishingPermitStatus"] as string,
                 FishingPermitExpiration = reader["FishingPermitExpiration"] as string,
                 HuntingPermitStatus = reader["HuntingPermitStatus"] as string,
-                HuntingPermitExpiration = reader["HuntingPermitExpiration"] as string
+                HuntingPermitExpiration = reader["HuntingPermitExpiration"] as string,
+                IncarceratedUntil = reader["IncarceratedUntil"] as string
             };
         }
 
@@ -806,23 +823,25 @@ namespace ExternalPoliceComputer.Data {
         private static void SavePedInternal(EPCPedData ped, SQLiteTransaction transaction) {
             using (var cmd = new SQLiteCommand(@"
                 INSERT OR REPLACE INTO peds (
-                    Name, FirstName, LastName, Birthday, Gender, Address,
+                    Name, FirstName, LastName, ModelHash, ModelName, Birthday, Gender, Address,
                     IsInGang, AdvisoryText, TimesStopped, IsWanted, WarrantText,
                     IsOnProbation, IsOnParole, LicenseStatus, LicenseExpiration,
                     WeaponPermitStatus, WeaponPermitExpiration, WeaponPermitType,
                     FishingPermitStatus, FishingPermitExpiration,
-                    HuntingPermitStatus, HuntingPermitExpiration
+                    HuntingPermitStatus, HuntingPermitExpiration, IncarceratedUntil
                 ) VALUES (
-                    @Name, @FirstName, @LastName, @Birthday, @Gender, @Address,
+                    @Name, @FirstName, @LastName, @ModelHash, @ModelName, @Birthday, @Gender, @Address,
                     @IsInGang, @AdvisoryText, @TimesStopped, @IsWanted, @WarrantText,
                     @IsOnProbation, @IsOnParole, @LicenseStatus, @LicenseExpiration,
                     @WeaponPermitStatus, @WeaponPermitExpiration, @WeaponPermitType,
                     @FishingPermitStatus, @FishingPermitExpiration,
-                    @HuntingPermitStatus, @HuntingPermitExpiration
+                    @HuntingPermitStatus, @HuntingPermitExpiration, @IncarceratedUntil
                 )", connection, transaction)) {
                 cmd.Parameters.AddWithValue("@Name", (object)ped.Name ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@FirstName", (object)ped.FirstName ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@LastName", (object)ped.LastName ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ModelHash", ped.ModelHash);
+                cmd.Parameters.AddWithValue("@ModelName", (object)ped.ModelName ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Birthday", (object)ped.Birthday ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Gender", (object)ped.Gender ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Address", (object)ped.Address ?? DBNull.Value);
@@ -842,6 +861,7 @@ namespace ExternalPoliceComputer.Data {
                 cmd.Parameters.AddWithValue("@FishingPermitExpiration", (object)ped.FishingPermitExpiration ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@HuntingPermitStatus", (object)ped.HuntingPermitStatus ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@HuntingPermitExpiration", (object)ped.HuntingPermitExpiration ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@IncarceratedUntil", (object)ped.IncarceratedUntil ?? DBNull.Value);
                 cmd.ExecuteNonQuery();
             }
 
@@ -1319,11 +1339,10 @@ namespace ExternalPoliceComputer.Data {
                 var entries = new List<SearchHistoryEntry>();
 
                 using (var cmd = new SQLiteCommand(@"
-                    SELECT ResultName, MAX(Timestamp) AS LastSearched, COUNT(*) AS SearchCount
+                    SELECT ResultName, Timestamp AS LastSearched
                     FROM search_history
                     WHERE SearchType = @type AND ResultName IS NOT NULL
-                    GROUP BY ResultName
-                    ORDER BY MAX(Timestamp) DESC
+                    ORDER BY Timestamp DESC
                     LIMIT @limit", connection)) {
                     cmd.Parameters.AddWithValue("@type", searchType);
                     cmd.Parameters.AddWithValue("@limit", limit);
@@ -1333,7 +1352,7 @@ namespace ExternalPoliceComputer.Data {
                             entries.Add(new SearchHistoryEntry {
                                 ResultName = reader["ResultName"] as string,
                                 LastSearched = reader["LastSearched"] as string,
-                                SearchCount = Convert.ToInt32(reader["SearchCount"])
+                                SearchCount = 1
                             });
                         }
                     }

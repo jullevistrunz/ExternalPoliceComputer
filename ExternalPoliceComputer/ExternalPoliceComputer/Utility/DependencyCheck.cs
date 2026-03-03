@@ -1,18 +1,22 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 
 namespace ExternalPoliceComputer.Utility {
     internal class DependencyCheck {
+        private static bool IsFileAvailable(string fileName) {
+            return File.Exists(fileName) || File.Exists(Path.Combine("plugins", "LSPDFR", fileName));
+        }
+
         internal static bool IsCIAPIAvailable() {
-            return File.Exists("CalloutInterfaceAPI.dll");
+            return IsFileAvailable("CalloutInterfaceAPI.dll");
         }
 
         internal static bool IsNewtonsoftJsonAvailable() {
-            return File.Exists("Newtonsoft.Json.dll");
+            return IsFileAvailable("Newtonsoft.Json.dll");
         }
 
         internal static bool IsIPTCommonAvailable() {
-            return File.Exists("IPT.Common.dll");
+            return IsFileAvailable("IPT.Common.dll");
         }
 
         internal static bool IsCDFAvailable() {

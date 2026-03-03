@@ -3,7 +3,6 @@
   if (config.updateDomWithLanguageOnLoad)
     await updateDomWithLanguage('vehicleSearch')
 
-  await loadNearbyVehicles()
   await loadSearchHistory()
 })()
 
@@ -31,58 +30,6 @@ document
 
     hideLoadingOnButton(this)
   })
-
-document
-  .querySelector('.nearbyPlatesRefresh')
-  .addEventListener('click', async function () {
-    if (this.classList.contains('loading')) return
-    showLoadingOnButton(this)
-    await loadNearbyVehicles()
-    hideLoadingOnButton(this)
-  })
-
-async function loadNearbyVehicles() {
-  const language = await getLanguage()
-  const nearbyVehicles = await (
-    await fetch('/data/nearbyVehicles', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: '5',
-    })
-  ).json()
-
-  const wrapper = document.querySelector('.nearbyPlatesWrapper')
-  const list = document.querySelector('.nearbyPlatesList')
-  list.innerHTML = ''
-
-  if (!nearbyVehicles || nearbyVehicles.length === 0) {
-    wrapper.classList.remove('hidden')
-    const emptyEl = document.createElement('div')
-    emptyEl.classList.add('searchCount')
-    emptyEl.innerHTML =
-      language.vehicleSearch.notifications.noNearbyVehicles ||
-      'No nearby vehicles found.'
-    list.appendChild(emptyEl)
-    return
-  }
-
-  wrapper.classList.remove('hidden')
-
-  for (const vehicle of nearbyVehicles) {
-    const item = document.createElement('button')
-    if (vehicle.IsStolen) item.classList.add('stolen')
-    const model = vehicle.ModelDisplayName ? ` - ${vehicle.ModelDisplayName}` : ''
-    const distance =
-      vehicle.Distance != null ? ` (${vehicle.Distance.toFixed(1)}m)` : ''
-    item.innerHTML = `${vehicle.LicensePlate}${model}${distance}`
-    item.addEventListener('click', function () {
-      document.querySelector('.searchInputWrapper #vehicleSearchInput').value =
-        vehicle.LicensePlate
-      document.querySelector('.searchInputWrapper button').click()
-    })
-    list.appendChild(item)
-  }
-}
 
 async function loadSearchHistory() {
   const history = await (
@@ -214,7 +161,6 @@ async function performSearch(query) {
   }
 
   // Reload search history after successful search
-  await loadNearbyVehicles()
   await loadSearchHistory()
 }
 

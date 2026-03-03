@@ -1,13 +1,51 @@
 body {
   background-color: var(--color-background);
   margin: 0;
+  color: var(--color-text-primary);
+  background:
+    linear-gradient(180deg, #0d1829 0%, #0b1320 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 31px,
+      #ffffff08 32px
+    );
+}
+
+.searchInputWrapper {
+  margin-top: 14px;
 }
 
 .searchHistoryList {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
   margin: 0 10px;
+}
+
+.nearbyPlatesHeader {
+  margin: 0 10px 6px;
+  font-family: var(--font-family-mono);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--color-accent-secondary);
+}
+
+.nearbyPlatesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 10px;
+}
+
+.nearbyPlatesList button {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.nearbyPlatesList button.stolen {
+  color: var(--color-error);
+  border-color: var(--color-error);
 }
 
 .searchHistoryList button {

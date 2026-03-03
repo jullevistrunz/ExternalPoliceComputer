@@ -12,6 +12,10 @@ using System.Linq;
 
 namespace ExternalPoliceComputer.Data {
     public class DataController {
+        private const string LifeIncarcerationValue = "LIFE";
+        private const double RealDaysPerGameYear = 7d;
+        private const double GameDaysPerYear = 365d;
+
         private static List<EPCPedData> pedDatabase = new List<EPCPedData>();
         public static IReadOnlyList<EPCPedData> PedDatabase { get { return GetPedDatabase(); } }
 
@@ -21,6 +25,8 @@ namespace ExternalPoliceComputer.Data {
         public static IReadOnlyList<EPCVehicleData> VehicleDatabase { get { return GetVehicleDatabase(); } }
 
         private static List<EPCVehicleData> keepInVehicleDatabase = new List<EPCVehicleData>();
+        private static readonly Random random = new Random();
+        private static readonly HashSet<PoolHandle> resolvedPedHandles = new HashSet<PoolHandle>();
 
         internal static List<CourtData> courtDatabase = new List<CourtData>();
         public static IReadOnlyList<CourtData> CourtDatabase => courtDatabase;
@@ -63,10 +69,7 @@ namespace ExternalPoliceComputer.Data {
             }
             Ped[] nearbyPeds = Main.Player.GetNearbyPeds(SetupController.GetConfig().maxNumberOfNearbyPedsOrVehicles);
             for (int i = 0; i < nearbyPeds.Length; i++) {
-                EPCPedData epcPedData = new EPCPedData(nearbyPeds[i]);
-                if (epcPedData == null || epcPedData.Name == null) continue;
-                if (pedDatabase.Any(x => x.Name == epcPedData.Name)) continue;
-                pedDatabase.Add(epcPedData);
+                ResolvePedForReEncounter(nearbyPeds[i]);
             }
         }
 
@@ -92,7 +95,6 @@ namespace ExternalPoliceComputer.Data {
                     pedDatabase.Remove(key);
                 }
             }
-            PopulatePedDatabase();
         }
 
         private static void SetVehicleDatabase() {
@@ -192,7 +194,16 @@ namespace ExternalPoliceComputer.Data {
         }
 
         internal static void AddCDFPedDataPedToDatabase(PedData pedData) {
+            if (pedData == null) return;
+            if (pedData.Holder != null && pedData.Holder.IsValid()) {
+                ResolvePedForReEncounter(pedData.Holder);
+                return;
+            }
+
             EPCPedData epcPedData = new EPCPedData(pedData);
+            if (epcPedData == null || epcPedData.Name == null) return;
+            if (pedDatabase.Any(x => x.Name == epcPedData.Name)) return;
+            TryApplyReEncounterProfile(epcPedData);
             if (pedDatabase.Any(x => x.Name == epcPedData.Name)) return;
             pedDatabase.Add(epcPedData);
         }
@@ -332,6 +343,16 @@ namespace ExternalPoliceComputer.Data {
                         );
                 }
 
+                if (!string.IsNullOrEmpty(arrestReport.OffenderPedName)) {
+                    int pedIndex = pedDatabase.FindIndex(pedData => pedData.Name.ToLower() == arrestReport.OffenderPedName.ToLower());
+                    if (pedIndex != -1) {
+                        EPCPedData pedDataToUpdate = pedDatabase[pedIndex];
+                        UpdatePedIncarcerationFromCourtData(pedDataToUpdate, courtData);
+                        KeepPedInDatabase(pedDataToUpdate);
+                        pedDatabase[pedIndex] = pedDataToUpdate;
+                    }
+                }
+
                 if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
                     if (courtDatabase.Count > SetupController.GetConfig().courtDatabaseMaxEntries) {
                         Database.DeleteCourtCase(courtDatabase[0].Number);
@@ -369,6 +390,120 @@ namespace ExternalPoliceComputer.Data {
                 }
             }
             AddReportToCurrentShift(report.Id);
+        }
+
+        private static void TryApplyReEncounterProfile(EPCPedData currentPedData) {
+            EPCPedData persistentMatch = GetReEncounterCandidate(currentPedData);
+            if (persistentMatch == null) return;
+
+            string originalName = currentPedData.Name;
+            currentPedData.ApplyPersistentIdentity(persistentMatch);
+            currentPedData.TimesStopped = Math.Max(currentPedData.TimesStopped, persistentMatch.TimesStopped + 1);
+
+            if (currentPedData.CDFPedData != null) {
+                currentPedData.CDFPedData.Wanted = currentPedData.IsWanted;
+                currentPedData.CDFPedData.IsOnProbation = currentPedData.IsOnProbation;
+                currentPedData.CDFPedData.IsOnParole = currentPedData.IsOnParole;
+                currentPedData.CDFPedData.Citations = currentPedData.Citations?.Count ?? 0;
+                currentPedData.CDFPedData.TimesStopped = currentPedData.TimesStopped;
+            }
+
+            KeepPedInDatabase(currentPedData);
+            Helper.Log($"Re-encounter matched by model: {originalName} => {currentPedData.Name}", false, Helper.LogSeverity.Info);
+        }
+
+        internal static void ResolvePedForReEncounter(Ped ped) {
+            if (ped == null || !ped.IsValid()) return;
+            if (resolvedPedHandles.Contains(ped.Handle)) return;
+            if (resolvedPedHandles.Count > 4000) resolvedPedHandles.Clear();
+            resolvedPedHandles.Add(ped.Handle);
+
+            EPCPedData epcPedData = new EPCPedData(ped);
+            if (epcPedData == null || string.IsNullOrEmpty(epcPedData.Name)) return;
+            if (pedDatabase.Any(x => x.Name == epcPedData.Name)) return;
+
+            TryApplyReEncounterProfile(epcPedData);
+            if (pedDatabase.Any(x => x.Name == epcPedData.Name)) return;
+
+            pedDatabase.Add(epcPedData);
+        }
+
+        private static EPCPedData GetReEncounterCandidate(EPCPedData currentPedData) {
+            if (currentPedData == null) return null;
+
+            float chance = SetupController.GetConfig().reEncounterChance;
+            if (chance <= 0f) return null;
+            if (chance >= 1f) chance = 1f;
+            if (random.NextDouble() > chance) return null;
+
+            List<EPCPedData> candidates = keepInPedDatabase
+                .Where(ped => ped != null && !string.IsNullOrEmpty(ped.Name))
+                .Where(IsPedAvailableForEncounter)
+                .Where(ped => !pedDatabase.Any(activePed => activePed.Name == ped.Name))
+                .Where(ped => {
+                    if (currentPedData.ModelHash != 0 && ped.ModelHash != 0) {
+                        return ped.ModelHash == currentPedData.ModelHash;
+                    }
+                    if (!string.IsNullOrEmpty(currentPedData.ModelName) && !string.IsNullOrEmpty(ped.ModelName)) {
+                        return ped.ModelName == currentPedData.ModelName;
+                    }
+                    return false;
+                })
+                .ToList();
+
+            if (candidates.Count == 0) return null;
+            return candidates[random.Next(candidates.Count)];
+        }
+
+        private static bool IsPedAvailableForEncounter(EPCPedData pedData) {
+            if (pedData == null) return false;
+            if (string.IsNullOrEmpty(pedData.IncarceratedUntil)) return true;
+            if (string.Equals(pedData.IncarceratedUntil, LifeIncarcerationValue, StringComparison.OrdinalIgnoreCase)) return false;
+
+            if (!DateTime.TryParse(
+                pedData.IncarceratedUntil,
+                null,
+                DateTimeStyles.RoundtripKind,
+                out DateTime incarceratedUntil)) {
+                return true;
+            }
+
+            return incarceratedUntil <= DateTime.UtcNow;
+        }
+
+        private static void UpdatePedIncarcerationFromCourtData(EPCPedData pedData, CourtData courtData) {
+            if (pedData == null || courtData?.Charges == null) return;
+
+            int totalDays = 0;
+            bool hasLifeSentence = false;
+
+            foreach (CourtData.Charge charge in courtData.Charges) {
+                if (charge.Time == null) {
+                    hasLifeSentence = true;
+                    continue;
+                }
+                if (charge.Time > 0) totalDays += charge.Time.Value;
+            }
+
+            if (hasLifeSentence) {
+                pedData.IncarceratedUntil = LifeIncarcerationValue;
+                return;
+            }
+
+            if (totalDays <= 0) return;
+
+            DateTime baseDate = DateTime.UtcNow;
+            if (string.Equals(pedData.IncarceratedUntil, LifeIncarcerationValue, StringComparison.OrdinalIgnoreCase)) return;
+            if (DateTime.TryParse(
+                pedData.IncarceratedUntil,
+                null,
+                DateTimeStyles.RoundtripKind,
+                out DateTime existingEnd) && existingEnd > baseDate) {
+                baseDate = existingEnd;
+            }
+
+            double scaledRealDays = totalDays * (RealDaysPerGameYear / GameDaysPerYear);
+            pedData.IncarceratedUntil = baseDate.AddDays(scaledRealDays).ToString("o");
         }
 
         private static OfficerInformationData GetOfficerInformation() {

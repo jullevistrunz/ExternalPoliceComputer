@@ -1,21 +1,21 @@
 :root {
-  --color-background: #0b1320;
-  --color-surface: #111c2d;
-  --color-surface-dimmed: #111c2de6;
-  --color-surface-elevated: #1b2a41;
-  --color-accent: #63a7ff;
-  --color-accent-dimmed: #63a7ffbf;
-  --color-accent-half: #63a7ff80;
-  --color-accent-secondary: #d7b56d;
-  --color-accent-secondary-dimmed: #d7b56dbf;
-  --color-accent-secondary-half: #d7b56d80;
+  --color-background: #1a1a1a;
+  --color-surface: #2a2a2a;
+  --color-surface-dimmed: #2a2a2abf;
+  --color-surface-elevated: #3a3a3a;
+  --color-accent: #7cabcf;
+  --color-accent-dimmed: #7daccfbf;
+  --color-accent-half: #7daccf80;
+  --color-accent-secondary: #cf7cae;
+  --color-accent-secondary-dimmed: #cf7caebf;
+  --color-accent-secondary-half: #cf7cae80;
 
-  --color-text-primary: #ecf3ff;
-  --color-text-primary-dimmed: #ecf3ffbf;
-  --color-text-primary-half: #ecf3ff80;
-  --color-text-disabled: #8c9bb0;
+  --color-text-primary: #f0f0f0;
+  --color-text-primary-dimmed: #f0f0f0bf;
+  --color-text-primary-half: #f0f0f080;
+  --color-text-disabled: #6e6e6e;
 
-  --color-border: #2c3f5e;
+  --color-border: #555555;
 
   --color-success: #4caf50;
   --color-success-half: #4caf5080;
@@ -26,60 +26,18 @@
   --color-error: #f44336;
   --color-error-half: #f4433680;
 
-  --color-shadow: #00000099;
+  --color-shadow: #00000080;
 
   --transition-time-short: 100ms;
   --transition-time-long: 250ms;
 
   --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  --font-family-mono: 'Consolas', 'Courier New', monospace;
 
-  --liquid-ass: blur(12px) saturate(130%);
-
-  --radius-small: 4px;
-  --radius-medium: 8px;
-  --radius-large: 12px;
-  --shadow-soft: 0 2px 10px #0000005e;
-  --shadow-medium: 0 10px 28px #00000075;
-  --focus-ring: 0 0 0 2px var(--color-accent-half);
+  --liquid-ass: blur(18px) saturate(160%);
 }
 
 body {
   font-family: var(--font-family);
-  color: var(--color-text-primary);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  scrollbar-color: var(--color-border) transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 20px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent-dimmed);
-  background-clip: content-box;
-}
-
-::selection {
-  background-color: var(--color-accent-half);
-  color: var(--color-text-primary);
 }
 
 .hidden {
@@ -108,10 +66,6 @@ button {
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font-family);
-  border-radius: var(--radius-small);
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
-  font-size: 12px;
 }
 
 button:disabled {
@@ -125,7 +79,6 @@ button:disabled:not(.selected) {
 
 button:not(:disabled):hover {
   color: var(--color-accent);
-  border-color: var(--color-accent-half);
 }
 
 button::before {
@@ -176,36 +129,12 @@ input {
   font-size: 14px;
   font-weight: 400;
   font-family: var(--font-family);
-  transition:
-    border-color var(--transition-time-short) ease,
-    box-shadow var(--transition-time-short) ease,
-    background-color var(--transition-time-short) ease;
-  border-radius: var(--radius-small);
+  transition: var(--transition-time-short) ease;
 }
 
 input:focus,
 button:focus {
   border-color: var(--color-accent);
-  box-shadow: var(--focus-ring);
-}
-
-textarea,
-select {
-  box-sizing: border-box;
-  background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-  padding: 6px 8px;
-  font-size: 14px;
-  font-family: var(--font-family);
-  border-radius: var(--radius-small);
-}
-
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: var(--focus-ring);
 }
 
 input::placeholder {
@@ -246,6 +175,7 @@ input[type='number'] {
 
 .inputWrapper > div input {
   width: 100%;
+  border-radius: 3px;
   margin-top: 2px;
 }
 
@@ -282,13 +212,13 @@ input[type='number'] {
 }
 
 .buttonWrapper button:first-child {
-  border-top-left-radius: var(--radius-small);
-  border-bottom-left-radius: var(--radius-small);
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 
 .buttonWrapper button:last-child {
-  border-top-right-radius: var(--radius-small);
-  border-bottom-right-radius: var(--radius-small);
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .inputWrapper + .buttonWrapper {
@@ -308,13 +238,13 @@ input[type='number'] {
 }
 
 .searchInputWrapper *:first-child {
-  border-top-left-radius: var(--radius-small);
-  border-bottom-left-radius: var(--radius-small);
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 
 .searchInputWrapper *:last-child {
-  border-top-right-radius: var(--radius-small);
-  border-bottom-right-radius: var(--radius-small);
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .searchResponseWrapper {
@@ -327,12 +257,10 @@ input[type='number'] {
 
 .searchResponseWrapper .inputWrapper > div {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-small);
+  border-radius: 3px;
   padding: 5px 10px;
   background-color: var(--color-surface-elevated);
-  transition:
-    var(--transition-time-short) ease,
-    transform var(--transition-time-short) ease;
+  transition: var(--transition-time-short) ease;
   position: relative;
 }
 
@@ -342,7 +270,6 @@ input[type='number'] {
 
 .searchResponseWrapper .inputWrapper > div.clickable:hover {
   border-color: var(--color-accent);
-  transform: translateY(-1px);
 }
 
 .searchResponseWrapper .inputWrapper > div label {
@@ -363,14 +290,10 @@ input[type='number'] {
 }
 
 .searchResponseSectionTitle {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 10px 0;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  border-left: 3px solid var(--color-accent-secondary);
-  padding-left: 8px;
 }
 
 .searchResponseSectionTitle:not(:first-child) {

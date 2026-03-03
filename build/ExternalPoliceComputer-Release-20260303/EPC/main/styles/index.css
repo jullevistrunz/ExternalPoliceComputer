@@ -8,15 +8,7 @@
   left: 0;
   width: 100%;
   height: calc(100% - var(--tb-height));
-  background:
-    linear-gradient(180deg, #0e1d31 0%, #0a1424 100%),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 38px,
-      #ffffff08 39px,
-      transparent 40px
-    );
+  background-color: var(--color-background);
   color: var(--color-text-primary);
   /* background-image: url('https://raw.githubusercontent.com/jullevistrunz/ExternalPoliceComputer/c4a0727a0482094d972eb1f5bab6bd3e43b38749/plugins/Backgrounds/Police.1.4.2/police.png'); */
   background-repeat: no-repeat;
@@ -28,34 +20,14 @@
   padding: 20px;
   box-sizing: border-box;
   gap: 20px;
-  overflow: auto;
-}
-
-@media (max-width: 700px) {
-  .desktop {
-    padding: 12px;
-    gap: 12px;
-  }
-
-  .desktop .desktopItem {
-    width: 110px;
-    font-size: 14px;
-  }
-
-  .desktop .desktopItem .icon {
-    width: 54px;
-    height: 54px;
-  }
 }
 
 .desktop .desktopItem {
   width: 140px;
   text-align: center;
-  transition:
-    background-color var(--transition-time-short) ease,
-    transform var(--transition-time-short) ease,
-    border-color var(--transition-time-short) ease;
-  border-radius: var(--radius-medium);
+  transition: none;
+  transition: background-color var(--transition-time-short) ease;
+  border-radius: 5px;
   font-size: 16px;
   padding: 5px;
   background-color: transparent;
@@ -68,10 +40,8 @@
 }
 
 .desktop .desktopItem:hover {
-  background-color: var(--color-surface-dimmed);
+  background-color: var(--color-surface);
   color: var(--color-text-primary);
-  border-color: var(--color-accent-half);
-  transform: translateY(-2px);
 }
 
 .desktop .desktopItem:focus {
@@ -84,10 +54,6 @@
   height: 62px;
   margin-bottom: 5px;
   fill: var(--color-accent-dimmed);
-  padding: 6px;
-  border-radius: var(--radius-medium);
-  border: 1px solid #ffffff17;
-  background: linear-gradient(180deg, #1f3552 0%, #16263b 100%);
 }
 
 .desktop .desktopItem .icon.stroke {
@@ -99,7 +65,6 @@
   text-shadow: 1px 1px 2px var(--color-shadow);
   word-wrap: break-word;
   display: block;
-  line-height: 1.25;
 }
 
 .taskbar {
@@ -110,35 +75,14 @@
   left: 0;
   bottom: 0;
   color: var(--color-text-primary);
-  background: linear-gradient(180deg, #1b2e49f2 0%, #122136f2 100%);
+  background-color: var(--color-surface);
   border-top: var(--border-width) solid var(--color-border);
-  backdrop-filter: blur(14px) saturate(120%);
-  -webkit-backdrop-filter: blur(14px) saturate(120%);
-  box-shadow: 0 -4px 16px #00000055;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
   font-weight: 600;
   z-index: 4;
-  overflow: hidden;
-}
-
-.taskbar::before {
-  content: 'LOS SANTOS POLICE DEPARTMENT • MOBILE DATA TERMINAL';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.9px;
-  color: var(--color-text-primary-half);
-  pointer-events: none;
-  opacity: 0.45;
-  white-space: nowrap;
-  max-width: calc(100% - 260px);
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .taskbar > * {
@@ -147,19 +91,14 @@
 
 .taskbar .time {
   text-align: right;
-  padding-right: 10px;
-  color: var(--color-text-primary-dimmed);
-  font-family: var(--font-family-mono);
-  letter-spacing: 0.5px;
+  padding-right: 5px;
 }
 
 .taskbar .location {
-  padding-left: 10px;
+  padding-left: 5px;
   display: flex;
   align-items: center;
   gap: 5px;
-  font-family: var(--font-family-mono);
-  color: var(--color-accent-secondary);
 }
 
 .taskbar .location svg {
@@ -180,7 +119,6 @@
   display: flex;
   gap: 5px;
   transition: var(--transition-time-long) ease;
-  z-index: 2;
 }
 
 .taskbar .icons button {
@@ -192,7 +130,7 @@
   justify-content: center;
   align-items: center;
   border: none;
-  border-radius: var(--radius-small);
+  border-radius: 5px;
   padding: unset;
   cursor: pointer;
   transition: background-color var(--transition-time-short) ease;
@@ -257,9 +195,8 @@
   border: 1px solid var(--color-border);
   resize: both;
   overflow: hidden;
-  border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-medium);
-  min-width: 320px;
+  border-radius: 5px;
+  box-shadow: 0 0 8px var(--color-shadow);
   min-height: 150px;
   transition: var(--transition-time-long) ease-in-out;
 }
@@ -287,15 +224,6 @@
   background-color: var(--color-surface-dimmed);
   backdrop-filter: var(--liquid-ass);
   -webkit-backdrop-filter: var(--liquid-ass);
-  user-select: none;
-  background-image: linear-gradient(
-    90deg,
-    #ffffff0d 0,
-    #ffffff0d 1px,
-    transparent 1px,
-    transparent 16px
-  );
-  background-size: 16px 100%;
 }
 
 .overlay .windows .window.maximized .windowHeader {
@@ -328,12 +256,6 @@
   color: var(--color-text-primary);
   padding-left: 10px;
   text-wrap: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: var(--font-family-mono);
-  font-size: 13px;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
 }
 
 .overlay .windows .window .windowHeader .windowControls {
@@ -378,85 +300,23 @@
 
 .overlay .settings {
   position: fixed;
-  width: min(500px, calc(100% - 20px));
-  right: 10px;
-  top: 10px;
+  width: 500px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--tb-height) + 10px);
   background-color: var(--color-surface-dimmed);
   backdrop-filter: var(--liquid-ass);
   -webkit-backdrop-filter: var(--liquid-ass);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-large);
-  box-shadow: var(--shadow-medium);
-  max-height: calc(100% - var(--tb-height) - 20px);
-  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 8px var(--color-shadow);
   transition: transform var(--transition-time-long) ease-in-out;
   pointer-events: all;
   color: var(--color-text-primary);
 }
 
-.overlay .settings::before {
-  content: 'LSPD OFFICER CONTROL PANEL';
-  display: block;
-  margin: 10px 10px 0;
-  padding: 8px 10px;
-  border: 1px solid var(--color-border);
-  background: linear-gradient(180deg, #1e314b 0%, #16263b 100%);
-  border-radius: var(--radius-small);
-  color: var(--color-accent-secondary);
-  font-family: var(--font-family-mono);
-  letter-spacing: 0.8px;
-  font-size: 11px;
-  text-transform: uppercase;
-}
-
-@media (max-width: 900px) {
-  .taskbar {
-    padding: 0 8px;
-    box-sizing: border-box;
-  }
-
-  .taskbar::before {
-    display: none;
-  }
-
-  .taskbar .icons {
-    position: static;
-    left: auto;
-    transform: none;
-    margin: 0 auto;
-  }
-
-  .taskbar .location,
-  .taskbar .time {
-    max-width: 30%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-@media (max-width: 640px) {
-  .taskbar .location {
-    display: none;
-  }
-
-  .taskbar {
-    justify-content: space-between;
-  }
-
-  .overlay .windows .window {
-    min-width: 260px;
-  }
-
-  .overlay .settings {
-    right: 6px;
-    top: 6px;
-    width: calc(100% - 12px);
-    max-height: calc(100% - var(--tb-height) - 12px);
-  }
-}
-
 .overlay .settings.hide {
-  transform: translateX(calc(100% + 20px));
+  transform: translateY(600px) translateX(-50%);
 }
 
 .overlay .settings .versionCustomizationWrapper {
@@ -469,10 +329,6 @@
 .overlay .settings .customization {
   font-size: 14px;
   font-weight: 600;
-}
-
-.overlay .settings .title {
-  letter-spacing: 0.2px;
 }
 
 .overlay .settings .customization {
@@ -494,7 +350,7 @@
 
 .overlay .settings .officerInformation .title {
   width: 100%;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   padding-bottom: 5px;
   margin-bottom: 5px;
@@ -526,7 +382,7 @@
 
 .overlay .settings .officerMetrics .title {
   width: 100%;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   padding-bottom: 5px;
   margin-bottom: 5px;
@@ -564,11 +420,11 @@
   width: 250px;
   backdrop-filter: var(--liquid-ass);
   -webkit-backdrop-filter: var(--liquid-ass);
-  border-radius: var(--radius-medium);
+  border-radius: 5px;
   padding: 10px;
   color: var(--color-text-primary);
   fill: var(--color-text-primary);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 2px 4px var(--color-shadow);
   animation: notification-fly-in var(--transition-time-long) ease-in-out
     forwards;
 }
@@ -631,6 +487,6 @@
   cursor: pointer;
   fill: var(--color-text-primary);
   transition: background-color var(--transition-time-short) ease;
-  border-radius: 0 var(--radius-medium) 0 var(--radius-medium);
+  border-radius: 0 5px 0 5px;
   pointer-events: all;
 }
