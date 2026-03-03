@@ -51,6 +51,9 @@ namespace ExternalPoliceComputer.Data {
 
         internal static Location PlayerLocation = new Location();
         internal static string CurrentTime = World.TimeOfDay.ToString();
+        internal static PlayerCoords PlayerCoords = new PlayerCoords();
+
+        internal static string ActivePostalCodeSet;
 
         internal static void SetDatabases() {
             SetPedDatabase();
@@ -526,6 +529,7 @@ namespace ExternalPoliceComputer.Data {
         private static void UpdatePlayerLocation() {
             if (!Main.Player.IsValid()) return;
             PlayerLocation = new Location(Main.Player.Position);
+            PlayerCoords = new PlayerCoords(Main.Player.Position, Main.Player.Heading);
         }
     }
 }

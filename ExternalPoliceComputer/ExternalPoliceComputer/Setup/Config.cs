@@ -5,7 +5,7 @@ namespace ExternalPoliceComputer.Setup {
         public int port = 8080;
         public int maxNumberOfNearbyPedsOrVehicles = 15;
         public int databaseLimitMultiplier = 10;
-        public int webSocketUpdateInterval = 1000;
+        public int webSocketUpdateInterval = 100;
         public int databaseUpdateInterval = 15000;
         public bool updateDomWithLanguageOnLoad = false;
         public bool useInGameTime = false;
@@ -29,5 +29,13 @@ namespace ExternalPoliceComputer.Setup {
 
         public bool displayCurrencySymbolBeforeNumber = true;
         public int courtDatabaseMaxEntries = 100;
+
+        public int mapPlayerIconSize = 30;
+        public float mapTurnPenaltySecondsPerRadian = 1.0f;
+        public bool mapDrawPostalCodeSet = true;
+        public bool mapUseBurgerUnits = false;
+        public bool mapSmoothPlayerIcon = false;
+
+        public bool showAgencyInCalloutInfo = true;
     }
 }

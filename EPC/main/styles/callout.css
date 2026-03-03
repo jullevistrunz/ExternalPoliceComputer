@@ -1,0 +1,34 @@
+body {
+  background-color: var(--color-background);
+  margin: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+.inputWrapper {
+  margin: 0 !important;
+}
+
+.inputWrapper > div {
+  background-color: var(--color-surface) !important;
+}
+
+.calloutInfo {
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background-color: var(--color-surface);
+  margin: 0 10px 10px 10px;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 5px;
+}
+
+.calloutInfo .halfOpacity {
+  opacity: 0.5;
+}
+
+.calloutInfo > div {
+  margin-bottom: 2px;
+}

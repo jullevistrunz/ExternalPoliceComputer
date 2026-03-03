@@ -1,0 +1,104 @@
+body,
+#map {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--color-map);
+}
+
+.leaflet-interactive {
+  cursor: unset;
+}
+
+.playerIcon {
+  background-color: transparent;
+  border: none;
+}
+
+.postalCodeIcon {
+  color: var(--color-background);
+  text-shadow:
+    -1px 0 var(--color-text-primary),
+    0 1px var(--color-text-primary),
+    1px 0 var(--color-text-primary),
+    0 -1px var(--color-text-primary);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.leaflet-control-attribution {
+  background-color: var(--color-surface-dimmed) !important;
+  color: var(--color-accent) !important;
+}
+
+.leaflet-control-zoom {
+  border: 1px solid var(--color-border) !important;
+}
+
+.leaflet-bar a {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  border-bottom-color: var(--color-border) !important;
+}
+
+.leaflet-bar a.leaflet-disabled {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary-half) !important;
+}
+
+.leaflet-touch .leaflet-bar a:first-child {
+  border-top-left-radius: 3px !important;
+  border-top-right-radius: 3px !important;
+}
+
+.leaflet-touch .leaflet-bar a:last-child {
+  border-bottom-left-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.routeInstructionsControl {
+  background-color: var(--color-surface);
+  border-radius: 3px !important;
+  border: 1px solid var(--color-border) !important;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  padding: 5px;
+  color: var(--color-text-primary);
+  width: 300px;
+}
+
+.routeInstructionsControl .direction {
+  fill: var(--color-accent);
+  margin: 10px 5px;
+  width: 45px;
+  height: 45px;
+}
+
+.routeInstructionsControl .direction svg {
+  width: 100%;
+  height: 100%;
+}
+
+.routeInstructionsControl .direction svg.stroke {
+  fill: none;
+  stroke: var(--color-accent);
+}
+
+.routeInstructionsControl .instructions {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+}

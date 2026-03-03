@@ -1,72 +1,98 @@
-﻿using LSPD_First_Response.Engine.Scripting;
+﻿// Ignore Spelling: Callsign Coords
+
+using ExternalPoliceComputer.Data.Reports;
+using ExternalPoliceComputer.Utility;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response.Mod.Callouts;
-using Rage;
+using System;
+using System.Collections.Generic;
 
 namespace ExternalPoliceComputer.EventListeners {
-    internal class CalloutEvents {
+    public class CalloutEvents {
+        internal static CalloutInformation CalloutInfo;
+
+        public class CalloutInformation {
+            public string Name;
+            public string Description;
+            public string Message;
+            public string Advisory;
+            public string Callsign;
+            public string Agency;
+            public string Priority;
+            public Location Location;
+            public float[] Coords = new float[2];
+            public CalloutAcceptanceState AcceptanceState;
+            public DateTime DisplayedTime;
+            public DateTime? AcceptedTime = null;
+            public DateTime? FinishedTime = null;
+            public List<string> AdditionalMessages = new List<string>();
+
+            internal CalloutInformation(Callout callout) {
+                Name = callout.FriendlyName;
+                Agency = Helper.GetAgencyNameFromScriptName(LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName()) ?? LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName();
+                // thank you opus49
+                if (callout.ScriptInfo is CalloutInterfaceAPI.CalloutInterfaceAttribute calloutInterfaceInfo) {
+                    if (calloutInterfaceInfo.Agency.Length > 0) {
+                        Agency = calloutInterfaceInfo.Agency;
+                    }
+                    if (calloutInterfaceInfo.Priority.Length > 0) {
+                        Priority = calloutInterfaceInfo.Priority;
+                    }
+                    Description = calloutInterfaceInfo.Description;
+                    Name = calloutInterfaceInfo.Name;
+                }
+                Message = callout.CalloutMessage;
+                Advisory = callout.CalloutAdvisory;
+                Callsign = DependencyCheck.IsIPTCommonAvailable() ? Helper.GetCallSignFromIPTCommon() : null;
+                Location = new Location(callout.CalloutPosition);
+                Coords[0] = callout.CalloutPosition.X;
+                Coords[1] = callout.CalloutPosition.Y;
+                AcceptanceState = callout.AcceptanceState;
+                DisplayedTime = DateTime.Now;
+            }
+        }
+
+        internal delegate void CalloutEventHandler(CalloutInformation calloutInfo);
+        internal static event CalloutEventHandler OnCalloutEvent;
+
         internal static void AddCalloutEventWithCI() {
             LSPD_First_Response.Mod.API.Events.OnCalloutDisplayed += Events_OnCalloutDisplayed;
             LSPD_First_Response.Mod.API.Events.OnCalloutFinished += Events_OnCalloutFinished;
             LSPD_First_Response.Mod.API.Events.OnCalloutAccepted += Events_OnCalloutAccepted;
             void Events_OnCalloutDisplayed(LHandle handle) {
+                if (handle == null) return;
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
-                string agency = LSPD_First_Response.Mod.API.Functions.GetCurrentAgencyScriptName();
-                string priority = "default";
-                string description = "";
-                string name = callout.FriendlyName;
-                string callsign = IPT.Common.Handlers.PlayerHandler.GetCallsign();
 
-                // opus49 came up with this (and I just modified it a bit)
-                if (callout.ScriptInfo is CalloutInterfaceAPI.CalloutInterfaceAttribute calloutInterfaceInfo) {
-                    if (calloutInterfaceInfo.Agency.Length > 0) {
-                        agency = calloutInterfaceInfo.Agency;
-                    }
-                    if (calloutInterfaceInfo.Priority.Length > 0) {
-                        priority = calloutInterfaceInfo.Priority;
-                    }
-                    description = calloutInterfaceInfo.Description;
-                    name = calloutInterfaceInfo.Name;
-                }
+                CalloutInfo = new CalloutInformation(callout);
 
-                string street = World.GetStreetName(World.GetStreetHash(callout.CalloutPosition));
-                WorldZone zone = LSPD_First_Response.Mod.API.Functions.GetZoneAtPosition(callout.CalloutPosition);
-
-                /*
-                string calloutData = WorldDataHelper.PrintObjects(
-                    ("id", new Random().Next(10000, 100000).ToString()),
-                    ("name", name),
-                    ("description", description),
-                    ("message", Main.MakeStringWorkWithMyStupidQueryStrings(callout.CalloutMessage)),
-                    ("advisory", Main.MakeStringWorkWithMyStupidQueryStrings(callout.CalloutAdvisory)),
-                    ("callsign", callsign),
-                    ("agency", agency),
-                    ("priority", priority),
-                    ("postal", CalloutInterface.API.Functions.GetPostalCode(callout.CalloutPosition)),
-                    ("street", street),
-                    ("area", zone.RealAreaName),
-                    ("county", zone.County.ToString()),
-                    ("position", callout.CalloutPosition.ToString()),
-                    ("acceptanceState", callout.AcceptanceState.ToString()),
-                    ("displayedTime", DateTime.Now.ToLocalTime().ToString("s")),
-                    ("additionalMessage", "")
-                    );
-
-                */
-
-                // File.WriteAllText($"{Main.DataPath}/callout.data", calloutData);
+                OnCalloutEvent?.Invoke(CalloutInfo);
             }
 
             void Events_OnCalloutAccepted(LHandle handle) {
+                if (handle == null || CalloutInfo == null) return;
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
-                // DataToClient.UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
-                // DataToClient.UpdateCalloutData("acceptedTime", DateTime.Now.ToLocalTime().ToString("s"));
+
+                CalloutInfo.AcceptanceState = callout.AcceptanceState;
+                CalloutInfo.AcceptedTime = DateTime.Now;
+
+                OnCalloutEvent?.Invoke(CalloutInfo);
             }
 
             void Events_OnCalloutFinished(LHandle handle) {
+                if (handle == null || CalloutInfo == null) return;
                 Callout callout = CalloutInterface.API.Functions.GetCalloutFromHandle(handle);
-                // DataToClient.UpdateCalloutData("acceptanceState", callout.AcceptanceState.ToString());
-                // DataToClient.UpdateCalloutData("finishedTime", DateTime.Now.ToLocalTime().ToString("s"));
+
+                CalloutInfo.AcceptanceState = callout.AcceptanceState;
+                CalloutInfo.FinishedTime = DateTime.Now;
+
+                OnCalloutEvent?.Invoke(CalloutInfo);
+            }
+        }
+
+        internal static void SendAdditionalMessage(string message) {
+            if (CalloutInfo != null) {
+                CalloutInfo.AdditionalMessages.Add(message);
+                OnCalloutEvent?.Invoke(CalloutInfo);
             }
         }
     }

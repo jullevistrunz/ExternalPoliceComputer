@@ -67,6 +67,8 @@ namespace ExternalPoliceComputer.Setup {
             DataController.LoadVehicleDatabaseFromFile();
             DataController.SetOfficerInformation();
 
+            DataController.ActivePostalCodeSet = JsonConvert.SerializeObject(CommonDataFramework.Modules.Postals.PostalCodeController.ActivePostalCodeSet);
+
             if (!File.Exists(ConfigPath)) {
                 Helper.WriteToJsonFile(ConfigPath, new Config());
             }

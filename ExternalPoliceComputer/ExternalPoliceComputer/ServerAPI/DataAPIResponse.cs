@@ -203,6 +203,10 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(offenders));
                 status = 200;
                 contentType = "text/json";
+            } else if (path == "activePostalCodeSet") {
+                buffer = Encoding.UTF8.GetBytes(DataController.ActivePostalCodeSet);
+                status = 200;
+                contentType = "text/plain";
             }
         }
     }

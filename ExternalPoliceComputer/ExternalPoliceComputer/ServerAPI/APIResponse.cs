@@ -50,6 +50,10 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(PluginController.GetPlugins()));
                 status = 200;
                 contentType = "text/json";
+            } else if (path == "/roads.geojson") {
+                buffer = File.ReadAllBytes("EPC/roads.geojson");
+                status = 200;
+                contentType = "text/json";
             }
         }
     }
