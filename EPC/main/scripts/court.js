@@ -112,6 +112,66 @@
     totalTimeWrapper.appendChild(totalTimeInput)
     if (totalTime > 0) inputWrapper.appendChild(totalTimeWrapper)
 
+    const statusWrapper = document.createElement('div')
+    statusWrapper.classList.add('courtStatusWrapper')
+    const statusLabel = document.createElement('label')
+    statusLabel.innerHTML = language.court.status || 'Status'
+    statusWrapper.appendChild(statusLabel)
+
+    const statusButtonWrapper = document.createElement('div')
+    statusButtonWrapper.classList.add('buttonWrapper')
+
+    const courtStatusMap = language.court.statusMap || [
+      'Pending',
+      'Convicted',
+      'Acquitted',
+      'Dismissed',
+    ]
+    const courtStatusColorMap = {
+      0: 'info',
+      1: 'error',
+      2: 'success',
+      3: 'warning',
+    }
+
+    for (let i = 0; i < courtStatusMap.length; i++) {
+      const statusBtn = document.createElement('button')
+      statusBtn.innerHTML = courtStatusMap[i]
+      statusBtn.dataset.status = i
+      if (i === courtCase.Status) statusBtn.classList.add('selected')
+      statusBtn.style.borderColor = `var(--color-${courtStatusColorMap[i]})`
+      statusBtn.addEventListener('click', async function () {
+        if (statusBtn.classList.contains('loading')) return
+        showLoadingOnButton(statusBtn)
+        const response = await (
+          await fetch('/post/updateCourtCaseStatus', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              Number: courtCase.Number,
+              Status: i,
+            }),
+          })
+        ).text()
+        if (response === 'OK') {
+          statusButtonWrapper
+            .querySelectorAll('button')
+            .forEach((b) => b.classList.remove('selected'))
+          statusBtn.classList.add('selected')
+        } else {
+          topWindow.showNotification(
+            language.court.statusUpdateError || 'Failed to update status',
+            'error'
+          )
+        }
+        hideLoadingOnButton(statusBtn)
+      })
+      statusButtonWrapper.appendChild(statusBtn)
+    }
+
+    statusWrapper.appendChild(statusButtonWrapper)
+    inputWrapper.appendChild(statusWrapper)
+
     searchResponseWrapper.appendChild(inputWrapper)
     chargesSearchResponseWrapper.appendChild(chargesInputWrapper)
     listItem.appendChild(searchResponseWrapper)

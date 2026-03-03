@@ -1,6 +1,8 @@
 ﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Utility;
 using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -25,6 +27,8 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 EPCPedData pedData = DataController.PedDatabase.FirstOrDefault(o => o.Name?.ToLower() == name.ToLower() || o.Name?.ToLower() == reversedName.ToLower());
 
+                Database.SaveSearchHistoryEntry("ped", name, pedData?.Name);
+
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(pedData));
                 contentType = "text/json";
                 status = 200;
@@ -33,6 +37,8 @@ namespace ExternalPoliceComputer.ServerAPI {
                 string licensePlateOrVin = !string.IsNullOrEmpty(body) ? body : "";
 
                 EPCVehicleData vehicleData = DataController.VehicleDatabase.FirstOrDefault(o => o.LicensePlate?.ToLower() == licensePlateOrVin.ToLower() ||o.VehicleIdentificationNumber?.ToLower() == licensePlateOrVin.ToLower());
+
+                Database.SaveSearchHistoryEntry("vehicle", licensePlateOrVin, vehicleData?.LicensePlate);
 
                 buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicleData));
                 contentType = "text/json";
@@ -77,7 +83,92 @@ namespace ExternalPoliceComputer.ServerAPI {
                 buffer = Encoding.UTF8.GetBytes(DataController.CurrentTime);
                 status = 200;
                 contentType = "text/plain";
-            } 
+            } else if (path == "searchHistory") {
+                string body = Helper.GetRequestPostData(req);
+                string type = !string.IsNullOrEmpty(body) ? body : "ped";
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Database.LoadSearchHistory(type)));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "pedReports") {
+                string body = Helper.GetRequestPostData(req);
+                string pedName = !string.IsNullOrEmpty(body) ? body.ToLower() : "";
+
+                var result = new {
+                    citations = DataController.citationReports
+                        .Where(r => r.OffenderPedName?.ToLower() == pedName)
+                        .Select(r => new { r.Id, r.TimeStamp, r.Status }),
+                    arrests = DataController.arrestReports
+                        .Where(r => r.OffenderPedName?.ToLower() == pedName)
+                        .Select(r => new { r.Id, r.TimeStamp, r.Status }),
+                    incidents = DataController.incidentReports
+                        .Where(r => (r.OffenderPedsNames != null && r.OffenderPedsNames.Any(n => n.ToLower() == pedName))
+                                 || (r.WitnessPedsNames != null && r.WitnessPedsNames.Any(n => n.ToLower() == pedName)))
+                        .Select(r => new { r.Id, r.TimeStamp, r.Status })
+                };
+
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "pedVehicles") {
+                string body = Helper.GetRequestPostData(req);
+                string pedName = !string.IsNullOrEmpty(body) ? body : "";
+
+                var vehicles = DataController.VehicleDatabase
+                    .Where(v => v.Owner != null && v.Owner.ToLower() == pedName.ToLower())
+                    .Select(v => new { v.LicensePlate, v.ModelDisplayName, v.IsStolen, v.Color });
+
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vehicles));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "officerMetrics") {
+                var shifts = DataController.shiftHistoryData;
+                int totalShifts = shifts.Count;
+
+                double avgShiftMs = 0;
+                if (totalShifts > 0) {
+                    var completedShifts = shifts.Where(s => s.startTime.HasValue && s.endTime.HasValue).ToList();
+                    if (completedShifts.Count > 0) {
+                        avgShiftMs = completedShifts.Average(s => (s.endTime.Value - s.startTime.Value).TotalMilliseconds);
+                    }
+                }
+
+                int totalIncident = DataController.incidentReports.Count;
+                int totalCitation = DataController.citationReports.Count;
+                int totalArrest = DataController.arrestReports.Count;
+                int totalReports = totalIncident + totalCitation + totalArrest;
+
+                var metrics = new {
+                    totalShifts,
+                    averageShiftDurationMs = avgShiftMs,
+                    totalIncidentReports = totalIncident,
+                    totalCitationReports = totalCitation,
+                    totalArrestReports = totalArrest,
+                    totalReports,
+                    reportsPerShift = totalShifts > 0 ? Math.Round((double)totalReports / totalShifts, 1) : 0
+                };
+
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metrics));
+                status = 200;
+                contentType = "text/json";
+            } else if (path == "repeatOffenders") {
+                var offenders = DataController.PedDatabase
+                    .Where(p => (p.Citations != null ? p.Citations.Count : 0) + (p.Arrests != null ? p.Arrests.Count : 0) > 1)
+                    .OrderByDescending(p => (p.Citations != null ? p.Citations.Count : 0) + (p.Arrests != null ? p.Arrests.Count : 0))
+                    .Take(20)
+                    .Select(p => new {
+                        p.Name,
+                        p.TimesStopped,
+                        CitationCount = p.Citations != null ? p.Citations.Count : 0,
+                        ArrestCount = p.Arrests != null ? p.Arrests.Count : 0,
+                        p.IsWanted,
+                        p.IsOnProbation,
+                        p.IsOnParole
+                    });
+
+                buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(offenders));
+                status = 200;
+                contentType = "text/json";
+            }
         }
     }
 }

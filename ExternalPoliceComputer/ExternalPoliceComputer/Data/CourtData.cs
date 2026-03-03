@@ -15,6 +15,7 @@ namespace ExternalPoliceComputer.Data {
         public string Number;
         public string ReportId;
         public int ShortYear;
+        public int Status = 0;
         public List<Charge> Charges = new List<Charge>();
 
         public class Charge {

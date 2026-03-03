@@ -1,6 +1,8 @@
 Releases
 References
 EPC/EPC.log
+EPC/data/*.db
+EPC/data/*.json.bak
 ExternalPoliceComputer/packages
 ExternalPoliceComputer/.vs
 ExternalPoliceComputer/.idea

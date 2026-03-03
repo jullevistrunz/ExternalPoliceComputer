@@ -65,6 +65,9 @@
     <Reference Include="RagePluginHook">
       <HintPath>..\..\References\RagePluginHook.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.119.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -82,6 +85,8 @@
   <ItemGroup>
     <Compile Include="Data\CourtData.cs" />
     <Compile Include="Data\EPCPedData.cs" />
+    <Compile Include="Data\Database.cs" />
+    <Compile Include="Data\SearchHistoryEntry.cs" />
     <Compile Include="Data\DataController.cs" />
     <Compile Include="Data\EPCVehicleData.cs" />
     <Compile Include="Data\OfficerInformationData.cs" />

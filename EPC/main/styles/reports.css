@@ -113,6 +113,12 @@ body {
   border-color: var(--color-accent);
 }
 
+.createPage .reportInformation .fillFromPrior {
+  margin-bottom: 10px;
+  font-size: 13px;
+  border-radius: 3px;
+}
+
 .createPage .reportInformation .plusButton,
 .createPage .reportInformation .removeButton {
   max-height: 33px;
@@ -349,10 +355,31 @@ body {
 }
 
 .listPage .reportsList .filter {
-  display: grid;
-  grid-template-columns: min-content 4fr 3fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   min-width: fit-content;
+}
+
+.listPage .reportsList .filter .dateRange {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--color-text-primary-half);
+}
+
+.listPage .reportsList .filter .dateRange input {
+  border-radius: 3px;
+  font-size: 12px;
+  padding: 4px 6px;
+  color-scheme: dark;
+}
+
+.listPage .reportsList .filter .sortWrapper {
+  max-width: 200px;
 }
 
 .listPage .reportsList .filter .title {

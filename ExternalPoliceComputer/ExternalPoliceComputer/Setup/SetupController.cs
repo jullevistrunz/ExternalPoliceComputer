@@ -42,26 +42,6 @@ namespace ExternalPoliceComputer.Setup {
                 Directory.CreateDirectory(ReportsDataPath);
             }
 
-            if (!File.Exists(PedDataPath)) {
-                File.WriteAllText(PedDataPath, "[]");
-            }
-
-            if (!File.Exists(VehicleDataPath)) {
-                File.WriteAllText(VehicleDataPath, "[]");
-            }
-
-            if (!File.Exists(CourtDataPath)) {
-                File.WriteAllText(CourtDataPath, "[]");
-            }
-
-            if (!File.Exists(ShiftHistoryDataPath)) {
-                File.WriteAllText(ShiftHistoryDataPath, "[]");
-            }
-
-            if (!File.Exists(OfficerInformationDataPath)) {
-                Helper.WriteToJsonFile(OfficerInformationDataPath, new OfficerInformationData());
-            }
-
             if (!File.Exists(CitationOptionsPath)) {
                 File.WriteAllBytes(CitationOptionsPath, File.ReadAllBytes(CitationOptionsDefaultsPath));
             }
@@ -70,33 +50,18 @@ namespace ExternalPoliceComputer.Setup {
                 File.WriteAllBytes(ArrestOptionsPath, File.ReadAllBytes(ArrestOptionsDefaultsPath));
             }
 
-            if (!File.Exists(IncidentReportsPath)) {
-                File.WriteAllText(IncidentReportsPath, "[]");
-            }
-
-            if (!File.Exists(CitationReportsPath)) {
-                File.WriteAllText(CitationReportsPath, "[]");
-            }
-
-            if (!File.Exists(ArrestReportsPath)) {
-                File.WriteAllText(ArrestReportsPath, "[]");
-            }
-
             if (!Directory.Exists(PluginsPath)) {
                 Directory.CreateDirectory(PluginsPath);
             }
 
-            DataController.OfficerInformationData = Helper.ReadFromJsonFile<OfficerInformationData>(OfficerInformationDataPath);
+            Database.Initialize();
 
-            DataController.courtDatabase = Helper.ReadFromJsonFile<List<CourtData>>(CourtDataPath) ?? new List<CourtData>();
-
-            DataController.shiftHistoryData = Helper.ReadFromJsonFile<List<ShiftData>>(ShiftHistoryDataPath) ?? new List<ShiftData>();
-
-            DataController.incidentReports = Helper.ReadFromJsonFile<List<IncidentReport>>(IncidentReportsPath);
-
-            DataController.citationReports = Helper.ReadFromJsonFile<List<CitationReport>>(CitationReportsPath);
-
-            DataController.arrestReports = Helper.ReadFromJsonFile<List<ArrestReport>>(ArrestReportsPath);
+            DataController.OfficerInformationData = Database.LoadOfficerInformation() ?? new OfficerInformationData();
+            DataController.courtDatabase = Database.LoadCourtCases() ?? new List<CourtData>();
+            DataController.shiftHistoryData = Database.LoadShifts() ?? new List<ShiftData>();
+            DataController.incidentReports = Database.LoadIncidentReports() ?? new List<IncidentReport>();
+            DataController.citationReports = Database.LoadCitationReports() ?? new List<CitationReport>();
+            DataController.arrestReports = Database.LoadArrestReports() ?? new List<ArrestReport>();
 
             DataController.LoadPedDatabaseFromFile();
             DataController.LoadVehicleDatabaseFromFile();
@@ -186,11 +151,11 @@ namespace ExternalPoliceComputer.Setup {
         }
 
         internal static List<EPCPedData> GetEPCPedData() {
-            return Helper.ReadFromJsonFile<List<EPCPedData>>(PedDataPath);
+            return Database.LoadPeds() ?? new List<EPCPedData>();
         }
 
         internal static List<EPCVehicleData> GetEPCVehicleData() {
-            return Helper.ReadFromJsonFile<List<EPCVehicleData>>(VehicleDataPath);
+            return Database.LoadVehicles() ?? new List<EPCVehicleData>();
         }
     }
 }

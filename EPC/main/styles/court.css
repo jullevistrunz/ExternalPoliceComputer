@@ -49,3 +49,20 @@ body {
   font-size: 16px !important;
   margin-top: 16px !important;
 }
+
+.courtStatusWrapper {
+  grid-column: 1 / -1;
+}
+
+.courtStatusWrapper > label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.courtStatusWrapper .buttonWrapper {
+  flex-wrap: nowrap;
+}
+
+.courtStatusWrapper .buttonWrapper button {
+  min-width: fit-content;
+}

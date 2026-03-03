@@ -353,6 +353,12 @@ async function updateDomWithLanguage(page) {
   })
 }
 
+const statusColorMap = {
+  0: 'success',
+  1: 'info',
+  2: 'error',
+}
+
 function getActivePlugins() {
   const activePlugins = localStorage.getItem('activePlugins')
   if (!activePlugins) {

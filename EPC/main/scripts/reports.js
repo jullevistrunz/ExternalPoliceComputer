@@ -3,6 +3,73 @@
   if (config.updateDomWithLanguageOnLoad) await updateDomWithLanguage('reports')
 })()
 
+let autosaveInterval = null
+
+function serializeDraft() {
+  const el = document.querySelector('.createPage .reportInformation')
+  if (!el || el.children.length === 0) return
+  const type = document.querySelector(
+    '.createPage .typeSelector .selected'
+  )?.dataset.type
+  if (!type) return
+  const draft = { type, timestamp: Date.now(), fields: {} }
+  el.querySelectorAll('input[id]').forEach((input) => {
+    draft.fields[input.id] = input.value
+  })
+  const notes = el.querySelector('#notesSectionTextarea')
+  if (notes) draft.fields['notesSectionTextarea'] = notes.value
+  const selectedStatus = el.querySelector('.statusInput .selected')
+  if (selectedStatus) draft.fields['status'] = selectedStatus.dataset.status
+  localStorage.setItem('epcReportDraft', JSON.stringify(draft))
+}
+
+function clearDraft() {
+  if (autosaveInterval) {
+    clearInterval(autosaveInterval)
+    autosaveInterval = null
+  }
+  localStorage.removeItem('epcReportDraft')
+}
+
+function getDraft() {
+  const raw = localStorage.getItem('epcReportDraft')
+  if (!raw) return null
+  try {
+    const draft = JSON.parse(raw)
+    if (Date.now() - draft.timestamp >= 24 * 60 * 60 * 1000) {
+      localStorage.removeItem('epcReportDraft')
+      return null
+    }
+    return draft
+  } catch {
+    return null
+  }
+}
+
+function applyDraft(draft) {
+  const el = document.querySelector('.createPage .reportInformation')
+  if (!el || !draft) return
+  for (const [id, value] of Object.entries(draft.fields)) {
+    if (id === 'status') {
+      const statusButtons = el.querySelectorAll('.statusInput button')
+      statusButtons.forEach((btn) => {
+        btn.classList.toggle('selected', btn.dataset.status === value)
+      })
+    } else if (id === 'notesSectionTextarea') {
+      const textarea = el.querySelector('#notesSectionTextarea')
+      if (textarea) textarea.value = value
+    } else {
+      const input = el.querySelector(`#${id}`)
+      if (input) input.value = value
+    }
+  }
+}
+
+function startAutosave() {
+  if (autosaveInterval) clearInterval(autosaveInterval)
+  autosaveInterval = setInterval(serializeDraft, 5000)
+}
+
 document
   .querySelector('.listPage .createButton')
   .addEventListener('click', async function () {
@@ -23,9 +90,23 @@ async function onCreateButtonClick() {
   document.querySelector('.createPage .listWrapper').style.display = 'grid'
   document.querySelector('.createPage .typeSelector').classList.remove('hidden')
 
-  await onCreatePageTypeSelectorButtonClick(
-    document.querySelector('.listPage .typeSelector .selected').dataset.type
-  )
+  const draft = getDraft()
+  const type = draft
+    ? draft.type
+    : document.querySelector('.listPage .typeSelector .selected').dataset.type
+
+  await onCreatePageTypeSelectorButtonClick(type)
+
+  if (draft) {
+    applyDraft(draft)
+    topWindow.showNotification(
+      language.reports.notifications?.draftRestored ||
+        'Draft report restored',
+      'info'
+    )
+  }
+
+  startAutosave()
 }
 
 document
@@ -113,9 +194,63 @@ async function onListPageTypeSelectorButtonClick(type) {
     })
   }
 
+  const dateRangeWrapper = document.createElement('div')
+  dateRangeWrapper.classList.add('dateRange')
+
+  const dateFromLabel = document.createElement('label')
+  dateFromLabel.innerHTML =
+    language.reports.list.filter?.dateFrom || 'From'
+  const dateFromInput = document.createElement('input')
+  dateFromInput.type = 'date'
+  dateFromInput.id = 'reportsListFilterDateFrom'
+  dateFromInput.addEventListener('change', async () => await applyFilter())
+
+  const dateToLabel = document.createElement('label')
+  dateToLabel.innerHTML =
+    language.reports.list.filter?.dateTo || 'To'
+  const dateToInput = document.createElement('input')
+  dateToInput.type = 'date'
+  dateToInput.id = 'reportsListFilterDateTo'
+  dateToInput.addEventListener('change', async () => await applyFilter())
+
+  dateRangeWrapper.appendChild(dateFromLabel)
+  dateRangeWrapper.appendChild(dateFromInput)
+  dateRangeWrapper.appendChild(dateToLabel)
+  dateRangeWrapper.appendChild(dateToInput)
+
+  const sortWrapper = document.createElement('div')
+  sortWrapper.classList.add('buttonWrapper', 'sortWrapper')
+
+  const sortNewest = document.createElement('button')
+  sortNewest.innerHTML =
+    language.reports.list.filter?.newest || 'Newest'
+  sortNewest.classList.add('selected')
+  sortNewest.dataset.sort = 'newest'
+
+  const sortOldest = document.createElement('button')
+  sortOldest.innerHTML =
+    language.reports.list.filter?.oldest || 'Oldest'
+  sortOldest.dataset.sort = 'oldest'
+
+  sortWrapper.appendChild(sortNewest)
+  sortWrapper.appendChild(sortOldest)
+
+  for (const btn of sortWrapper.querySelectorAll('button')) {
+    btn.addEventListener('click', async function () {
+      btn.blur()
+      sortWrapper
+        .querySelectorAll('button')
+        .forEach((b) => b.classList.remove('selected'))
+      btn.classList.add('selected')
+      await applyFilter()
+    })
+  }
+
   filterElement.appendChild(filterTitle)
   filterElement.appendChild(filterInput)
+  filterElement.appendChild(dateRangeWrapper)
   filterElement.appendChild(statusButtonWrapper)
+  filterElement.appendChild(sortWrapper)
 
   if (reports.length < 1) {
     document.querySelector('.listPage .reportsList').innerHTML +=
@@ -128,6 +263,8 @@ async function onListPageTypeSelectorButtonClick(type) {
 
   async function applyFilter() {
     const newReports = []
+    const searchText = filterInput.value.toLowerCase()
+
     function addToNewReports(report) {
       if (!newReports.includes(report)) {
         newReports.push(report)
@@ -137,32 +274,51 @@ async function onListPageTypeSelectorButtonClick(type) {
       const index = newReports.indexOf(report)
       if (index > -1) newReports.splice(index, 1)
     }
+
+    const dateFrom = dateFromInput.value
+      ? new Date(dateFromInput.value)
+      : null
+    const dateTo = dateToInput.value
+      ? new Date(dateToInput.value + 'T23:59:59')
+      : null
+
     for (const report of reports) {
+      // Date range filter
+      const reportDate = new Date(report.TimeStamp)
+      if (dateFrom && reportDate < dateFrom) continue
+      if (dateTo && reportDate > dateTo) continue
+
+      // Text search across fields
       if (
-        report.OffenderPedName?.toLowerCase().includes(
-          filterInput.value.toLowerCase()
-        ) ||
-        report.OffenderVehicleLicensePlate?.toLowerCase().includes(
-          filterInput.value.toLowerCase()
-        ) ||
-        report.Id.toLowerCase().includes(filterInput.value.toLowerCase()) ||
+        report.OffenderPedName?.toLowerCase().includes(searchText) ||
+        report.OffenderVehicleLicensePlate?.toLowerCase().includes(searchText) ||
+        report.Id.toLowerCase().includes(searchText) ||
         new Date(report.TimeStamp)
           .toLocaleDateString()
           .toLowerCase()
-          .includes(filterInput.value.toLowerCase()) ||
+          .includes(searchText) ||
         `${report.Location.Postal} ${report.Location.Street}`
           .toLowerCase()
-          .includes(filterInput.value.toLowerCase()) ||
-        report.Location.Area.toLowerCase().includes(
-          filterInput.value.toLowerCase()
-        )
+          .includes(searchText) ||
+        report.Location.Area.toLowerCase().includes(searchText) ||
+        (report.Notes && report.Notes.toLowerCase().includes(searchText))
       ) {
         addToNewReports(report)
       }
 
+      // Charge name search
+      if (report.Charges) {
+        for (const charge of report.Charges) {
+          if (charge.name?.toLowerCase().includes(searchText)) {
+            addToNewReports(report)
+            break
+          }
+        }
+      }
+
       if (report.OffenderPedsNames) {
         for (const pedName of report.OffenderPedsNames) {
-          if (pedName.toLowerCase().includes(filterInput.value.toLowerCase())) {
+          if (pedName.toLowerCase().includes(searchText)) {
             addToNewReports(report)
             break
           }
@@ -171,7 +327,7 @@ async function onListPageTypeSelectorButtonClick(type) {
 
       if (report.WitnessPedsNames) {
         for (const pedName of report.WitnessPedsNames) {
-          if (pedName.toLowerCase().includes(filterInput.value.toLowerCase())) {
+          if (pedName.toLowerCase().includes(searchText)) {
             addToNewReports(report)
             break
           }
@@ -189,16 +345,20 @@ async function onListPageTypeSelectorButtonClick(type) {
         }
       }
     }
+
+    // Apply sort
+    const sortDirection =
+      sortWrapper.querySelector('.selected')?.dataset.sort || 'newest'
+    if (sortDirection === 'oldest') {
+      newReports.sort((a, b) => new Date(a.TimeStamp) - new Date(b.TimeStamp))
+    } else {
+      newReports.sort((a, b) => new Date(b.TimeStamp) - new Date(a.TimeStamp))
+    }
+
     await renderReports(newReports, button.dataset.type)
   }
 
   hideLoadingOnButton(button)
-}
-
-const statusColorMap = {
-  0: 'success',
-  1: 'info',
-  2: 'error',
 }
 
 async function renderReports(reports, type) {
@@ -438,6 +598,7 @@ async function renderReportInformation(report, type, isList) {
 document
   .querySelector('.createPage .cancelButton')
   .addEventListener('click', async function () {
+    clearDraft()
     document.querySelector('.createPage').classList.add('hidden')
     document.querySelector('.createPage .reportInformation').innerHTML = ''
     document.querySelector('.listPage').classList.remove('hidden')
@@ -477,6 +638,7 @@ async function onCreatePageTypeSelectorButtonClick(type) {
 
   document.querySelector('.createPage .reportInformation').innerHTML = ''
 
+  const language = await getLanguage()
   const config = await getConfig()
   const location = await (await fetch('/data/playerLocation')).json()
   const officerInformation = await (
@@ -504,6 +666,42 @@ async function onCreatePageTypeSelectorButtonClick(type) {
   }
 
   await renderReportInformation(fakeReport, button.dataset.type, false)
+
+  const fillFromPriorBtn = document.createElement('button')
+  fillFromPriorBtn.innerHTML =
+    language.reports.create?.fillFromPrior || 'Fill from Prior Report'
+  fillFromPriorBtn.classList.add('fillFromPrior')
+  fillFromPriorBtn.addEventListener('click', async function () {
+    if (fillFromPriorBtn.classList.contains('loading')) return
+    showLoadingOnButton(fillFromPriorBtn)
+    const reports = await (
+      await fetch(`/data/${button.dataset.type}Reports`)
+    ).json()
+    if (reports.length === 0) {
+      topWindow.showNotification(
+        language.reports.notifications?.noPriorReport ||
+          'No prior reports found',
+        'info'
+      )
+      hideLoadingOnButton(fillFromPriorBtn)
+      return
+    }
+    const latest = reports[reports.length - 1]
+    const el = document.querySelector('.createPage .reportInformation')
+    const fields = {
+      '#locationSectionAreaInput': latest.Location.Area,
+      '#locationSectionStreetInput': latest.Location.Street,
+      '#locationSectionCountyInput': latest.Location.County,
+      '#locationSectionPostalInput': latest.Location.Postal,
+    }
+    for (const [selector, value] of Object.entries(fields)) {
+      const input = el.querySelector(selector)
+      if (input) input.value = value || ''
+    }
+    hideLoadingOnButton(fillFromPriorBtn)
+  })
+  const reportInfo = document.querySelector('.createPage .reportInformation')
+  reportInfo.insertBefore(fillFromPriorBtn, reportInfo.firstChild)
 }
 
 const pageLoadedEvent = new Event('pageLoaded')
@@ -723,6 +921,7 @@ async function saveReport(type) {
     language.reports.notifications.saveSuccess,
     'success'
   )
+  clearDraft()
 
   document.querySelector('.createPage').classList.add('hidden')
   document.querySelector('.createPage .reportInformation').innerHTML = ''

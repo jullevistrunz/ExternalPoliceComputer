@@ -139,17 +139,17 @@ namespace ExternalPoliceComputer.Data {
 
         public static void KeepPedInDatabase(EPCPedData pedData) {
             if (!keepInPedDatabase.Any(x => x.Name == pedData.Name)) keepInPedDatabase.Add(pedData);
-            Helper.WriteToJsonFile(SetupController.PedDataPath, keepInPedDatabase);
+            Database.SavePed(pedData);
         }
 
         internal static void LoadPedDatabaseFromFile() {
             pedDatabase.Clear();
+            keepInPedDatabase.Clear();
             List<EPCPedData> fileContent = SetupController.GetEPCPedData();
             foreach (EPCPedData data in fileContent) {
                 if (data == null || data.Name == null) continue;
-                KeepPedInDatabase(data);
-                if (pedDatabase.Any(x => x.Name == data.Name)) continue;
-                pedDatabase.Add(data);
+                if (!keepInPedDatabase.Any(x => x.Name == data.Name)) keepInPedDatabase.Add(data);
+                if (!pedDatabase.Any(x => x.Name == data.Name)) pedDatabase.Add(data);
             }
         }
 
@@ -159,8 +159,8 @@ namespace ExternalPoliceComputer.Data {
 
         public static void KeepVehicleInDatabase(EPCVehicleData vehicleData) {
             if (!keepInVehicleDatabase.Any(x => x.LicensePlate == vehicleData.LicensePlate)) keepInVehicleDatabase.Add(vehicleData);
-            Helper.WriteToJsonFile(SetupController.VehicleDataPath, keepInVehicleDatabase);
-            
+            Database.SaveVehicle(vehicleData);
+
             EPCPedData pedData = pedDatabase.FirstOrDefault(x => x.Name == vehicleData.Owner);
             if (pedData == null) return;
             pedData.Name = vehicleData.Owner;
@@ -169,12 +169,12 @@ namespace ExternalPoliceComputer.Data {
 
         internal static void LoadVehicleDatabaseFromFile() {
             vehicleDatabase.Clear();
+            keepInVehicleDatabase.Clear();
             List<EPCVehicleData> fileContent = SetupController.GetEPCVehicleData();
             foreach (EPCVehicleData data in fileContent) {
                 if (data == null || data.LicensePlate == null) continue;
-                KeepVehicleInDatabase(data);
-                if (vehicleDatabase.Any(x => x.LicensePlate == data.LicensePlate)) continue;
-                vehicleDatabase.Add(data);
+                if (!keepInVehicleDatabase.Any(x => x.LicensePlate == data.LicensePlate)) keepInVehicleDatabase.Add(data);
+                if (!vehicleDatabase.Any(x => x.LicensePlate == data.LicensePlate)) vehicleDatabase.Add(data);
             }
         }
 
@@ -211,8 +211,11 @@ namespace ExternalPoliceComputer.Data {
         }
 
         internal static void EndCurrentShift() {
+            if (currentShiftData.startTime == null) return;
+
             currentShiftData.endTime = SetupController.GetConfig().useInGameTime ? DateTime.ParseExact(World.TimeOfDay.ToString(), "HH:mm:ss", CultureInfo.InvariantCulture) : DateTime.Now;
             shiftHistoryData.Add(currentShiftData);
+            Database.SaveShift(currentShiftData);
             currentShiftData = new ShiftData();
             ShiftHistoryUpdated?.Invoke();
         }
@@ -267,6 +270,7 @@ namespace ExternalPoliceComputer.Data {
 
                 if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
                     if (courtDatabase.Count > SetupController.GetConfig().courtDatabaseMaxEntries) {
+                        Database.DeleteCourtCase(courtDatabase[0].Number);
                         courtDatabase.RemoveAt(0);
                     }
                     courtDatabase.Add(courtData);
@@ -330,6 +334,7 @@ namespace ExternalPoliceComputer.Data {
 
                 if (!courtDatabase.Any(x => x.Number == courtCaseNumber)) {
                     if (courtDatabase.Count > SetupController.GetConfig().courtDatabaseMaxEntries) {
+                        Database.DeleteCourtCase(courtDatabase[0].Number);
                         courtDatabase.RemoveAt(0);
                     }
                     courtDatabase.Add(courtData);

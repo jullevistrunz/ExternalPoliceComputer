@@ -11,6 +11,22 @@
   ).json()
   applyOfficerInformationToDOM(officerInformationData)
 
+  const metrics = await (await fetch('/data/officerMetrics')).json()
+  const metricsContent = document.querySelector(
+    '.overlay .settings .officerMetrics .metricsContent'
+  )
+  const ml = language.index.settings?.officerMetrics || {}
+  const avgDuration = await convertMsToTimeString(metrics.averageShiftDurationMs)
+  metricsContent.innerHTML = `
+    <span class="metricLabel">${ml.totalShifts || 'Total Shifts'}</span><span class="metricValue">${metrics.totalShifts}</span>
+    <span class="metricLabel">${ml.avgDuration || 'Avg Shift Duration'}</span><span class="metricValue">${avgDuration}</span>
+    <span class="metricLabel">${ml.incidents || 'Incidents'}</span><span class="metricValue">${metrics.totalIncidentReports}</span>
+    <span class="metricLabel">${ml.citations || 'Citations'}</span><span class="metricValue">${metrics.totalCitationReports}</span>
+    <span class="metricLabel">${ml.arrests || 'Arrests'}</span><span class="metricValue">${metrics.totalArrestReports}</span>
+    <span class="metricLabel">${ml.totalReports || 'Total Reports'}</span><span class="metricValue">${metrics.totalReports}</span>
+    <span class="metricLabel">${ml.reportsPerShift || 'Reports/Shift'}</span><span class="metricValue">${metrics.reportsPerShift}</span>
+  `
+
   const pluginInfo = await (await fetch('/pluginInfo')).json()
   const activePlugins = getActivePlugins()
   for (const plugin of pluginInfo) {

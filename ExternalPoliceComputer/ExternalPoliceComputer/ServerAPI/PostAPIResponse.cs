@@ -1,4 +1,4 @@
-﻿using ExternalPoliceComputer.Data;
+using ExternalPoliceComputer.Data;
 using ExternalPoliceComputer.Data.Reports;
 using ExternalPoliceComputer.Setup;
 using ExternalPoliceComputer.Utility;
@@ -25,7 +25,7 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.SyncPedDatabaseWithCDF();
 
-                Helper.WriteToJsonFile(SetupController.PedDataPath, DataController.GetPedDataToSave());
+                Database.SavePed(pedData);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
@@ -37,13 +37,15 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.SyncVehicleDatabaseWithCDF();
 
+                Database.SaveVehicle(vehicleData);
+
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
             } else if (path == "updateOfficerInformationData") {
                 DataController.OfficerInformationData = JsonConvert.DeserializeObject<OfficerInformationData>(body);
 
-                Helper.WriteToJsonFile(SetupController.OfficerInformationDataPath, DataController.OfficerInformationData);
+                Database.SaveOfficerInformation(DataController.OfficerInformationData);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
@@ -60,8 +62,6 @@ namespace ExternalPoliceComputer.ServerAPI {
                     return;
                 }
 
-                Helper.WriteToJsonFile(SetupController.ShiftHistoryDataPath, DataController.shiftHistoryData);
-
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
@@ -70,7 +70,7 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.AddReport(report);
 
-                Helper.WriteToJsonFile(SetupController.IncidentReportsPath, DataController.incidentReports);
+                Database.SaveIncidentReport(report);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
@@ -80,9 +80,10 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.AddReport(report);
 
-                Helper.WriteToJsonFile(SetupController.CitationReportsPath, DataController.citationReports);
+                Database.SaveCitationReport(report);
 
-                Helper.WriteToJsonFile(SetupController.CourtDataPath, DataController.courtDatabase);
+                CourtData courtCase = DataController.courtDatabase.Find(x => x.Number == report.CourtCaseNumber);
+                if (courtCase != null) Database.SaveCourtCase(courtCase);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
@@ -92,13 +93,30 @@ namespace ExternalPoliceComputer.ServerAPI {
 
                 DataController.AddReport(report);
 
-                Helper.WriteToJsonFile(SetupController.ArrestReportsPath, DataController.arrestReports);
+                Database.SaveArrestReport(report);
 
-                Helper.WriteToJsonFile(SetupController.CourtDataPath, DataController.courtDatabase);
+                CourtData courtCase = DataController.courtDatabase.Find(x => x.Number == report.CourtCaseNumber);
+                if (courtCase != null) Database.SaveCourtCase(courtCase);
 
                 buffer = Encoding.UTF8.GetBytes("OK");
                 contentType = "text/plain";
                 status = 200;
+            } else if (path == "updateCourtCaseStatus") {
+                var data = JsonConvert.DeserializeAnonymousType(body, new { Number = "", Status = 0 });
+
+                CourtData courtCase = DataController.courtDatabase.Find(x => x.Number == data.Number);
+                if (courtCase != null) {
+                    courtCase.Status = data.Status;
+                    Database.SaveCourtCase(courtCase);
+
+                    buffer = Encoding.UTF8.GetBytes("OK");
+                    contentType = "text/plain";
+                    status = 200;
+                } else {
+                    buffer = Encoding.UTF8.GetBytes("Not Found");
+                    contentType = "text/plain";
+                    status = 404;
+                }
             } else if (path == "updateConfig") {
                 Config config = JsonConvert.DeserializeObject<Config>(body);
 

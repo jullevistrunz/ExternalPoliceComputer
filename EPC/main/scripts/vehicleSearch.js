@@ -2,6 +2,8 @@
   const config = await getConfig()
   if (config.updateDomWithLanguageOnLoad)
     await updateDomWithLanguage('vehicleSearch')
+
+  await loadSearchHistory()
 })()
 
 document
@@ -29,6 +31,38 @@ document
     hideLoadingOnButton(this)
   })
 
+async function loadSearchHistory() {
+  const history = await (
+    await fetch('/data/searchHistory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'vehicle',
+    })
+  ).json()
+
+  const wrapper = document.querySelector('.searchHistoryWrapper')
+  const list = document.querySelector('.searchHistoryList')
+  list.innerHTML = ''
+
+  if (history.length === 0) {
+    wrapper.classList.add('hidden')
+    return
+  }
+
+  wrapper.classList.remove('hidden')
+
+  for (const entry of history) {
+    const item = document.createElement('button')
+    item.innerHTML = `${entry.ResultName} <span class="searchCount">(${entry.SearchCount})</span>`
+    item.addEventListener('click', async function () {
+      document.querySelector('.searchInputWrapper #vehicleSearchInput').value =
+        entry.ResultName
+      document.querySelector('.searchInputWrapper button').click()
+    })
+    list.appendChild(item)
+  }
+}
+
 async function performSearch(query) {
   const language = await getLanguage()
   if (!query) {
@@ -54,6 +88,15 @@ async function performSearch(query) {
       'warning'
     )
     return
+  }
+
+  // Alert notification for stolen vehicles
+  if (response.IsStolen) {
+    topWindow.showNotification(
+      `${language.vehicleSearch.notifications?.stolen || 'ALERT'}: ${language.vehicleSearch.notifications?.vehicleStolen || 'Vehicle'} ${response.LicensePlate} ${language.vehicleSearch.notifications?.reportedStolen || 'reported STOLEN'}`,
+      'error',
+      -1
+    )
   }
 
   document.title = `${language.vehicleSearch.static.title}: ${response.LicensePlate}`
@@ -116,6 +159,9 @@ async function performSearch(query) {
         el.style.color = getColorForValue(response[key])
     }
   }
+
+  // Reload search history after successful search
+  await loadSearchHistory()
 }
 
 function getColorForValue(value) {

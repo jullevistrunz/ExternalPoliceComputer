@@ -23,6 +23,7 @@ namespace ExternalPoliceComputer {
         public override void Finally() {
             Data.DataController.EndCurrentShift();
             Server.Stop();
+            Data.Database.Close();
             ClearCache();
             Game.DisplayNotification(GetLanguage().inGame.unloaded);
         }

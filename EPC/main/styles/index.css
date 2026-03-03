@@ -374,6 +374,38 @@
   margin: 0 0 5px 0;
 }
 
+.overlay .settings .officerMetrics {
+  margin: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.overlay .settings .officerMetrics .title {
+  width: 100%;
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.overlay .settings .officerMetrics .metricsContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 10px;
+  font-size: 14px;
+}
+
+.overlay .settings .officerMetrics .metricsContent .metricLabel {
+  font-weight: 400;
+  color: var(--color-text-primary-half);
+}
+
+.overlay .settings .officerMetrics .metricsContent .metricValue {
+  font-weight: 600;
+  text-align: right;
+}
+
 .overlay .notifications {
   position: fixed;
   top: 5px;

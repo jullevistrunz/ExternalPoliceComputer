@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 
@@ -7,13 +7,25 @@ namespace ClearEPCData {
         static void Main() {
 
             Option[] options = {
-                new Option("shift.json", () => {
+                new Option("SQLite database (epc.db)", () => {
+                    string dbPath = "data/epc.db";
+                    if (File.Exists(dbPath)) {
+                        File.Delete(dbPath);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Successfully deleted epc.db (will be recreated on next load)");
+                    } else {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("epc.db not found - nothing to reset");
+                    }
+                    Console.ResetColor();
+                }),
+                new Option("Legacy shift.json", () => {
                     File.WriteAllText("data/shift.json", "{\"currentShift\":null,\"shifts\":[]}");
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Successfully reset shift.json");
                     Console.ResetColor();
                 }),
-                new Option("court.json & peds.json", () => {
+                new Option("Legacy court.json & peds.json", () => {
                     File.WriteAllText("data/court.json", "[]");
                     File.WriteAllText("data/peds.json", "[]");
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -25,7 +37,7 @@ namespace ClearEPCData {
             Console.CursorVisible = false;
             Console.OutputEncoding = Encoding.UTF8;
 
-            Console.WriteLine("Use ↑ and ↓ to navigate and press ↵ Enter to select the file(s) you want to reset.\n");
+            Console.WriteLine("Use \u2191 and \u2193 to navigate and press \u21b5 Enter to select the file(s) you want to reset.\n");
 
             int selection = 0;
             bool inOptionMenu = true;
@@ -38,7 +50,7 @@ namespace ClearEPCData {
                 Console.SetCursorPosition(cursorLeft, cursorTop);
 
                 foreach (Option option in options) {
-                    Console.WriteLine($"{(selection == Array.IndexOf(options, option) ? "\u001b[38;2;255;0;144m✓" : " ")} {option.File}\u001b[0m");
+                    Console.WriteLine($"{(selection == Array.IndexOf(options, option) ? "\u001b[38;2;255;0;144m\u2713" : " ")} {option.File}\u001b[0m");
                 }
 
                 key = Console.ReadKey(false);
@@ -65,7 +77,7 @@ namespace ClearEPCData {
                 Console.WriteLine("An Error occured! Tf did you do? Follow the damn instructions! (Sorry jk, if you need support ask on Discord: https://discord.gg/RW9uy3spVb)");
                 Console.ResetColor();
             }
-            Console.WriteLine("Press ↵ Enter to exit");
+            Console.WriteLine("Press \u21b5 Enter to exit");
             Console.ReadLine();
         }
     }
